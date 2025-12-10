@@ -149,4 +149,4 @@ def stack_rasters(input_paths: list, output_path: str):
 
 if __name__ == "__main__":
     # Example usage
-    convert_envi_to_geotiff("./input_hdrs", "./processed_tifs") # use directories not files
+    convert_envi_to_geotiff("./data/input_hdrs", "./data/processed_tifs") # use directories not files

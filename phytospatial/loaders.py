@@ -42,10 +42,10 @@ def load_crowns(path: str, id_col: str = None, species_col: str = None) -> gpd.G
         gdf[temp_id] = gdf.index
         id_col = temp_id 
 
-    # Rename whichever column we are using to 'crown_id'
+    # Rename whichever field we are using to 'crown_id'
     gdf = gdf.rename(columns={id_col: 'crown_id'})
 
-    # Standardize species column(if exists)
+    # Standardize 'species' field (if exists)
     if species_col and species_col in gdf.columns:
         gdf = gdf.rename(columns={species_col: 'species'})
     elif 'species' not in gdf.columns:

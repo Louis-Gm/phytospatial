@@ -2,3 +2,4 @@ old/
 unfinished/
 __pycache__/
 data/
+.vscode/
