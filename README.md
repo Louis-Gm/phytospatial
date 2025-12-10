@@ -57,7 +57,7 @@ To get a local copy up and running follow these simple example steps.
 
 1. First, clone the repository to your local machine:
    ```sh
-   git clone https://github.com/Louis-Gm/phytospatial.git
+   git clone [https://github.com/Louis-Gm/phytospatial.git](https://github.com/Louis-Gm/phytospatial.git)
    ```
 2. Enter the project directory:
    ```sh
@@ -73,7 +73,7 @@ The list of dependencies is outlined in `requirements.txt` and `environments.yml
 
 _Using pip or conda, setting up the environment is simple_
 
-**With conda:**
+**Using conda (recommended):**
 1. Create the environment from the file:
    ```sh
    conda env create -f environment.yml
@@ -82,24 +82,16 @@ _Using pip or conda, setting up the environment is simple_
    ```sh
    conda activate phytospatial-env
    ```
-3. You're in business!
-
-**With pip:**
-1. Create a virtual environment
+3. Install the package in editable mode (allows you to import phytospatial in scripts)
    ```sh
-   python -m venv phytospatial-env
+   pip install -e
    ```
-2. Activate the environment:
-    **Windows:**
-    ```sh 
-    .\phytospatial-env\Scripts\activate
-    ```
+4. Verify everything is dandy by running this in your terminal:
+   ```sh
+   python -c "import phytospatial; print('Phytospatial installed successfully!')"
+   ```
+5. Celebrate!
 
-    **Mac/Linux:**
-    ```sh
-    source phytospatial-env/bin/activate
-    ```
-4. You're in business!
 
 ### Usage
 
