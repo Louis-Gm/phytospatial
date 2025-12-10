@@ -57,7 +57,7 @@ To get a local copy up and running follow these simple example steps.
 
 1. First, clone the repository to your local machine:
    ```sh
-   git clone [https://github.com/Louis-Gm/phytospatial.git](https://github.com/Louis-Gm/phytospatial.git)
+   git clone https://github.com/Louis-Gm/phytospatial.git
    ```
 2. Enter the project directory:
    ```sh
@@ -86,11 +86,11 @@ _Using pip or conda, setting up the environment is simple_
    ```sh
    pip install -e
    ```
-4. Verify everything is dandy by running this in your terminal:
+4. Run this in your terminal to verify everything is dandy:
    ```sh
    python -c "import phytospatial; print('Phytospatial installed successfully!')"
    ```
-5. Celebrate!
+5. Celebrate! 🥂
 
 
 ### Usage
