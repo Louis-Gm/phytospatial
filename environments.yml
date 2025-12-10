@@ -1,0 +1,13 @@
+name: forest_extraction
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.9
+  - geopandas>=0.13.0
+  - rasterio>=1.3.0
+  - numpy
+  - tqdm
+  - shapely
+  - pandas
+  - pip
