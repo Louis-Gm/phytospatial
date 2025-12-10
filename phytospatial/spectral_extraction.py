@@ -8,10 +8,11 @@ from pathlib import Path
 
 def compute_basic_stats(pixel_values: np.array, prefix: str) -> dict:
     """
-    Standard strategy: Mean, Median, SD.
+    Computes basic statistics for a given array of pixel values.
+
     Args:
-        pixel_values: 1D numpy array of valid pixels (no nodata).
-        prefix: Naming prefix (e.g. 'Ortho_Red')
+        pixel_values (np.array): 1D array of pixel values.
+        prefix (str): Prefix for the output statistic keys.
     """
     if pixel_values.size == 0:
         return {}
@@ -27,6 +28,8 @@ def compute_basic_stats(pixel_values: np.array, prefix: str) -> dict:
 class BlockExtractor:
     def __init__(self, raster_path: str, band_names: list = None, read_indices: list = None, return_raw_pixels: bool = False):
         """
+        Initializes the BlockExtractor with a raster file and optional parameters.
+
         Args:
             raster_path (str): Path to raster.
             band_names (list): Names for the OUTPUT stats.
@@ -53,25 +56,34 @@ class BlockExtractor:
             self.band_names = [f"b{i}" for i in self.read_indices]
 
     def close(self):
+        """
+        Closes the raster file.
+        """
         self.src.close()
 
     def process_crowns(self, crowns_gdf, threshold: float = 0.001):
         """
         Iterates over every tree in the GeoDataFrame, reads its specific window,
         and computes stats. Guarantees 1 row per tree.
+
+        Args:
+            crowns_gdf (GeoDataFrame): GeoDataFrame with tree crown geometries.
+            threshold (float): Minimum pixel value to consider for stats. Internal argument passed to _extract_from_array.
+        
+        Yields:
+            dict: Statistics for each tree crown.
         """
         # CRS Check
         if crowns_gdf.crs != self.src.crs:
             print(f"Warning: Reprojecting crowns to match raster {self.name}...")
             crowns_gdf = crowns_gdf.to_crs(self.src.crs)
 
-        # Optional: Check for duplicate IDs which could cause confusion
+        # Check for duplicate IDs which could cause confusion
         if 'crown_id' in crowns_gdf.columns:
             if crowns_gdf['crown_id'].duplicated().any():
                 print("Warning: Duplicate crown_ids found in input! Output will have multiple rows for these IDs.")
 
-        # Loop over TREES (not blocks)
-        # Using tqdm to show progress
+        # Loop over trees. tqdm is used as a progress bar
         for idx, row in tqdm(crowns_gdf.iterrows(), total=len(crowns_gdf), desc=f"Extracting {self.name}"):
             
             geom = row.geometry
@@ -80,26 +92,22 @@ class BlockExtractor:
             minx, miny, maxx, maxy = geom.bounds
             
             # 2. Convert to a Raster Window
-            # specific to this tree's location
             window = from_bounds(minx, miny, maxx, maxy, self.src.transform)
             
             # Round the window to integers (pixels) to avoid partial-pixel read errors
-            # We pad slightly to ensure we catch the edges
             window = window.round_offsets().round_lengths()
             
             # 3. Read the data for this window
-            # boundless=True handles cases where the tree is partially off the edge of the map
             try:
                 # Read only requested bands
                 block_data = self.src.read(
                     indexes=self.read_indices, 
                     window=window, 
-                    boundless=True,
+                    boundless=True, # handles cases where the tree is partially off the edge of the map
                     fill_value=self.nodata if self.nodata is not None else 0
                 )
                 
                 # Get the affine transform for this tiny window 
-                # (needed to map the polygon onto the pixel grid)
                 win_transform = self.src.window_transform(window)
 
                 # 4. Extract Stats
@@ -119,6 +127,18 @@ class BlockExtractor:
                 continue
 
     def _extract_from_array(self, data_array, transform, geometry, threshold: float = 0.001):
+        """
+        Given a data array and geometry, computes stats for pixels within the geometry.
+
+        Args:
+            data_array (np.array): 3D numpy array (bands, rows, cols).
+            transform (Affine): Affine transform for the data array.
+            geometry (shapely.geometry): Geometry of the tree crown.
+            threshold (float): Minimum pixel value to consider for stats.
+        
+        Returns:
+            dict: Computed statistics.
+        """
         out_shape = (data_array.shape[1], data_array.shape[2])
         
         try:

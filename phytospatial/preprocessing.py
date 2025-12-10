@@ -20,8 +20,7 @@ def convert_envi_to_geotiff(input_dir: str, output_dir: str, compression: str = 
     Args:
         input_dir (str): Directory containing .hdr files.
         output_dir (str): Directory to save .tif files.
-        compression (str, optional): Compression type (e.g., 'lzw', 'deflate'). 
-                                     Defaults to None (no compression).
+        compression (str, optional): Compression type for GeoTIFFs. Defaults to None.
     """
     in_path = Path(input_dir)
     out_path = Path(output_dir)
@@ -34,18 +33,19 @@ def convert_envi_to_geotiff(input_dir: str, output_dir: str, compression: str = 
 
     for hdr_file in hdr_files:
         try:
-            # --- Validation Logic ---
-            # Strip suffix to look for the binary (e.g. 'image.hdr' -> 'image')
+            # Validation Logic
+           
             binary_file = hdr_file.with_suffix('')
             target_file = hdr_file 
 
+             # Strip suffix to look for the binary ('image.hdr' -> 'image')
             if binary_file.exists():
                 logger.info(f"Correcting input: Pointing to binary file '{binary_file.name}' instead of header.")
                 target_file = binary_file
             else:
                 logger.warning(f"Targeted {hdr_file.name} but could not find the companion binary file. GDAL might fail.")
 
-            # --- Conversion ---
+            # Conversion
             with rasterio.open(target_file) as src:
                 
                 # Define output profile
@@ -83,8 +83,8 @@ def reproject_raster(input_path: str, output_path: str, target_crs: str = "EPSG:
         input_path (str): Path to source file.
         output_path (str): Path to destination file.
         target_crs (str): Destination EPSG code (default UTM Zone 19N).
-        target_resolution (float, optional): Force a specific pixel size in the units of target_crs 
-                                             (e.g., 0.20 for 20cm). If None, keeps original pixel count.
+        target_resolution (float, optional): Force a specific pixel size in the units of target_crs. 
+                                             If None, keeps original pixel count.
     """
     dst_crs = rasterio.crs.CRS.from_string(target_crs)
 
@@ -124,6 +124,10 @@ def stack_rasters(input_paths: list, output_path: str):
     """
     Stacks multiple single-band rasters into one multi-band GeoTIFF.
     Assumes all inputs share the same extent, resolution, and CRS.
+
+    Args:
+        input_paths (list): List of paths to single-band raster files.
+        output_path (str): Path to save the stacked multi-band raster.
     """
     if not input_paths:
         return
@@ -145,4 +149,4 @@ def stack_rasters(input_paths: list, output_path: str):
 
 if __name__ == "__main__":
     # Example usage
-    convert_envi_to_geotiff("./input_hdrs", "./processed_tifs")
+    convert_envi_to_geotiff("./input_hdrs", "./processed_tifs") # use directories not files

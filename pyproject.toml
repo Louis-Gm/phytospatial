@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phytospatial"
+version = "0.0.1"
+authors = [
+  { name="Louis-Vincent Grand'Maison", email="lvgra@ulaval.ca" },
+]
+description = "A python package to process remote sensing data for vegetation analysis"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+keywords = ["forestry", "remote sensing", "geospatial", "vegetation"]
+dynamic = ["dependencies"]
+
+[project.urls]
+"Homepage" = "https://github.com/Louis-Gm/phytospatial"
+"Bug Tracker" = "https://github.com/Louis-Gm/phytospatial/issues"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["phytospatial*"]
+namespaces = false
