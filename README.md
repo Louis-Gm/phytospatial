@@ -1,5 +1,6 @@
 
 <!-- HEADER AND LOGO -->
+<a name="readme-top"></a>
 <br />
 <div align="center">
   <a href="https://github.com/Louis-Gm/phytospatial">
@@ -111,7 +112,9 @@ The project is being maintained by **Louis-Vincent Grand'Maison** (Université L
 
 As an open-source project, we encourage and welcome your contributions, whether you are a student, researcher, or developer.
 
-**Want to help?** Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+**Want to help?** Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Citation
 
@@ -119,30 +122,26 @@ If you use this project in your research, please cite it as:
 
 Grand'Maison, L.V. (2025). Phytospatial: A python package for vegetation analysis. Université Laval.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 <!-- CONTACT -->
-## Contact
+### Contact
 
 Email - [lvgra@ulaval.ca](lvgra@ulaval.ca)
 
 Linkedin - [https://www.linkedin.com/in/grandmaison-lv/] (https://www.linkedin.com/in/grandmaison-lv/)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 <!-- FUNDING -->
-## Funding
+### Funding
 
 This project was initially funded through a scholarship from the **Fonds de Recherche du Québec - Secteur Nature et Technologies (2024-2025)**.
 
 It is currently funded through scholarships from **Université Laval (2024-present)** and the **Natural Sciences and Engineering Research Council of Canada (2025-present)**.
 
+<!-- LICENSE -->
+## License
+
+Distributed under the MIT License. See [LICENSE](./LICENSE) for more information.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
 
