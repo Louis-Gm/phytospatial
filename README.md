@@ -125,9 +125,9 @@ Grand'Maison, L.V. (2025). Phytospatial: A python package for vegetation analysi
 <!-- CONTACT -->
 ### Contact
 
-Email - [lvgra@ulaval.ca](lvgra@ulaval.ca)
+Email - [lvgra@ulaval.ca](mailto:lvgra@ulaval.ca)
 
-Linkedin - [https://www.linkedin.com/in/grandmaison-lv/] (https://www.linkedin.com/in/grandmaison-lv/)
+Linkedin - [grandmaison-lv](https://www.linkedin.com/in/grandmaison-lv/)
 
 <!-- FUNDING -->
 ### Funding
