@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Louis-Gm/phytospatial">
-    <img src="images/phytospatial.png" alt="Logo" width="420" height="420">
+    <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/images/phytospatial.png" alt="Logo" width="420" height="420">
   </a>
 
   <h3 align="center">phytospatial</h3>
