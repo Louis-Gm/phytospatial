@@ -35,7 +35,7 @@
     <li><a href="#citation">Citation</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#funding">Funding</a></li>
-    <li><a href="#license">Funding</a></li>
+    <li><a href="#license">License</a></li>
   </ol>
 </details>
 
