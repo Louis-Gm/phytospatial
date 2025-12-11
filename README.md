@@ -94,14 +94,17 @@ If you prefer standard Python tools:
 2. Create a virtual environment
 
 **On windows:**
-```sh
-python -m venv venv
-```
+
+   ```sh
+   python -m venv venv
+   ```
 
 **on Linux/mac:**
-```sh
-python3 -m venv venv
-```
+
+   ```sh
+   python3 -m venv venv
+   ```
+
 
 3. Install the package in editable mode
    ```sh
