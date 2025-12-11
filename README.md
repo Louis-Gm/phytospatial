@@ -35,10 +35,12 @@
     <li><a href="#citation">Citation</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#funding">Funding</a></li>
+    <li><a href="#license">Funding</a></li>
   </ol>
 </details>
 
 <!-- ABOUT -->
+<a name="about-the-project"></a>
 ## About The Project
 
 **phytospatial** is a Python toolkit designed to streamline the processing of remote sensing data for forestry and vegetation analysis.
@@ -49,6 +51,8 @@
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
+<a name="getting-started"></a>
+
 ## Getting Started
 
 To get a local copy up and running follow these simple example steps.
@@ -108,12 +112,16 @@ To ensure everything is dandy, run:
    ```
 
 You are now ready to run the package, Celebrate! 🥂
+<!-- USAGE -->
+<a name="usage"></a>
 
-### Usage
+## Usage
 
 Will come later!
 
-<!-- CONTRIBUTING -->
+<!-- CONTRIBUTE -->
+<a name="contribute"></a>
+
 ## Contribute
 
 The project is being maintained by **Louis-Vincent Grand'Maison** (Université Laval).
@@ -124,6 +132,9 @@ As an open-source project, we encourage and welcome your contributions, whether 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<!-- CITATION -->
+<a name="citation"></a
+
 ## Citation
 
 If you use this project in your research, please cite it as:
@@ -131,20 +142,26 @@ If you use this project in your research, please cite it as:
 Grand'Maison, L.V. (2025). Phytospatial: A python package for vegetation analysis. Université Laval.
 
 <!-- CONTACT -->
-### Contact
+<a name="contact"></a
+
+## Contact
 
 Email - [lvgra@ulaval.ca](mailto:lvgra@ulaval.ca)
 
 Linkedin - [grandmaison-lv](https://www.linkedin.com/in/grandmaison-lv/)
 
 <!-- FUNDING -->
-### Funding
+<a name="funding"></a
+
+## Funding
 
 This project was initially funded through a scholarship from the **Fonds de Recherche du Québec - Secteur Nature et Technologies (2024-2025)**.
 
 It is currently funded through scholarships from **Université Laval (2024-present)** and the **Natural Sciences and Engineering Research Council of Canada (2025-present)**.
 
 <!-- LICENSE -->
+<a name="license"></a
+
 ## License
 
 Distributed under the MIT License. See [LICENSE](./LICENSE) for more information.

@@ -1,5 +1,4 @@
 # main_pipeline.py
-# conda activate geo_env and ctrl + shift + p -> Python: Select Interpreter
 
 import pandas as pd
 from pathlib import Path
