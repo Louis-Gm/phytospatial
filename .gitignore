@@ -3,3 +3,8 @@ unfinished/
 __pycache__/
 data/
 .vscode/
+dist/
+build/
+*.egg-info/
+venv/
+*main.py

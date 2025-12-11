@@ -67,13 +67,13 @@ To get a local copy up and running follow these simple example steps.
 
 ### Environment
 
-It is suggested to setup an environment dedicated to this project to avoid dependency conflicts. 
-
-The list of dependencies is outlined in `requirements.txt` and `environments.yml`.
+It is highly recommended to use a virtual environment. Choose the method that fits your workflow.
 
 _Using pip or conda, setting up the environment is simple_
 
 **Using conda (recommended):**
+We provide a configured `environment.yml` that handles Python versioning and automatically installs the package in editable mode.
+
 1. Create the environment from the file:
    ```sh
    conda env create -f environment.yml
@@ -82,16 +82,32 @@ _Using pip or conda, setting up the environment is simple_
    ```sh
    conda activate phytospatial-env
    ```
-3. Install the package in editable mode (allows you to import phytospatial in scripts)
+
+**Using standard pip (venv):**
+If you prefer standard Python tools:
+
+1. Ensure Python 3.10+ is installed
+2. Create a virtual environment
+**On windows:**
    ```sh
-   pip install -e
+   python -m venv venv
    ```
-4. Run this in your terminal to verify everything is dandy:
+**on Linux/mac:**
+   ```sh
+   python3 -m venv venv
+   ```
+3. Install the package in editable mode
+   ```sh
+   pip install -e .[analysis]
+   ```
+
+### Verification
+To ensure everything is dandy, run:
    ```sh
    python -c "import phytospatial; print('Phytospatial installed successfully!')"
    ```
-5. Celebrate! 🥂
 
+You are now ready to run the package, Celebrate! 🥂
 
 ### Usage
 
