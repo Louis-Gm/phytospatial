@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "phytospatial"
-version = "0.1"
+version = "0.2"
 authors = [
   { name="Louis-Vincent Grand'Maison", email="lvgra@ulaval.ca" },
 ]
