@@ -28,7 +28,7 @@
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li><a href="#about-the-project">About The Project</a></li>
+    <li><a href="#about">About The Project</a></li>
     <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#contribute">Contribute</a></li>
@@ -40,7 +40,7 @@
 </details>
 
 <!-- ABOUT -->
-<a name="about-the-project"></a>
+<a name="about"></a>
 ## About The Project
 
 **phytospatial** is a Python toolkit designed to streamline the processing of remote sensing data for forestry and vegetation analysis.
@@ -115,7 +115,8 @@ To ensure everything is dandy, run:
    python -c "import phytospatial; print('Phytospatial installed successfully!')"
    ```
 
-You are now ready to run the package, Celebrate! 🥂
+You are now ready to run the package, Celebrate! 🥂¨
+
 <!-- USAGE -->
 <a name="usage"></a>
 
@@ -137,7 +138,7 @@ As an open-source project, we encourage and welcome your contributions, whether 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CITATION -->
-<a name="citation"></a
+<a name="citation"></a>
 
 ## Citation
 
@@ -146,7 +147,7 @@ If you use this project in your research, please cite it as:
 Grand'Maison, L.V. (2025). Phytospatial: A python package for vegetation analysis. Université Laval.
 
 <!-- CONTACT -->
-<a name="contact"></a
+<a name="contact"></a>
 
 ## Contact
 
@@ -155,7 +156,7 @@ Email - [lvgra@ulaval.ca](mailto:lvgra@ulaval.ca)
 Linkedin - [grandmaison-lv](https://www.linkedin.com/in/grandmaison-lv/)
 
 <!-- FUNDING -->
-<a name="funding"></a
+<a name="funding"></a>
 
 ## Funding
 
@@ -164,7 +165,7 @@ This project was initially funded through a scholarship from the **Fonds de Rech
 It is currently funded through scholarships from **Université Laval (2024-present)** and the **Natural Sciences and Engineering Research Council of Canada (2025-present)**.
 
 <!-- LICENSE -->
-<a name="license"></a
+<a name="license"></a>
 
 ## License
 
