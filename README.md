@@ -103,6 +103,7 @@ If you prefer standard Python tools:
    python3 -m venv venv
    ```
 
+
 3. Install the package in editable mode
    ```sh
    pip install -e .[analysis]
