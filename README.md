@@ -111,9 +111,9 @@ If you prefer standard Python tools:
 
 ### Verification
 To ensure everything is dandy, run:
-   ```sh
-   python -c "import phytospatial; print('Phytospatial installed successfully!')"
-   ```
+      ```sh
+      python -c "import phytospatial; print('Phytospatial installed successfully!')"
+      ```
 
 You are now ready to run the package, Celebrate! 🥂
 <!-- USAGE -->
