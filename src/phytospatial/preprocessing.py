@@ -122,30 +122,39 @@ def reproject_raster(input_path: str, output_path: str, target_crs: str = "EPSG:
 
 def stack_rasters(input_paths: list, output_path: str):
     """
-    Stacks multiple single-band rasters into one multi-band GeoTIFF.
-    Assumes all inputs share the same extent, resolution, and CRS.
-
-    Args:
-        input_paths (list): List of paths to single-band raster files.
-        output_path (str): Path to save the stacked multi-band raster.
+    Stacks multiple single-band rasters into one multi-band GeoTIFF using 
+    memory-safe windowed processing.
     """
     if not input_paths:
         return
 
-    # Read metadata from the first file
+    # Read metadata from the first file to configure the output
     with rasterio.open(input_paths[0]) as src0:
         meta = src0.meta.copy()
 
-    # Update metadata count to reflect total bands
-    meta.update(count=len(input_paths))
+    # Update metadata: Set total band count and ensure Tiled format
+    meta.update(
+        count=len(input_paths),
+        tiled=True,
+        blockxsize=256,
+        blockysize=256
+    )
 
     logger.info(f"Stacking {len(input_paths)} files into {output_path}...")
 
+    # Create the output file
     with rasterio.open(output_path, 'w', **meta) as dst:
+        
+        # Outer Loop: Process one file (one band) at a time
         for idx, layer_path in enumerate(input_paths, start=1):
+            
             with rasterio.open(layer_path) as src:
-                # Write the first band of the source to the idx band of destination
-                dst.write(src.read(1), idx)
+                logger.info(f"Processing band {idx}: {Path(layer_path).name}")
+
+                # Inner Loop: Process one window at a time
+                for ji, window in src.block_windows(1):
+                    block_data = src.read(1, window=window)
+                    dst.write(block_data, indexes=idx, window=window)
 
 if __name__ == "__main__":
     # Example usage
