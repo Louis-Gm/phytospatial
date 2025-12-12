@@ -26,7 +26,11 @@ def compute_basic_stats(pixel_values: np.array, prefix: str) -> dict:
     }
 
 class BlockExtractor:
-    def __init__(self, raster_path: str, band_names: list = None, read_indices: list = None, return_raw_pixels: bool = False):
+    def __init__(self, raster_path: str, 
+                 band_names: list = None, 
+                 read_indices: list = None, 
+                 return_raw_pixels: bool = False,
+                 gdal_cache_max: int = 512):
         """
         Initializes the BlockExtractor with a raster file and optional parameters.
 
@@ -40,6 +44,12 @@ class BlockExtractor:
         self.name = Path(raster_path).stem
         self.nodata = self.src.nodata
         self.return_raw_pixels = return_raw_pixels
+        self.env = None
+
+        if gdal_cache_max is not None:
+            self.env = rasterio.Env(GDAL_CACHEMAX=gdal_cache_max)
+            self.env.__enter__()
+            print(f"Set GDAL_CACHEMAX to {gdal_cache_max} MB, to change, set gdal_cache_max to desired value in constructor.")
         
         # Handle Band Selection
         if read_indices:
@@ -59,6 +69,8 @@ class BlockExtractor:
         """
         Closes the raster file.
         """
+        if self.env:
+            self.env.__exit__(None, None, None)
         self.src.close()
 
     def process_crowns(self, crowns_gdf, threshold: float = 0.001):
@@ -83,21 +95,23 @@ class BlockExtractor:
             if crowns_gdf['crown_id'].duplicated().any():
                 print("Warning: Duplicate crown_ids found in input! Output will have multiple rows for these IDs.")
 
+        centroids = crowns_gdf.geometry.centroid
+        sorted_indices = centroids.y.argsort()
+        crowns_gdf = crowns_gdf.loc[sorted_indices]
+
         # Loop over trees. tqdm is used as a progress bar
         for idx, row in tqdm(crowns_gdf.iterrows(), total=len(crowns_gdf), desc=f"Extracting {self.name}"):
             
             geom = row.geometry
             
-            # 1. Calculate the bounding box of the tree
+            # Calculate the bounding box of the tree
             minx, miny, maxx, maxy = geom.bounds
             
-            # 2. Convert to a Raster Window
+            # Convert to a Raster Window and round to full pixels
             window = from_bounds(minx, miny, maxx, maxy, self.src.transform)
-            
-            # Round the window to integers (pixels) to avoid partial-pixel read errors
             window = window.round_offsets().round_lengths()
             
-            # 3. Read the data for this window
+            # Read the data for this window
             try:
                 # Read only requested bands
                 block_data = self.src.read(
@@ -194,3 +208,31 @@ class BlockExtractor:
                 stats_out.update(band_stats)
             
         return stats_out
+    
+if __name__ == "__main__":
+    import geopandas as gpd
+    import pandas as pd
+
+    # Example Usage
+    raster_file = "path/to/raster.tif"
+    crowns_file = "path/to/crowns.shp"
+    
+    # Load crowns
+    gdf = gpd.read_file(crowns_file)
+
+    # Initialize Extractor with 1GB (1024MB) Cache
+    extractor = BlockExtractor(
+        raster_path=raster_file,
+        gdal_cache_max=1024
+    )
+
+    try:
+        results = []
+        for result in extractor.process_crowns(gdf):
+            results.append(result)
+        
+        df = pd.DataFrame(results)
+        print(df.head())
+        
+    finally:
+        extractor.close()
