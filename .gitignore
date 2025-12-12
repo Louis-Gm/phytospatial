@@ -8,3 +8,4 @@ build/
 *.egg-info/
 venv/
 *main.py
+PyPI.txt

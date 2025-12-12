@@ -133,7 +133,7 @@ The project is being maintained by **Louis-Vincent Grand'Maison** (Université L
 
 As an open-source project, we encourage and welcome your contributions, whether you are a student, researcher, or developer.
 
-**Want to help?** Please read our [CONTRIBUTING](./CONTRIBUTING.md) section for details on our code of conduct and the process for submitting pull requests.
+**Want to help?** Please read our [CONTRIBUTING](https://raw.githubusercontent.com/Louis-Gm/phytospatial/CONTRIBUTING.md) section for details on our code of conduct and the process for submitting pull requests.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -169,7 +169,7 @@ It is currently funded through scholarships from **Université Laval (2024-prese
 
 ## License
 
-Distributed under the MIT License. See [LICENSE](./LICENSE) for more information.
+Distributed under the MIT License. See [LICENSE](https://raw.githubusercontent.com/Louis-Gm/phytospatial/LICENSE) for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
