@@ -20,6 +20,7 @@
   <p align="center">
     <img src="https://img.shields.io/badge/python-3.10-blue.svg" alt="Python 3.10">
     <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License">
+    <img src="https://zenodo.org/badge/865067970.svg" alt="DOI">
   </p>
 </div>
 
