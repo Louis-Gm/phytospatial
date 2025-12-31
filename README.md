@@ -129,9 +129,9 @@ Will come later!
 
 ## Contribute
 
-The project is being maintained by **Louis-Vincent Grand'Maison** (Université Laval).
+The project is being maintained by **Louis-Vincent Grand'Maison**.
 
-As an open-source project, we encourage and welcome your contributions, whether you are a student, researcher, or developer.
+As an open-source project, we encourage and welcome contributions of students, researchers, or professional developers.
 
 **Want to help?** Please read our [CONTRIBUTING](https://raw.githubusercontent.com/Louis-Gm/phytospatial/CONTRIBUTING.md) section for details on our code of conduct and the process for submitting pull requests.
 
