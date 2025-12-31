@@ -2,9 +2,16 @@
 
 First off, thank you for considering contributing to **phytospatial**! 
 
-The project is currently maintained by **Louis-Vincent Grand'Maison** (Université Laval). 
+The project is currently maintained by **Louis-Vincent Grand'Maison**. 
 
-As an open-source project in the academic sphere, we strongly encourage students, researchers and professionals to collaborate.
+As an academic open-source project, we encourage and welcome collaborations from other researchers.
+
+## Legal & Licensing
+
+By contributing to this repository (via Pull Request, Issue, or otherwise), you agree to the following terms:
+
+1.  **License Agreement:** You agree that your contributions will be licensed under the project's **MIT License** and copyright clause.
+2.  **Academic Integrity:** As this project is part of active research, please ensure any citations or algorithms added are properly referenced.
 
 ## How to Contribute
 
