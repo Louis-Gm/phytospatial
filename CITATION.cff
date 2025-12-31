@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-title: "phytospatial"
+title: "Phytospatial"
 abstract: "A Python package for remote sensing forestry data processing."
 authors:
   - family-names: "Grand'Maison"
