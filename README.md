@@ -144,7 +144,7 @@ As an open-source project, we encourage and welcome your contributions, whether 
 
 If you use this project in your research, please cite it as:
 
-Grand'Maison, L.V. (2025). Phytospatial: A python package for vegetation analysis. Université Laval.
+Grand'Maison, L.V. (2025). Phytospatial: A python package for vegetation analysis [Computer software]. GitHub. https://github.com/Louis-Gm/phytospatial
 
 <!-- CONTACT -->
 <a name="contact"></a>
@@ -158,11 +158,15 @@ Linkedin - [grandmaison-lv](https://www.linkedin.com/in/grandmaison-lv/)
 <!-- FUNDING -->
 <a name="funding"></a>
 
-## Funding
+## Acknowledgments & Funding
 
-This project was initially funded through a scholarship from the **Fonds de Recherche du Québec - Secteur Nature et Technologies (2024-2025)**.
+This software is developed by Louis-Vincent Grand'Maison as part of a PhD project at the Département des sciences géomatiques, Université Laval. The maintenance and development of this project is supported by research scholarships:
 
-It is currently funded through scholarships from **Université Laval (2024-present)** and the **Natural Sciences and Engineering Research Council of Canada (2025-present)**.
+* Fonds de recherche du Québec – Nature et technologies (FRQNT) (Scholarship 2024-2025)
+
+* Natural Sciences and Engineering Research Council of Canada (NSERC) (Scholarship 2025-present)
+
+* Université Laval (Scholarship 2024-present)
 
 <!-- LICENSE -->
 <a name="license"></a>
