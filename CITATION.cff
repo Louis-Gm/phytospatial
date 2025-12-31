@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "phytospatial"
+abstract: "A Python package for remote sensing forestry data processing."
+authors:
+  - family-names: "Grand'Maison"
+    given-names: "Louis-Vincent"
+    email: "lvgra@ulaval.ca"
+    affiliation: "Université Laval, Département des sciences géomatiques"
+    orcid: "https://orcid.org/0009-0006-2726-9677"
+version: 0.2.1
+date-released: 2026-01-01
+license: MIT
+repository-code: "https://github.com/Louis-Gm/phytospatial"
+keywords:
+  - forestry
+  - remote sensing
+  - image processing
+  - vegetation
+  - python
