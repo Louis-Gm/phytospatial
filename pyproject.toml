@@ -4,20 +4,24 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "phytospatial"
-version = "0.2"
+version = "0.2.1"
 authors = [
   { name="Louis-Vincent Grand'Maison", email="lvgra@ulaval.ca" },
 ]
-description = "A python package to process remote sensing data for vegetation analysis"
+description = "A python package to process remote sensing forestry data"
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
 classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Scientific/Engineering :: GIS",
     "Programming Language :: Python :: 3.10",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-keywords = ["forestry", "remote sensing", "geospatial", "vegetation"]
+keywords = ["forestry", "remote sensing", "imagery", "image processing", "geospatial", "vegetation"]
 
 # CORE DEPENDENCIES: Necessary for the package to function
 dependencies = [
@@ -40,12 +44,6 @@ analysis = [
     "pyarrow>=10.0",
     "scikit-learn",
     "scipy",
-]
-dev = [
-    "pytest",
-    "black",
-    "isort",
-    "flake8"
 ]
 [tool.setuptools.packages.find]
 where = ["src"]
