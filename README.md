@@ -145,7 +145,7 @@ As an open-source project, we encourage and welcome contributions of students, r
 
 If you use this project in your research, please cite it as:
 
-Grand'Maison, L.V. (2025). Phytospatial: A python package for vegetation analysis [Computer software]. GitHub. https://github.com/Louis-Gm/phytospatial
+Grand'Maison, L.V. (2025). Phytospatial: A python package for hyperspectral image processing in forestry [Computer software]. https://doi.org/10.5281/zenodo.18112045
 
 <!-- CONTACT -->
 <a name="contact"></a>
