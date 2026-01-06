@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+message: "If you use this software, please use the citation format listed below."
 title: "Phytospatial: A python package for hyperspectral image processing in forestry"
 abstract: "A python package for hyperspectral image processing in forestry."
 authors:
