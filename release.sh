@@ -9,6 +9,17 @@ MAIN_BRANCH="main"
 
 echo "   STARTING RELEASE PROCESS FOR $PROJECT_NAME"
 
+# SELECT RELEASE MODE
+echo "Select Release Mode:"
+echo "  [1] Test (Dry Run - Build & Upload to TestPyPI only)"
+echo "  [2] Production (Build, Tag, GitHub Release & Upload to PyPI)"
+read -p "Enter choice [1-2]: " mode_choice
+
+if [[ "$mode_choice" != "1" && "$mode_choice" != "2" ]]; then
+    echo "Error: Invalid choice. Exiting."
+    exit 1
+fi
+
 # PRE-UPLOAD CHECKS
 if [[ -n $(git status -s) ]]; then
     echo "Error: Working directory is dirty. Please commit changes first."
@@ -44,42 +55,44 @@ rm -rf dist/ build/ *.egg-info
 echo "Building Source and Wheel..."
 python -m build
 
-# COMMIT AND TAG
-echo "Committing and Tagging..."
-git add pyproject.toml requirements.txt
-git commit -m "Bump version to $NEW_VERSION"
-git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
+# --- EXECUTE MODE ---
 
-echo "Pushing to GitHub..."
-git push origin "$MAIN_BRANCH"
-git push origin "v$NEW_VERSION"
+if [[ "$mode_choice" == "1" ]]; then
+    echo "--------------------------------------------------------"
+    echo "TEST MODE SELECTED"
+    echo "--------------------------------------------------------"
+    
+    echo "Uploading to TestPyPI..."
+    # This requires a separate account on test.pypi.org
+    twine upload --repository testpypi dist/*
+    
+    echo "Test upload complete."
+    echo "Note: Local version bump has NOT been committed."
+    exit 0
+fi
 
-# CREATE GITHUB RELEASE
-echo "Creating GitHub Release entry..."
-gh release create "v$NEW_VERSION" dist/* --generate-notes --title "v$NEW_VERSION""
+if [[ "$mode_choice" == "2" ]]; then
+    echo "--------------------------------------------------------"
+    echo "PRODUCTION MODE SELECTED"
+    echo "--------------------------------------------------------"
+    
+    # COMMIT AND TAG
+    echo "Committing and Tagging..."
+    git add pyproject.toml requirements.txt
+    git commit -m "Bump version to $NEW_VERSION"
+    git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
 
-# UPLOAD MENU
-echo "--------------------------------------------------------"
-echo "Where would you like to publish this version?"
-echo "  [1] TestPyPI (Sandbox - use this to test if upload works)"
-echo "  [2] PyPI     (Production - use this for real releases)"
-echo "  [3] Skip     (Do not upload)"
-echo "--------------------------------------------------------"
-read -p "Enter choice [1-3]: " upload_choice
+    echo "Pushing to GitHub..."
+    git push origin "$MAIN_BRANCH"
+    git push origin "v$NEW_VERSION"
 
-case "$upload_choice" in
-    1)
-        echo "Uploading to TestPyPI..."
-        # This requires a separate account on test.pypi.org
-        twine upload --repository testpypi dist/*
-        ;;
-    2)
-        echo "Uploading to PRODUCTION PyPI..."
-        twine upload dist/*
-        ;;
-    *)
-        echo "Skipping upload."
-        ;;
-esac
+    # CREATE GITHUB RELEASE
+    echo "Creating GitHub Release entry..."
+    gh release create "v$NEW_VERSION" dist/* --generate-notes --title "v$NEW_VERSION"
+
+    # UPLOAD TO PYPI
+    echo "Uploading to PRODUCTION PyPI..."
+    twine upload dist/*
+fi
 
 echo "SUCCESS. Version v$NEW_VERSION processing complete."
