@@ -1,8 +1,4 @@
-#!/bin/bash
-# ------------------------------------------------------------------
-# RELEASE SCRIPT FOR PHYTOSPATIAL
-# Automates versioning, building, and publishing.
-# ------------------------------------------------------------------
+# release.sh
 
 set -e  # Fail immediately if any command errors out
 
