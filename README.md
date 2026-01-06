@@ -10,11 +10,13 @@
   <h3 align="center">phytospatial</h3>
 
   <p align="center">
-    A python package to process remote sensing data for vegetation analysis!
+    A python package to process remote sensing data in forestry applications
     <br />
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Report Bug</a>
     ·
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Request Feature</a>
+    <br />
+    Don't forget to leave :star: if you found this helpful.
   </p>
   
   <p align="center">
