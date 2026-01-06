@@ -11,7 +11,7 @@ hidden_imports += collect_submodules('rasterio')
 hidden_imports += collect_submodules('shapely')
 hidden_imports += collect_submodules('sklearn')
 
-datas = []
+datas = [ ('images/phytospatial.png', 'images') ]
 
 a = Analysis(
     [ENTRY_POINT],
