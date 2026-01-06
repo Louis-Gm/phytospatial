@@ -136,8 +136,8 @@ As an open-source project, we encourage and welcome contributions of students, r
 
 **Want to help?** Please read our [CONTRIBUTING](https://raw.githubusercontent.com/Louis-Gm/phytospatial/CONTRIBUTING.md) section for details on our code of conduct and the process for submitting pull requests.
 
-Not sure how to implement a feature, but want to contribute?
-
+Not sure how to implement your idea, but want to contribute?
+<br />
 Feel free to leave a feature request <a href="https://github.com/Louis-Gm/phytospatial/issues">here</a>.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
