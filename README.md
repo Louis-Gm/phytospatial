@@ -21,8 +21,6 @@
     <img src="https://img.shields.io/badge/python-3.10-blue.svg" alt="Python 3.10">
     <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License">
     <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.18112046.svg" alt="DOI">
-    <br />
-    Don't forget to leave a star if you found this helpful :star:
   </p>
 </div>
 
@@ -138,6 +136,7 @@ As an open-source project, we encourage and welcome contributions of students, r
 
 **Want to help?** Please read our [CONTRIBUTING](https://raw.githubusercontent.com/Louis-Gm/phytospatial/CONTRIBUTING.md) section for details on our code of conduct and the process for submitting pull requests.
 
+If you're not sure how to implement a feature, but want to contribute, feel free to leave a feature request <a href="https://github.com/Louis-Gm/phytospatial/issues">here</a>.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CITATION -->
