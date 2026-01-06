@@ -15,14 +15,14 @@
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Report Bug</a>
     ·
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Request Feature</a>
-    <br />
-    Don't forget to leave a star if you found this helpful :star:
   </p>
   
   <p align="center">
     <img src="https://img.shields.io/badge/python-3.10-blue.svg" alt="Python 3.10">
     <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License">
     <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.18112046.svg" alt="DOI">
+    <br />
+    Don't forget to leave a star if you found this helpful :star:
   </p>
 </div>
 
