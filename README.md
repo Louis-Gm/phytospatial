@@ -147,7 +147,6 @@ Feel free to leave a feature request <a href="https://github.com/Louis-Gm/phytos
 
 ## Citation
 
-[!IMPORTANT]
 If you use this project in your research, please cite it as:
 
 Grand'Maison, L.V. (2025). Phytospatial: A python package for hyperspectral image processing in forestry [Computer software]. https://doi.org/10.5281/zenodo.18112045
