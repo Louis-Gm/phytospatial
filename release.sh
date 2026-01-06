@@ -12,9 +12,7 @@ MAIN_BRANCH="main"
 SPEC_FILE="main.spec"
 # ---------------------
 
-echo "========================================================"
 echo "   STARTING RELEASE PROCESS FOR $PROJECT_NAME"
-echo "========================================================"
 
 # PRE-FLIGHT CHECKS
 if [[ -n $(git status -s) ]]; then
@@ -29,7 +27,7 @@ echo "Current Version: $CURRENT_VERSION"
 read -p "Enter the new version number (e.g 4.2.0): " NEW_VERSION
 
 if [[ -z "$NEW_VERSION" ]]; then
-    echo "❌ Error: No version entered."
+    echo "Error: No version entered."
     exit 1
 fi
 
