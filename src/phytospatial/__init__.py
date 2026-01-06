@@ -7,6 +7,6 @@ A Python package to process remote sensing data for vegetation analysis.
 Maintained by Louis-Vincent Grand'Maison (Université Laval).
 """
 
-__version__ = "0.2"
+__version__ = "0.2.1-alpha"
 __author__ = "Louis-Vincent Grand'Maison"
 __email__ = "lvgra@ulaval.ca"
