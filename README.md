@@ -16,7 +16,7 @@
     ·
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Request Feature</a>
     <br />
-    Don't forget to leave :star: if you found this helpful.
+    Don't forget to leave a star if you found this helpful :star:
   </p>
   
   <p align="center">
