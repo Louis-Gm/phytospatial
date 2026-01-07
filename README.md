@@ -32,6 +32,7 @@
     <li><a href="#about">About The Project</a></li>
     <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#structure">Project Organization</a></li>
     <li><a href="#contribute">Contribute</a></li>
     <li><a href="#citation">Citation</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -118,6 +119,8 @@ To ensure everything is dandy, run:
 
 You are now ready to run the package, Celebrate! 🥂¨
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 <!-- USAGE -->
 <a name="usage"></a>
 
@@ -125,12 +128,27 @@ You are now ready to run the package, Celebrate! 🥂¨
 
 Will come later!
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- Structure -->
+<a name="structure"></a>
+
+## Project Organization
+
+- `.github/workflows`: Contains GitHub Actions used for building, testing, and publishing.
+- `src/phytospatial`: Place new source code here.
+- `tests`: Contains Python-based test cases to validate source code.
+- `scripts`: Place new scripts to facilitate project maintenance here.
+- `images`: Contains images used in the project.
+- `paper`: Contains the paper associated with this package.
+- `pyproject.toml`: Contains metadata about the project and configurations for additional tools used to format, lint, type-check, and analyze Python code.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 <!-- CONTRIBUTE -->
 <a name="contribute"></a>
 
 ## Contribute
-
-The project is being maintained by **Louis-Vincent Grand'Maison**.
 
 As an open-source project, we encourage and welcome contributions of students, researchers, or professional developers.
 
@@ -151,27 +169,35 @@ If you use this project in your research, please cite it as:
 
 Grand'Maison, L.V. (2025). Phytospatial: A python package for hyperspectral image processing in forestry [Computer software]. https://doi.org/10.5281/zenodo.18112045
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 <!-- CONTACT -->
 <a name="contact"></a>
 
 ## Contact
 
-Email - [lvgra@ulaval.ca](mailto:lvgra@ulaval.ca)
+The project is being maintained by **Louis-Vincent Grand'Maison**.
 
+Feel free to contact me by email or linkedin:
+<br />
+Email - [lvgra@ulaval.ca](mailto:lvgra@ulaval.ca)
+<br />
 Linkedin - [grandmaison-lv](https://www.linkedin.com/in/grandmaison-lv/)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- FUNDING -->
 <a name="funding"></a>
 
 ## Acknowledgments & Funding
 
-This software is developed by Louis-Vincent Grand'Maison as part of a PhD project at the Département des sciences géomatiques, Université Laval. The maintenance and development of this project is supported by research scholarships:
+This software is developed by Louis-Vincent Grand'Maison as part of a PhD project at the Département des sciences géomatiques, Université Laval. The maintenance and development of this project is supported by several research scholarships:
 
 * Fonds de recherche du Québec – Nature et technologies (FRQNT) (Scholarship 2024-2025)
-
 * Natural Sciences and Engineering Research Council of Canada (NSERC) (Scholarship 2025-present)
-
 * Université Laval (Scholarship 2024-present)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- LICENSE -->
 <a name="license"></a>
