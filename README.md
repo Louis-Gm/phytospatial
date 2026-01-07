@@ -1,4 +1,3 @@
-
 <!-- HEADER AND LOGO -->
 <br />
 <div align="center">
@@ -44,7 +43,7 @@
 *Key features:*
 * Will come later!
 
-<p align="right">([Back to Top](#table-of-contents))</p>
+([Back to Top](#table-of-contents))
 
 <!-- GETTING STARTED -->
 ## Getting Started
