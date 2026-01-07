@@ -7,7 +7,7 @@ PROJECT_NAME="phytospatial"
 MAIN_BRANCH="main"
 # ---------------
 
-echo "   STARTING RELEASE PROCESS FOR $PROJECT_NAME"
+echo "STARTING RELEASE PROCESS FOR $PROJECT_NAME"
 
 # SELECT RELEASE MODE
 echo "Select Release Mode:"
