@@ -152,7 +152,7 @@ Grand'Maison, L.V. (2025). Phytospatial: A python package for hyperspectral imag
 <!-- CONTACT -->
 ## Contact
 
-The project is being maintained by **Louis-Vincent Grand'Maison**.
+The project is currently being maintained by **Louis-Vincent Grand'Maison**.
 
 Feel free to contact me by email or linkedin:
 <br />
