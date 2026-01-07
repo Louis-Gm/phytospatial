@@ -24,6 +24,11 @@
 
 <!-- TABLE OF CONTENTS -->
 ## Table of contents
+| **Getting Started** | **Documentation** | **Community** |
+|:--- |:--- |:--- |
+| [About the Project](#about-the-project) | [Project Organization](#project-organization) | [Contribute](#contribute) |
+| [Installation](#getting-started) | [Citation](#citation) | [Contact](#contact) |
+| [Usage](#usage) | [License](#license) | [Acknowledgments](#acknowledgments--funding) |
 
 * [About The Project](#about-the-project)
 * [Getting Started](#getting-started)
@@ -110,14 +115,14 @@ To ensure everything is dandy, run:
 
 You are now ready to run the package, Celebrate! 🥂¨
 
-<p align="right">([Back to Top](#table-of-contents))</p>
+([Back to Top](#table-of-contents))
 
 <!-- USAGE -->
 ## Usage
 
 Will come later!
 
-<p align="right">([Back to Top](#table-of-contents))</p>
+([Back to Top](#table-of-contents))
 
 <!-- PROJECT ORGANIZATION -->
 ## Project Organization
@@ -130,7 +135,7 @@ Will come later!
 - `paper`: Contains the paper associated with this package.
 - `pyproject.toml`: Contains metadata about the project and configurations for additional tools used to format, lint, type-check, and analyze Python code.
 
-<p align="right">([Back to Top](#table-of-contents))</p>
+([Back to Top](#table-of-contents))
 
 <!-- CONTRIBUTE -->
 ## Contribute
@@ -143,7 +148,7 @@ Not sure how to implement your idea, but want to contribute?
 <br />
 Feel free to leave a feature request <a href="https://github.com/Louis-Gm/phytospatial/issues">here</a>.
 
-<p align="right">([Back to Top](#table-of-contents))</p>
+([Back to Top](#table-of-contents))
 
 <!-- CITATION -->
 ## Citation
@@ -152,7 +157,7 @@ If you use this project in your research, please cite it as:
 
 Grand'Maison, L.V. (2025). Phytospatial: A python package for hyperspectral image processing in forestry [Computer software]. https://doi.org/10.5281/zenodo.18112045
 
-<p align="right">([Back to Top](#table-of-contents))</p>
+([Back to Top](#table-of-contents))
 
 <!-- CONTACT -->
 ## Contact
@@ -165,7 +170,7 @@ Email - [lvgra@ulaval.ca](mailto:lvgra@ulaval.ca)
 <br />
 Linkedin - [grandmaison-lv](https://www.linkedin.com/in/grandmaison-lv/)
 
-<p align="right">([Back to Top](#table-of-contents))</p>
+([Back to Top](#table-of-contents))
 
 <!-- FUNDING -->
 ## Acknowledgments & Funding
@@ -176,14 +181,13 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 * Natural Sciences and Engineering Research Council of Canada (NSERC) (Scholarship 2025-present)
 * Université Laval (Scholarship 2024-present)
 
-<p align="right">([Back to Top](#table-of-contents))</p>
+([Back to Top](#table-of-contents))
 
 <!-- LICENSE -->
 ## License
 
 Distributed under the MIT License. See [LICENSE](https://github.com/Louis-Gm/phytospatial/blob/main/LICENSE) for more information.
 
-<p align="right">([Back to Top](#table-of-contents))</p>
-
+([Back to Top](#table-of-contents))
 
 
