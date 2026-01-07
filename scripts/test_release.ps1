@@ -15,7 +15,7 @@ if ([string]::IsNullOrWhiteSpace($NewVersion)) { Write-Error "Version required."
 (Get-Content "pyproject.toml") -replace "version = `"$CurrentVersion`"", "version = `"$NewVersion`"" | Set-Content "pyproject.toml"
 
 try {
-    # CLEAN BUILD ARTIFACTS (Integrated from build.ps1)
+    # CLEAN BUILD ARTIFACTS
     Write-Host "--- CLEANING OLD BUILDS ---" -ForegroundColor Cyan
     if (Test-Path "dist") { Remove-Item -Recurse -Force "dist" }
     if (Test-Path "build") { Remove-Item -Recurse -Force "build" }
