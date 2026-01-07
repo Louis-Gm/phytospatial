@@ -26,7 +26,7 @@
 ## Table of Contents
 | **Getting Started** | **Documentation** | **Community** |
 |:--:|:--:|:--:|
-| [About the Project](#about-the-project) | [Organization](#project-organization) | [Contribute](#contribute) |
+| [About the Project](#about-the-project) | [Project Organization](#project-organization) | [Contribute](#contribute) |
 | [Installation](#getting-started) | [Citation](#citation) | [Contact](#contact) |
 | [Usage](#usage) | [License](#license) | [Acknowledgments](#acknowledgments--funding) |
 
