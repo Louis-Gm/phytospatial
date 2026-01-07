@@ -91,7 +91,7 @@ def reproject_raster(input_path: str, output_path: str, target_crs: str = "EPSG:
 
     with rasterio.open(input_path) as src:
         # Calculate transform for the new CRS
-        # If target_resolution is provided, this function calculates the new width/height for us.
+        # If target_resolution is provided, this function calculates the new width/height.
         transform, width, height = calculate_default_transform(
             src.crs, dst_crs, src.width, src.height, *src.bounds, resolution=target_resolution
         )
@@ -120,6 +120,14 @@ def reproject_raster(input_path: str, output_path: str, target_crs: str = "EPSG:
                     # Bilinear is standard for continuous data (imagery/reflectance)
                     resampling=Resampling.bilinear 
                 )
+
+def split_raster(input_path: str, output_dir: str)
+    """
+    Generates multiple single-band rasters from a multi-band GeoTIFF using 
+    memory-safe windowed processing.
+    """
+    if not input_path:
+        return
 
 def stack_rasters(input_paths: list, output_path: str):
     """

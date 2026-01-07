@@ -8,7 +8,7 @@ def load_crowns(path: str, id_col: str = None, species_col: str = None) -> gpd.G
     Loads crown geometries, logs row numbers of invalid geometries, and filters them out.
 
     Args:
-        path (str): Path to the crowns shapefile.
+        path (str): Path to the crown geometry file. 
         id_col (str): Optional field name to use as crown ID. If None, uses the row index.
         species_col (str): Optional field name for species labels. If None, no species labels are assigned.
 
