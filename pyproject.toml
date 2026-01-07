@@ -25,13 +25,11 @@ keywords = ["forestry", "remote sensing", "imagery", "image processing", "geospa
 
 # CORE DEPENDENCIES: Necessary for the package to function
 dependencies = [
-    "geopandas", 
+    "geopandas",
     "pandas",
     "tqdm",
     "rasterio>=1.4",
     "numpy>=1.24",
-    "matplotlib>=3.5", 
-    "shapely>=2.0",
 ]
 
 [project.urls]
