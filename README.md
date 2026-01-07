@@ -1,6 +1,5 @@
 
 <!-- HEADER AND LOGO -->
-<a name="readme-top"></a>
 <br />
 <div align="center">
   <a href="https://github.com/Louis-Gm/phytospatial">
@@ -25,24 +24,19 @@
 </div>
 
 <!-- TABLE OF CONTENTS -->
+## Table of contents
 
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li><a href="#about">About The Project</a></li>
-    <li><a href="#getting-started">Getting Started</a></li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#structure">Project Organization</a></li>
-    <li><a href="#contribute">Contribute</a></li>
-    <li><a href="#citation">Citation</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#funding">Funding</a></li>
-    <li><a href="#license">License</a></li>
-  </ol>
-</details>
+* [About The Project](#about-the-project)
+* [Getting Started](#getting-started)
+* [Usage](#usage)
+* [Project Organization](#project-organization)
+* [Contribute](#contribute)
+* [Citation](#citation)
+* [Contact](#contact)
+* [Acknowledgments & Funding](#acknowledgments--funding)
+* [License](#license)
 
 <!-- ABOUT -->
-<a name="about"></a>
 ## About The Project
 
 **phytospatial** is a Python toolkit designed to streamline the processing of remote sensing data for forestry and vegetation analysis.
@@ -50,11 +44,9 @@
 *Key features:*
 * Will come later!
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">([Back to Top](#table-of-contents))</p>
 
 <!-- GETTING STARTED -->
-<a name="getting-started"></a>
-
 ## Getting Started
 
 To get a local copy up and running follow these simple example steps.
@@ -119,20 +111,16 @@ To ensure everything is dandy, run:
 
 You are now ready to run the package, Celebrate! 🥂¨
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">([Back to Top](#table-of-contents))</p>
 
 <!-- USAGE -->
-<a name="usage"></a>
-
 ## Usage
 
 Will come later!
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">([Back to Top](#table-of-contents))</p>
 
-<!-- Structure -->
-<a name="structure"></a>
-
+<!-- PROJECT ORGANIZATION -->
 ## Project Organization
 
 - `.github/workflows`: Contains GitHub Actions used for building, testing, and publishing.
@@ -143,37 +131,31 @@ Will come later!
 - `paper`: Contains the paper associated with this package.
 - `pyproject.toml`: Contains metadata about the project and configurations for additional tools used to format, lint, type-check, and analyze Python code.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">([Back to Top](#table-of-contents))</p>
 
 <!-- CONTRIBUTE -->
-<a name="contribute"></a>
-
 ## Contribute
 
 As an open-source project, we encourage and welcome contributions of students, researchers, or professional developers.
 
-**Want to help?** Please read our [CONTRIBUTING](https://raw.githubusercontent.com/Louis-Gm/phytospatial/CONTRIBUTING.md) section for details on our code of conduct and the process for submitting pull requests.
+**Want to help?** Please read our [CONTRIBUTING](https://github.com/Louis-Gm/phytospatial/blob/main/CONTRIBUTING.md) section for a detailed explanation of how to submit pull requests. Please make sure to read the [CODE OF CONDUCT](https://github.com/Louis-Gm/phytospatial/blob/main/CODE_OF_CONDUCT.md) section before making contributions.
 
 Not sure how to implement your idea, but want to contribute?
 <br />
 Feel free to leave a feature request <a href="https://github.com/Louis-Gm/phytospatial/issues">here</a>.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">([Back to Top](#table-of-contents))</p>
 
 <!-- CITATION -->
-<a name="citation"></a>
-
 ## Citation
 
 If you use this project in your research, please cite it as:
 
 Grand'Maison, L.V. (2025). Phytospatial: A python package for hyperspectral image processing in forestry [Computer software]. https://doi.org/10.5281/zenodo.18112045
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">([Back to Top](#table-of-contents))</p>
 
 <!-- CONTACT -->
-<a name="contact"></a>
-
 ## Contact
 
 The project is being maintained by **Louis-Vincent Grand'Maison**.
@@ -184,11 +166,9 @@ Email - [lvgra@ulaval.ca](mailto:lvgra@ulaval.ca)
 <br />
 Linkedin - [grandmaison-lv](https://www.linkedin.com/in/grandmaison-lv/)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">([Back to Top](#table-of-contents))</p>
 
 <!-- FUNDING -->
-<a name="funding"></a>
-
 ## Acknowledgments & Funding
 
 This software is developed by Louis-Vincent Grand'Maison as part of a PhD project at the Département des sciences géomatiques, Université Laval. The maintenance and development of this project is supported by several research scholarships:
@@ -197,16 +177,14 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 * Natural Sciences and Engineering Research Council of Canada (NSERC) (Scholarship 2025-present)
 * Université Laval (Scholarship 2024-present)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">([Back to Top](#table-of-contents))</p>
 
 <!-- LICENSE -->
-<a name="license"></a>
-
 ## License
 
-Distributed under the MIT License. See [LICENSE](https://raw.githubusercontent.com/Louis-Gm/phytospatial/LICENSE) for more information.
+Distributed under the MIT License. See [LICENSE](https://github.com/Louis-Gm/phytospatial/blob/main/LICENSE) for more information.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">([Back to Top](#table-of-contents))</p>
 
 
 
