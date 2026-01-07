@@ -24,21 +24,12 @@
 
 <!-- TABLE OF CONTENTS -->
 ## Table of contents
-| **Getting Started** | **Documentation** | **Community** |
-|:--- |:--- |:--- |
-| [About the Project](#about-the-project) | [Project Organization](#project-organization) | [Contribute](#contribute) |
+## Table of Contents
+| &nbsp;&nbsp;&nbsp;&nbsp; **Getting Started** &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp; **Documentation** &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp; **Community** &nbsp;&nbsp;&nbsp;&nbsp; |
+|:--:|:--:|:--:|
+| [About the Project](#about-the-project) | [Organization](#project-organization) | [Contribute](#contribute) |
 | [Installation](#getting-started) | [Citation](#citation) | [Contact](#contact) |
 | [Usage](#usage) | [License](#license) | [Acknowledgments](#acknowledgments--funding) |
-
-* [About The Project](#about-the-project)
-* [Getting Started](#getting-started)
-* [Usage](#usage)
-* [Project Organization](#project-organization)
-* [Contribute](#contribute)
-* [Citation](#citation)
-* [Contact](#contact)
-* [Acknowledgments & Funding](#acknowledgments--funding)
-* [License](#license)
 
 <!-- ABOUT -->
 ## About The Project
