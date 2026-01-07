@@ -23,9 +23,8 @@
 </div>
 
 <!-- TABLE OF CONTENTS -->
-## Table of contents
 ## Table of Contents
-| &nbsp;&nbsp;&nbsp;&nbsp; **Getting Started** &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp; **Documentation** &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp; **Community** &nbsp;&nbsp;&nbsp;&nbsp; |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Getting Started** &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp; **Documentation** &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp; **Community** &nbsp;&nbsp;&nbsp;&nbsp; |
 |:--:|:--:|:--:|
 | [About the Project](#about-the-project) | [Organization](#project-organization) | [Contribute](#contribute) |
 | [Installation](#getting-started) | [Citation](#citation) | [Contact](#contact) |
