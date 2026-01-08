@@ -22,5 +22,5 @@ keywords:
   - python
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.18112046"
+    value: "10.5281/zenodo.18112045"
     description: "The Zenodo archive associated with the software"
