@@ -1,5 +1,4 @@
 # scripts/test_release.ps1
-
 $ErrorActionPreference = "Stop"
 
 Write-Host "--- TEST RELEASE ---" -ForegroundColor Yellow
