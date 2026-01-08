@@ -10,7 +10,8 @@ authors = [
 ]
 description = "A python package to process remote sensing forestry data"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = { text = "MIT OR Apache-2.0" }
+license-files = ["LICENSE-MIT", "LICENSE-APACHE", "NOTICE"]
 requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -19,6 +20,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: GIS",
     "Programming Language :: Python :: 3.10",
     "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
 keywords = ["forestry", "remote sensing", "imagery", "image processing", "geospatial", "vegetation"]
@@ -47,3 +49,6 @@ analysis = [
 where = ["src"]
 include = ["phytospatial*"]
 namespaces = false
+
+[tool.setuptools.package-data]
+"*" = ["LICENSE-MIT", "LICENSE-APACHE", "NOTICE"]

@@ -10,7 +10,7 @@ As an academic open-source project, we encourage and welcome collaborations from
 
 By contributing to this repository (via Pull Request, Issue, or otherwise), you agree to the following terms:
 
-1.  **License Agreement:** You agree that your contributions will be distributed under the project's **MIT License**. See [LICENSE](https://raw.githubusercontent.com/Louis-Gm/phytospatial/LICENSE) for more information on licensing and copyright.
+1.  **License Agreement:** You agree that your contributions will be distributed under the project's  **dual MIT and Apache-2.0 license**. See [LICENSE-MIT](https://github.com/Louis-Gm/phytospatial/blob/main/LICENSE-MIT), [LICENSE-APACHE](https://raw.githubusercontent.com/Louis-Gm/phytospatial/LICENSE-APACHE) and [NOTICE](https://github.com/Louis-Gm/phytospatial/blob/main/NOTICE) for more information on licensing and copyright.
 2.  **Academic Integrity:** As this project is part of active research, please ensure any citations or algorithms added are properly referenced.
 
 ## How to Contribute

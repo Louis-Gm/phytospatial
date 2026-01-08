@@ -16,8 +16,8 @@
   </p>
   
   <p align="center">
-    <img src="https://img.shields.io/badge/python-3.10-blue.svg" alt="Python 3.10">
-    <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License">
+    <img src="https://img.shields.io/badge/python-3.10-orange.svg" alt="Python 3.10">
+    <img src="https://img.shields.io/badge/License-MIT%20or%20Apache%202.0-blue.svg" alt="MIT License">
     <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.18112046.svg" alt="DOI">
   </p>
 </div>
@@ -176,7 +176,11 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See [LICENSE](https://github.com/Louis-Gm/phytospatial/blob/main/LICENSE) for more information.
+`phytospatial` is distributed under the Apache License, Version 2.0 or the MIT License, at your option.
+
+Unless you explicitly state otherwise, any contribution you intentionally submit for inclusion in this repository (as defined by Apache-2.0) shall be dual-licensed as above, without any additional terms or conditions.
+
+See [LICENSE-MIT](https://github.com/Louis-Gm/phytospatial/blob/main/LICENSE-MIT), [LICENSE-APACHE](https://raw.githubusercontent.com/Louis-Gm/phytospatial/LICENSE-APACHE) and [NOTICE](https://github.com/Louis-Gm/phytospatial/blob/main/NOTICE) for more information on licensing and copyright.
 
 ([Back to Top](#table-of-contents))
 

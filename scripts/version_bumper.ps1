@@ -1,47 +1,52 @@
 # scripts/version_bumper.ps1
 param (
-    [Parameter(Mandatory=$true)]
-    [string]$NewVersion,
-
-    [Parameter(Mandatory=$true)]
-    [string]$CurrentVersion
+    [Parameter(Mandatory=$true)] [string]$NewVersion,
+    [Parameter(Mandatory=$true)] [string]$CurrentVersion
 )
 
 $ErrorActionPreference = "Stop"
 $Year = (Get-Date).Year
 $DateReleased = Get-Date -Format "yyyy-MM-dd"
 
-Write-Host "--- STARTING FILE UPDATES ---" -ForegroundColor Cyan
+$ProjectRoot = Resolve-Path "$PSScriptRoot\.."
+
+Write-Host "--- STARTING FILE UPDATES IN: $ProjectRoot ---" -ForegroundColor Cyan
 
 # Update pyproject.toml
 Write-Host "Updating pyproject.toml..."
-(Get-Content "pyproject.toml") -replace "version = `"$CurrentVersion`"", "version = `"$NewVersion`"" | Set-Content "pyproject.toml"
+$PyprojectPath = Join-Path $ProjectRoot "pyproject.toml"
+(Get-Content $PyprojectPath) -replace "version = `"$CurrentVersion`"", "version = `"$NewVersion`"" | Set-Content $PyprojectPath
 
 # Update README.md Citation
 Write-Host "Updating README.md Citation..."
-# Matches: "Grand'Maison, L.-V. (####). Phytospatial (ANYTHING). Zenodo"
+$ReadmePath = Join-Path $ProjectRoot "README.md"
 $CitationPattern = "Grand'Maison, L\.-V\. \(\d{4}\)\. Phytospatial \(.*?\)\. Zenodo"
 $NewCitation = "Grand'Maison, L.-V. ($Year). Phytospatial ($NewVersion). Zenodo"
-(Get-Content "README.md") -replace $CitationPattern, $NewCitation | Set-Content "README.md"
+(Get-Content $ReadmePath) -replace $CitationPattern, $NewCitation | Set-Content $ReadmePath
 
-# Update LICENSE Copyright
-Write-Host "Updating LICENSE Copyright..."
-$LicenseContent = Get-Content "LICENSE"
-$LicensePattern = "Copyright \(c\) (\d{4})(?:-\d{4})?"
-$StartYear = [regex]::Match($LicenseContent, $LicensePattern).Groups[1].Value
+# Update LICENSE-MIT Copyright
+Write-Host "Updating LICENSE-MIT Copyright..."
+$MITPath = Join-Path $ProjectRoot "LICENSE-MIT"
+(Get-Content $MITPath) -replace "Copyright \(c\) 2024-\d{4}", "Copyright (c) 2024-$Year" | Set-Content $MITPath
 
-if ($StartYear -and $StartYear -ne $Year) {
-    $NewCopyright = "Copyright (c) $StartYear-$Year"
-    $LicenseContent -replace $LicensePattern, $NewCopyright | Set-Content "LICENSE"
+# Update NOTICE
+Write-Host "Updating NOTICE..."
+$NoticePath = Join-Path $ProjectRoot "NOTICE"
+(Get-Content $NoticePath) -replace "Copyright 2024-\d{4}", "Copyright 2024-$Year" | Set-Content $NoticePath
+
+# Update src/phytospatial/__init__.py
+Write-Host "Updating src/phytospatial/__init__.py..."
+$InitPath = Join-Path $ProjectRoot "src\phytospatial\__init__.py"
+if (Test-Path $InitPath) {
+    (Get-Content $InitPath) -replace "# Copyright 2024-\d{4}", "# Copyright 2024-$Year" | Set-Content $InitPath
 }
 
-# Update CITATION.cff (Version and Date)
+# Update CITATION.cff
 Write-Host "Updating CITATION.cff..."
-$CffContent = Get-Content "CITATION.cff"
-# Replace version
+$CffPath = Join-Path $ProjectRoot "CITATION.cff"
+$CffContent = Get-Content $CffPath
 $CffContent = $CffContent -replace "^version:.*$", "version: $NewVersion"
-# Replace date-released
 $CffContent = $CffContent -replace "^date-released:.*$", "date-released: $DateReleased"
-$CffContent | Set-Content "CITATION.cff"
+$CffContent | Set-Content $CffPath
 
 Write-Host "All files updated successfully." -ForegroundColor Green
