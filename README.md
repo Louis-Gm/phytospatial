@@ -113,20 +113,33 @@ You are now ready to run the package, Celebrate! 🥂¨
 <!-- USAGE -->
 ## Usage
 
-Will come later!
+   ```sh
+    from phytospatial import extract, loaders
 
+    # Load tree crowns
+    crowns = loaders.load_crowns("data/crowns.shp")
+
+    # Initialize extractor
+    extractor = extract.BlockExtractor("data/image.tif")
+
+    # Process
+    results = []
+    for stats in extractor.process_crowns(crowns):
+        results.append(stats)
+    ```
+    
 ([Back to Top](#table-of-contents))
 
 <!-- PROJECT ORGANIZATION -->
 ## Project Organization
 
-- `.github/workflows`: Contains GitHub Actions used for building, testing, and publishing.
-- `src/phytospatial`: Place new source code here.
+- `.github`: Contains GitHub Actions used for building, testing, maintaining and publishing.
+- `src/phytospatial`: The project's source code.
 - `tests`: Contains Python-based test cases to validate source code.
-- `scripts`: Place new scripts to facilitate project maintenance here.
-- `assets`: Contains images used in the project.
+- `examples`: Contains concrete examples of how to use the package.
+- `scripts`: Contains scripts which facilitate project maintenance.
+- `assets`: Contains images or other assets used in the project.
 - `paper`: Contains the paper associated with this package.
-- `pyproject.toml`: Contains metadata about the project and configurations for additional tools used to format, lint, type-check, and analyze Python code.
 
 ([Back to Top](#table-of-contents))
 
