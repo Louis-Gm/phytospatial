@@ -23,9 +23,9 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
-keywords = ["forestry", "remote sensing", "imagery", "image processing", "geospatial", "vegetation"]
+keywords = ["forestry", "remote sensing", "imagery", "image processing", "geospatial", "GIS"]
 
-# CORE DEPENDENCIES: Necessary for the package to function
+# CORE DEPENDENCIES
 dependencies = [
     "geopandas",
     "pandas",
@@ -38,13 +38,19 @@ dependencies = [
 "Homepage" = "https://github.com/Louis-Gm/phytospatial"
 "Bug Tracker" = "https://github.com/Louis-Gm/phytospatial/issues"
 
-# OPTIONAL DEPENDENCIES: Install with 'pip install .[analysis]'
+# OPTIONAL DEPENDENCIES
 [project.optional-dependencies]
-analysis = [
+analysis = [                    # pip install .[analysis]
     "pyarrow>=10.0",
     "scikit-learn",
     "scipy",
 ]
+dev = [                         # pip install.[dev]
+    "pytest",
+    "build",
+    "twine",
+]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["phytospatial*"]

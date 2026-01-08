@@ -40,7 +40,7 @@ if (-not (Test-Path $BumperPath)) {
 # --- GIT OPERATIONS ---
 Write-Host "Committing and Tagging..."
 # Stage the known modified files
-git add pyproject.toml README.md LICENSE CITATION.cff # Updated from version_bumper.ps1
+git add pyproject.toml README.md LICENSE-MIT LICENSE-APACHE NOTICE CITATION.cff src/phytospatial/__init__.py
 git commit -m "Bump version to $NewVersion"
 git tag -a "v$NewVersion" -m "Release v$NewVersion"
 
