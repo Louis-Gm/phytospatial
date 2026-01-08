@@ -1,0 +1,55 @@
+site_name: Phytospatial
+site_description: A python package for hyperspectral image processing in forestry.
+site_url: https://phytospatial.readthedocs.io/
+repo_url: https://github.com/Louis-Gm/phytospatial
+repo_name: Louis-Gm/phytospatial
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - content.code.copy
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: true
+            show_root_heading: true
+            heading_level: 2
+  - include-markdown
+
+nav:
+  - Home: index.md
+  - Tutorials:
+      - "Pipeline Introduction": examples/intro_pipeline.ipynb
+  - API Reference:
+      - "Spectral Extraction": reference/extract.md
+      - "Raster Tools": reference/raster.md
+      - "Vector Tools": reference/vector.md
+      - "Loaders": reference/loaders.md
+  - Project Info:
+      - "Contributing": contributing.md
+      - "Code of Conduct": code_of_conduct.md
+      - "License": license.md
