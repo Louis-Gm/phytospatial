@@ -2,7 +2,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Louis-Gm/phytospatial">
-    <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/images/phytospatial.png" alt="Logo" width="420" height="420">
+    <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/phytospatial.png" alt="Logo" width="420" height="420">
   </a>
 
   <h3 align="center">phytospatial</h3>
@@ -33,10 +33,13 @@
 <!-- ABOUT -->
 ## About The Project
 
-**phytospatial** is a Python toolkit designed to streamline the processing of remote sensing data for forestry and vegetation analysis.
+**Phytospatial** is a Python toolkit designed to streamline the processing of remote sensing data for forestry and vegetation analysis. It provides tools for handling large hyperspectral rasters, validating vector geometries, and extracting spectral statistics from tree crowns. It also allows for passive-active raster-level fusion via its image processing module.
 
-*Key features:*
-* Will come later!
+### Key Features
+
+* **Memory-Safe Processing:** Process massive rasters using windowed reading (via `rasterio`) without overloading RAM.
+* **Forestry Focused:** Specialized tools for tree crown validation and species labeling.
+* **Dual-Licensed:** Available under both MIT and Apache 2.0 licenses for maximum flexibility.
 
 ([Back to Top](#table-of-contents))
 
@@ -183,5 +186,3 @@ Unless you explicitly state otherwise, any contribution you intentionally submit
 See [LICENSE-MIT](https://github.com/Louis-Gm/phytospatial/blob/main/LICENSE-MIT), [LICENSE-APACHE](https://raw.githubusercontent.com/Louis-Gm/phytospatial/LICENSE-APACHE) and [NOTICE](https://github.com/Louis-Gm/phytospatial/blob/main/NOTICE) for more information on licensing and copyright.
 
 ([Back to Top](#table-of-contents))
-
-

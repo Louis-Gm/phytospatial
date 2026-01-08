@@ -18,7 +18,7 @@ Before initiating a release, verify the integrity of the package:
 
 * **Local Testing**: Run the full test suite using pytest to ensure image processing algorithms remain functional.
 * **Staging Release**: Execute scripts/test_release.ps1 to verify the package builds correctly and can be uploaded to TestPyPI.
-    * This script will prompt for a temporary version number (e.g., 0.2.1-rc1).
+    * This script will prompt for a temporary version number (e.g., 4.2.0-rc1).
     * It automatically cleans old build artifacts and reverts changes to pyproject.toml after the test is complete.
     * Please check that the TestPyPI readme loads correctly.
 
