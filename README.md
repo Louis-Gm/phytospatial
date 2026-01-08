@@ -124,7 +124,7 @@ Will come later!
 - `src/phytospatial`: Place new source code here.
 - `tests`: Contains Python-based test cases to validate source code.
 - `scripts`: Place new scripts to facilitate project maintenance here.
-- `images`: Contains images used in the project.
+- `assets`: Contains images used in the project.
 - `paper`: Contains the paper associated with this package.
 - `pyproject.toml`: Contains metadata about the project and configurations for additional tools used to format, lint, type-check, and analyze Python code.
 

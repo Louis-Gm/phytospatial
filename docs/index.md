@@ -8,19 +8,6 @@
 * **Forestry Focused:** Specialized tools for tree crown validation and species labeling.
 * **Dual-Licensed:** Available under both MIT and Apache 2.0 licenses for maximum flexibility.
 
-## Installation
-
-It is recommended to use a virtual environment.
-
-```bash
-# Clone the repository
-git clone [https://github.com/Louis-Gm/phytospatial.git](https://github.com/Louis-Gm/phytospatial.git)
-cd phytospatial
-
-# Install with analysis dependencies
-pip install -e .[analysis]
-
-<!-- GETTING STARTED -->
 ## Getting Started
 
 To get a local copy up and running follow these simple example steps.
@@ -89,7 +76,6 @@ You are now ready to run the package, Celebrate! 🥂¨
 ## Usage
 
    ```sh
-
     from phytospatial import extract, loaders
 
     # Load tree crowns
@@ -102,6 +88,7 @@ You are now ready to run the package, Celebrate! 🥂¨
     results = []
     for stats in extractor.process_crowns(crowns):
         results.append(stats)
+    ```
 
 <!-- PROJECT ORGANIZATION -->
 ## Project Organization
@@ -110,7 +97,7 @@ You are now ready to run the package, Celebrate! 🥂¨
 - `src/phytospatial`: Place new source code here.
 - `tests`: Contains Python-based test cases to validate source code.
 - `scripts`: Place new scripts to facilitate project maintenance here.
-- `images`: Contains images used in the project.
+- `assets`: Contains images used in the project.
 - `paper`: Contains the paper associated with this package.
 - `pyproject.toml`: Contains metadata about the project and configurations for additional tools used to format, lint, type-check, and analyze Python code.
 
