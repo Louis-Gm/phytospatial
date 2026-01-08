@@ -17,8 +17,8 @@
   
   <p align="center">
     <img src="https://img.shields.io/badge/python-3.10-orange.svg" alt="Python 3.10">
+    <img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.18112046-green" alt="DOI">    
     <img src="https://img.shields.io/badge/License-MIT%20or%20Apache%202.0-blue.svg" alt="MIT License">
-    <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.18112046.svg" alt="DOI">
   </p>
 </div>
 
