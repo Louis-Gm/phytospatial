@@ -46,10 +46,21 @@ analysis = [                    # pip install .[analysis]
     "scipy",
 ]
 
-dev = [                         # pip install.[dev]
+docs = [                        # pip install .[docs]
+    "mkdocs>=1.5",
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.24",
+    "mkdocs-include-markdown-plugin>=4.0",
+    "mkdocs-jupyter>=0.24",
+]
+
+dev = [                         # pip install .[dev]
     "pytest",
     "build",
     "twine",
+    "pre-commit",
+    "black",
+    "flake8",
 ]
 
 [tool.setuptools.packages.find]
