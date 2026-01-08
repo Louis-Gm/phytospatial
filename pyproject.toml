@@ -45,6 +45,7 @@ analysis = [                    # pip install .[analysis]
     "scikit-learn",
     "scipy",
 ]
+
 dev = [                         # pip install.[dev]
     "pytest",
     "build",
