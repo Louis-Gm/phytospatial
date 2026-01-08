@@ -18,7 +18,7 @@
   <p align="center">
     <img src="https://img.shields.io/badge/python-3.10-orange.svg" alt="Python 3.10">    
     <img src="https://img.shields.io/badge/License-MIT%20or%20Apache%202.0-blue.svg" alt="MIT License">
-    <img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.18112046-purple" alt="DOI">
+    <img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.18112045-purple" alt="DOI">
   </p>
 </div>
 
@@ -145,7 +145,7 @@ Feel free to leave a feature request <a href="https://github.com/Louis-Gm/phytos
 
 If you use this project in your research, please cite it as:
 
-Grand'Maison, L.-V. (2026). Phytospatial (0.2.1-alpha). Zenodo. https://doi.org/10.5281/zenodo.18112046
+Grand'Maison, L.-V. (2026). Phytospatial (0.2.1-alpha). Zenodo. https://doi.org/10.5281/zenodo.18112045
 
 ([Back to Top](#table-of-contents))
 
