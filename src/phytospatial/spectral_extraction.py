@@ -1,11 +1,14 @@
-# spectral_extraction.py
+# src/phytospatial/spectral_extraction.py
 
+import logging
 import rasterio
 from rasterio.features import geometry_mask
 from rasterio.windows import from_bounds
 import numpy as np
 from tqdm import tqdm
 from pathlib import Path
+
+log = logging.getLogger(__name__)
 
 def compute_basic_stats(pixel_values: np.array, prefix: str) -> dict:
     """
@@ -50,7 +53,7 @@ class BlockExtractor:
         if gdal_cache_max is not None:
             self.env = rasterio.Env(GDAL_CACHEMAX=gdal_cache_max)
             self.env.__enter__()
-            print(f"Set GDAL_CACHEMAX to {gdal_cache_max} MB, to change, set gdal_cache_max to desired value in constructor.")
+            log.info(f"Set GDAL_CACHEMAX to {gdal_cache_max} MB. To change, set gdal_cache_max to desired value in constructor.")
         
         # Handle Band Selection
         if read_indices:
@@ -88,13 +91,13 @@ class BlockExtractor:
         """
         # CRS Check
         if crowns_gdf.crs != self.src.crs:
-            print(f"Warning: Reprojecting crowns to match raster {self.name}...")
+            log.warning(f"Reprojecting crowns to match raster {self.name} (from {crowns_gdf.crs.name} to {self.src.crs.name})...")
             crowns_gdf = crowns_gdf.to_crs(self.src.crs)
 
         # Check for duplicate IDs which could cause confusion
         if 'crown_id' in crowns_gdf.columns:
             if crowns_gdf['crown_id'].duplicated().any():
-                print("Warning: Duplicate crown_ids found in input! Output will have multiple rows for these IDs.")
+                log.warning("Duplicate crown_ids found in input! Output will have multiple rows for these IDs.")
 
         centroids = crowns_gdf.geometry.centroid
         sorted_indices = centroids.y.argsort()
@@ -125,7 +128,7 @@ class BlockExtractor:
                 # Get the affine transform for this tiny window 
                 win_transform = self.src.window_transform(window)
 
-                # 4. Extract Stats
+                # Extract Stats
                 id_field = row.get('crown_id', idx)
                 species_field = row.get('species', None)
                 
@@ -138,7 +141,7 @@ class BlockExtractor:
                     yield stats_dict
                     
             except Exception as e:
-                print(f"Error processing tree {idx}: {e}")
+                log.error(f"Error processing tree {idx}: {e}")
                 continue
 
     def _extract_from_array(self, data_array, transform, geometry, threshold: float = 0.001):
@@ -213,6 +216,8 @@ class BlockExtractor:
 if __name__ == "__main__":
     import geopandas as gpd
     import pandas as pd
+    
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     # Example Usage
     raster_file = "path/to/raster.tif"

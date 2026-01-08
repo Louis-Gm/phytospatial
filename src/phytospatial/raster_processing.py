@@ -1,4 +1,4 @@
-# preprocessing.py
+# src/phytospatial/raster_processing.py
 
 import logging
 from pathlib import Path
@@ -6,13 +6,7 @@ import rasterio
 from rasterio.warp import calculate_default_transform, reproject, Resampling
 from rasterio.enums import Resampling
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 def convert_envi_to_geotiff(input_dir: str, output_dir: str, compression: str = None):
     """
@@ -26,11 +20,12 @@ def convert_envi_to_geotiff(input_dir: str, output_dir: str, compression: str = 
     in_path = Path(input_dir)
     out_path = Path(output_dir)
     out_path.mkdir(parents=True, exist_ok=True)
-    logger.info(f"Writing GeoTIFFs to absolute path: {out_path.resolve()}")
+    
+    log.info(f"Writing GeoTIFFs to absolute path: {out_path.resolve()}")
 
     # Find .hdr files
     hdr_files = list(in_path.glob("*.hdr"))
-    logger.info(f"Found {len(hdr_files)} HDR files to process.")
+    log.info(f"Found {len(hdr_files)} HDR files to process.")
 
     for hdr_file in hdr_files:
         try:
@@ -41,10 +36,10 @@ def convert_envi_to_geotiff(input_dir: str, output_dir: str, compression: str = 
 
              # Strip suffix to look for the binary ('image.hdr' -> 'image')
             if binary_file.exists():
-                logger.info(f"Correcting input: Pointing to binary file '{binary_file.name}' instead of header.")
+                log.info(f"Correcting input: Pointing to binary file '{binary_file.name}' instead of header.")
                 target_file = binary_file
             else:
-                logger.warning(f"Targeted {hdr_file.name} but could not find the companion binary file. GDAL might fail.")
+                log.warning(f"Targeted {hdr_file.name} but could not find the companion binary file. GDAL might fail.")
 
             # Conversion
             with rasterio.open(target_file) as src:
@@ -64,17 +59,17 @@ def convert_envi_to_geotiff(input_dir: str, output_dir: str, compression: str = 
                     profile['compress'] = compression
                 else:
                     profile.pop('compress', None) # Remove if exists
-#
+
                 output_file = out_path / f"{hdr_file.stem}.tif"
                 
-                logger.info(f"Converting {target_file.name} -> {output_file.name} (Compression: {compression})...")
+                log.info(f"Converting {target_file.name} -> {output_file.name} (Compression: {compression})...")
                 
                 with rasterio.open(output_file, 'w', **profile) as dst:
                     for ji, window in src.block_windows(1):
                         dst.write(src.read(window=window), window=window)
                         
         except Exception as e:
-            logger.error(f"Failed to convert {hdr_file.name}: {e}")
+            log.error(f"Failed to convert {hdr_file.name}: {e}")
 
 def reproject_raster(input_path: str, output_path: str, target_crs: str = "EPSG:32619", target_resolution: float = None):
     """
@@ -104,9 +99,9 @@ def reproject_raster(input_path: str, output_path: str, target_crs: str = "EPSG:
             'height': height
         })
 
-        logger.info(f"Reprojecting {Path(input_path).name} to {target_crs}...")
+        log.info(f"Reprojecting {Path(input_path).name} to {target_crs}...")
         if target_resolution:
-            logger.info(f" -> Forcing resolution: {target_resolution} units (meters)")
+            log.info(f" -> Forcing resolution: {target_resolution} units (meters)")
         
         with rasterio.open(output_path, 'w', **kwargs) as dst:
             for i in range(1, src.count + 1):
@@ -117,11 +112,10 @@ def reproject_raster(input_path: str, output_path: str, target_crs: str = "EPSG:
                     src_crs=src.crs,
                     dst_transform=transform,
                     dst_crs=dst_crs,
-                    # Bilinear is standard for continuous data (imagery/reflectance)
-                    resampling=Resampling.bilinear 
+                    resampling=Resampling.bilinear # NOTE: should test other methods for performance
                 )
 
-def split_raster(input_path: str, output_dir: str)
+def split_raster(input_path: str, output_dir: str):
     """
     Generates multiple single-band rasters from a multi-band GeoTIFF using 
     memory-safe windowed processing.
@@ -149,7 +143,7 @@ def stack_rasters(input_paths: list, output_path: str):
         blockysize=256
     )
 
-    logger.info(f"Stacking {len(input_paths)} files into {output_path}...")
+    log.info(f"Stacking {len(input_paths)} files into {output_path}...")
 
     # Create the output file
     with rasterio.open(output_path, 'w', **meta) as dst:
@@ -158,7 +152,7 @@ def stack_rasters(input_paths: list, output_path: str):
         for idx, layer_path in enumerate(input_paths, start=1):
             
             with rasterio.open(layer_path) as src:
-                logger.info(f"Processing band {idx}: {Path(layer_path).name}")
+                log.info(f"Processing band {idx}: {Path(layer_path).name}")
 
                 # Inner Loop: Process one window at a time
                 for ji, window in src.block_windows(1):
@@ -167,4 +161,4 @@ def stack_rasters(input_paths: list, output_path: str):
 
 if __name__ == "__main__":
     # Example usage
-    convert_envi_to_geotiff("./data/input_hdrs", "./data/output_tifs") # use directories not files
+    convert_envi_to_geotiff("./data/input_hdrs", "./data/output_tifs")

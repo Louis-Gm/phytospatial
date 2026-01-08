@@ -1,8 +1,11 @@
-# spatial_tools.py
+# src/phytospatial/spatial_tools.py
 
+import logging
 import geopandas as gpd
 
-def label_crowns_spatially(crowns_gdf: gpd.GeoDataFrame, points_path: str, 
+log = logging.getLogger(__name__)
+
+def label_crowns(crowns_gdf: gpd.GeoDataFrame, points_path: str, 
                            label_col: str, max_dist: float = 2.0) -> gpd.GeoDataFrame:
     """
     Performs a spatial join to label crowns based on nearest points.
@@ -10,12 +13,13 @@ def label_crowns_spatially(crowns_gdf: gpd.GeoDataFrame, points_path: str,
     """
     try:
         points_gdf = gpd.read_file(points_path)
+        log.info(f"Loaded {len(points_gdf)} labeling points from {points_path}")
     except Exception as e:
         raise IOError(f"Could not load points: {e}")
 
     # Ensure CRS match
     if crowns_gdf.crs != points_gdf.crs:
-        print(f"Reprojecting points to {crowns_gdf.crs.name}...")
+        log.info(f"CRS mismatch detected. Reprojecting points from {points_gdf.crs.name} to {crowns_gdf.crs.name}...")
         points_gdf = points_gdf.to_crs(crowns_gdf.crs)
 
     # Spatial Join Nearest
@@ -34,6 +38,7 @@ def label_crowns_spatially(crowns_gdf: gpd.GeoDataFrame, points_path: str,
     crowns_gdf['species'] = crowns_gdf['species'].combine_first(joined[label_col])
     
     count = crowns_gdf['species'].notna().sum()
-    print(f"Labeling complete. {count} crowns now have labels.")
+    
+    log.info(f"Labeling complete. {count} crowns now have labels.")
     
     return crowns_gdf

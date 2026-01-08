@@ -1,7 +1,9 @@
-# loaders.py
+# src/phytospatial/loaders.py
 
 import logging
 import geopandas as gpd
+
+log = logging.getLogger(__name__)
 
 def load_crowns(path: str, id_col: str = None, species_col: str = None) -> gpd.GeoDataFrame:
     """
@@ -27,7 +29,7 @@ def load_crowns(path: str, id_col: str = None, species_col: str = None) -> gpd.G
 
         invalid_indices = invalid_rows.index.tolist()
         
-        logging.warning(
+        log.warning(
             f"Found {len(invalid_indices)} invalid geometries. "
             f"Skipping the following row indices: {invalid_indices}"
         )
@@ -36,15 +38,19 @@ def load_crowns(path: str, id_col: str = None, species_col: str = None) -> gpd.G
         gdf = gdf[gdf.is_valid].copy()
 
     # Check if the requested ID field actually exists
-    if id_col not in gdf.columns:
-        logging.warning(f"ID field '{id_col}' not found. Using row index as ID.")
+    if id_col and id_col not in gdf.columns:
+        log.warning(f"ID field '{id_col}' not found. Using row index as ID.")
         
         temp_id = 'crown_id'
         gdf[temp_id] = gdf.index
         id_col = temp_id 
 
     # Rename whichever field we are using to 'crown_id'
-    gdf = gdf.rename(columns={id_col: 'crown_id'})
+    if id_col:
+        gdf = gdf.rename(columns={id_col: 'crown_id'})
+    else:
+        # Fallback if id_col was None and not assigned via logic
+        gdf['crown_id'] = gdf.index
 
     # Standardize 'species' field (if exists)
     if species_col and species_col in gdf.columns:
