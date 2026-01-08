@@ -1,0 +1,20 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+      # 30 mb limit added for safety
+      # can bypass with git commit -m "Add large test file" --no-verify
+      # if large data files are deemed necessary for testing
+        args: ['--maxkb=30000']
+
+  # Standard Python Formatting (Black)
+  - repo: https://github.com/psf/black
+    rev: 24.1.1
+    hooks:
+      - id: black
+        args: [--line-length=100]

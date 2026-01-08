@@ -9,3 +9,6 @@ build/
 venv/
 *main.py
 PyPI.txt
+.pytest_cache/
+*.ipynb_checkpoints
+site/
