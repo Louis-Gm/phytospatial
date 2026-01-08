@@ -68,5 +68,8 @@ where = ["src"]
 include = ["phytospatial*"]
 namespaces = false
 
+[tool.setuptools]
+license-files = ["LICENSE-MIT", "LICENSE-APACHE", "NOTICE"]
+
 [tool.setuptools.package-data]
 "*" = ["LICENSE-MIT", "LICENSE-APACHE", "NOTICE"]
