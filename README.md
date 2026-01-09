@@ -141,6 +141,6 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 
 Unless you explicitly state otherwise, any contribution you intentionally submit for inclusion in this repository (as defined by Apache-2.0) shall be dual-licensed as above, without any additional terms or conditions.
 
-See (https://phytospatial.readthedocs.io/en/latest/license/) for more information on licensing and copyright.
+See [LICENSE](https://phytospatial.readthedocs.io/en/latest/license/) for more information on licensing and copyright.
 
 ([Back to Top](#table-of-contents))
