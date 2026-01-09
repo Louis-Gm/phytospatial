@@ -13,6 +13,15 @@ By contributing to this repository (via Pull Request, Issue, or otherwise), you 
 1.  **License Agreement:** You agree that your contributions will be distributed under the project's  **dual MIT and Apache-2.0 license**. See [LICENSE-MIT](https://github.com/Louis-Gm/phytospatial/blob/main/LICENSE-MIT), [LICENSE-APACHE](https://raw.githubusercontent.com/Louis-Gm/phytospatial/LICENSE-APACHE) and [NOTICE](https://github.com/Louis-Gm/phytospatial/blob/main/NOTICE) for more information on licensing and copyright.
 2.  **Academic Integrity:** As this project is part of active research, please ensure any citations or algorithms added are properly referenced.
 
+## Project Structure
+
+* `src/phytospatial`: Core source code.
+* `tests`: Pytest suite.
+* `.github`: CI/CD workflows (Tests, Release).
+* `scripts`: Maintenance scripts (Release triggers).
+* `examples`: Jupyter notebooks and tutorials.
+* `docs`: Documentation files.
+
 ## How to Contribute
 
 If you have an idea for a new feature or have found a bug, please follow these steps to submit your changes.
@@ -62,3 +71,9 @@ git push origin feat/your-feature-name
 ## Note on dependencies
 
 If your new feature requires installing a new Python library, please **mention it in your Pull Request description** so we can update environment.yml and requirements.txt.
+
+## Release Protocol
+
+We follow a strict, automated protocol for releasing new versions to ensure consistency across PyPI, GitHub, and our documentation. Manual version bumps are strongly discouraged.
+
+If you are a maintainer looking to publish a new version, please strictly follow the steps outlined in [RELEASING.md](docs/RELEASING.md).

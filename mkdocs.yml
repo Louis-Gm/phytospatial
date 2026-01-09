@@ -53,3 +53,4 @@ nav:
       - "Contributing": contributing.md
       - "Code of Conduct": code_of_conduct.md
       - "License": license.md
+      - "Installation": docs/installation.md
