@@ -6,13 +6,12 @@ on:
     paths:
       - 'src/**/*.py'      # Source code
       - 'tests/*.py'         # Tests
-      - 'pyproject.toml'   # Dependencies
+      
   pull_request:
     branches: [ "main" ]
     paths:
       - 'src/**/*.py'
       - 'tests/*.py'
-      - 'pyproject.toml'
 
 jobs:
   test:
