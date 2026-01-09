@@ -1,0 +1,41 @@
+name: Sync README to Docs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'README.md'
+      - 'scripts/sync_readme.py'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+
+      - name: Run Sync Script
+        run: python scripts/sync_readme.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Check if there are changes to commit
+          if [[ -n $(git status -s docs/index.md) ]]; then
+            git add docs/index.md
+            git commit -m "docs: auto-sync README to index.md [skip ci]"
+            git push
+          else
+            echo "No changes in docs/index.md to commit."
+          fi

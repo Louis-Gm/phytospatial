@@ -1,0 +1,41 @@
+# scripts/sync_readme.py
+import re
+from pathlib import Path
+
+def main():
+    # Define paths
+    root_dir = Path(__file__).resolve().parent.parent
+    readme_path = root_dir / "README.md"
+    index_path = root_dir / "docs" / "index.md"
+
+    if not readme_path.exists():
+        print(f"Error: Could not find README.md at {readme_path}")
+        exit(1)
+
+    # Read the README content
+    content = readme_path.read_text(encoding="utf-8")
+
+    # Define the markers (hidden markdown syntax)
+    # Matches: [start]: # ... content ... [end]: #
+    pattern = r"\[start\]: #.*?\[end\]: #"
+    
+    # Remove unwanted newlines
+    clean_content = re.sub(pattern, "", content, flags=re.DOTALL)
+    clean_content = re.sub(r"\n{3,}", "\n\n", clean_content)
+
+    # Add a new header
+    header = (
+        "\n\n"
+        "# Welcome to Phytospatial!\n\n"
+    )
+    
+    final_content = header + clean_content
+
+    # Write to docs/index.md
+    index_path.parent.mkdir(parents=True, exist_ok=True)
+    index_path.write_text(final_content, encoding="utf-8")
+    
+    print(f"Successfully synced README.md to {index_path} (stripped sections & added header).")
+
+if __name__ == "__main__":
+    main()
