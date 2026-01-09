@@ -6,17 +6,22 @@
 
   <h3 align="center">phytospatial</h3>
 
+  [start]: #
+
   <p align="center">
     A python package to process remote sensing data in forestry applications
     <br />
     <a href="https://phytospatial.readthedocs.io/"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
+  </p>
+
+  [end]: #
+
+  <p>
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Report Bug</a>
     ·
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Request Feature</a>
   </p>
-  
+  <br />
   <p align="center">
     <img src="https://img.shields.io/badge/python-3.10+-orange.svg" alt="Python versions">    
     <img src="https://img.shields.io/badge/License-MIT%20or%20Apache%202.0-blue.svg" alt="License">
@@ -26,12 +31,16 @@
   </p>
 </div>
 
+[start]: #
+
 ## Table of Contents
 | **Getting Started** | **Documentation** | **Community** |
 |:--:|:--:|:--:|
 | [About the Project](#about-the-project) | [Project Organization](CONTRIBUTING.md#project-structure) | [Contribute](#contribute) |
 | [Installation](#getting-started) | [Citation](#citation) | [Contact](#contact) |
 | [Usage](#usage) | [License](#license) | [Acknowledgments](#acknowledgments--funding) |
+
+[end]: #
 
 ## About The Project
 
@@ -57,7 +66,7 @@ cd phytospatial
 pip install -e .
 ```
 
-> **New to Python?** Check out our detailed [Installation Guide](docs/installation.md) for Conda and Virtual Environment setup.
+> **New to Python?** Check out our detailed [Installation Guide](https://phytospatial.readthedocs.io/en/latest/installation/) for Conda and Virtual Environment setup.
 
 ([Back to Top](#table-of-contents))
 
@@ -80,7 +89,7 @@ for stats in extractor.process_crowns(crowns):
     results.append(stats)
 ```
 
-For a complete workflow, see the [Introduction Pipeline Tutorial](examples/intro_pipeline.ipynb).
+For a complete workflow, see the [Introduction Pipeline Tutorial](https://phytospatial.readthedocs.io/en/latest/examples/intro_pipeline/).
 
 ([Back to Top](#table-of-contents))
 
@@ -88,7 +97,7 @@ For a complete workflow, see the [Introduction Pipeline Tutorial](examples/intro
 
 As an open-source project, we encourage and welcome contributions of students, researchers, or professional developers.
 
-**Want to help?** Please read our [CONTRIBUTING](CONTRIBUTING.md) section for a detailed explanation of how to submit pull requests. Please make sure to read the [CODE OF CONDUCT](CODE_OF_CONDUCT.md) section before making contributions.
+**Want to help?** Please read our [CONTRIBUTING](https://phytospatial.readthedocs.io/en/latest/contributing/contributing/) section for a detailed explanation of how to submit pull requests. Please also make sure to read the project's [CODE OF CONDUCT](https://phytospatial.readthedocs.io/en/latest/contributing/code_of_conduct/).
 
 Not sure how to implement your idea, but want to contribute?
 <br />
@@ -132,6 +141,6 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 
 Unless you explicitly state otherwise, any contribution you intentionally submit for inclusion in this repository (as defined by Apache-2.0) shall be dual-licensed as above, without any additional terms or conditions.
 
-See [LICENSE-MIT](LICENSE-MIT), [LICENSE-APACHE](LICENSE-APACHE) and [NOTICE](NOTICE) for more information on licensing and copyright.
+See (https://phytospatial.readthedocs.io/en/latest/license/) for more information on licensing and copyright.
 
 ([Back to Top](#table-of-contents))

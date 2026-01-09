@@ -10,8 +10,9 @@ As an academic open-source project, we encourage and welcome collaborations from
 
 By contributing to this repository (via Pull Request, Issue, or otherwise), you agree to the following terms:
 
-1.  **License Agreement:** You agree that your contributions will be distributed under the project's  **dual MIT and Apache-2.0 license**. See [LICENSE-MIT](https://github.com/Louis-Gm/phytospatial/blob/main/LICENSE-MIT), [LICENSE-APACHE](https://raw.githubusercontent.com/Louis-Gm/phytospatial/LICENSE-APACHE) and [NOTICE](https://github.com/Louis-Gm/phytospatial/blob/main/NOTICE) for more information on licensing and copyright.
+1.  **License Agreement:** You agree that your contributions will be distributed under the project's  **dual MIT and Apache-2.0 license**. See [LICENSE](https://phytospatial.readthedocs.io/en/latest/license/) for more information on licensing and copyright.
 2.  **Academic Integrity:** As this project is part of active research, please ensure any citations or algorithms added are properly referenced.
+3.  **Code of conduct:** As an open-sourced project, it is important to understand our code of conduct prior to contributing. See [CODE_OF_CONDUCT](https://phytospatial.readthedocs.io/en/latest/contributing/code_of_conduct/) prior to contributing.
 
 ## Project Structure
 
@@ -76,4 +77,4 @@ If your new feature requires installing a new Python library, please **mention i
 
 We follow a strict, automated protocol for releasing new versions to ensure consistency across PyPI, GitHub, and our documentation. Manual version bumps are strongly discouraged.
 
-If you are a maintainer looking to publish a new version, please strictly follow the steps outlined in [RELEASING.md](docs/RELEASING.md).
+If you are a contributor looking to publish a new version, please strictly follow the steps outlined in [RELEASING](https://phytospatial.readthedocs.io/en/latest/contributing/releasing/).

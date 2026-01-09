@@ -55,3 +55,4 @@ nav:
       - "Code of Conduct": code_of_conduct.md
       - "License": license.md
       - "Installation": installation.md
+      - "Releasing": RELEASING.md
