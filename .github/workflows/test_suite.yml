@@ -39,5 +39,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install .[dev]
 
+      - name: List files in tests directory
+        run: |
+          ls -R tests
+          
       - name: Run Pytest
         run: python -m pytest
