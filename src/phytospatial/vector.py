@@ -22,20 +22,25 @@ def label_crowns(crowns_gdf: gpd.GeoDataFrame, points_path: str,
         log.info(f"CRS mismatch detected. Reprojecting points from {points_gdf.crs.name} to {crowns_gdf.crs.name}...")
         points_gdf = points_gdf.to_crs(crowns_gdf.crs)
 
-    # Spatial Join Nearest
+    temp_label_col = "pts_label_temp"
+    
+    # Prepare the subset with the renamed column
+    points_subset = points_gdf[[label_col, 'geometry']].rename(columns={label_col: temp_label_col})
+
+    # Spatial Join Nearest using the SAFE subset
     joined = gpd.sjoin_nearest(
         crowns_gdf,
-        points_gdf[[label_col, 'geometry']],
+        points_subset,
         how='left',
         max_distance=max_dist,
         distance_col="dist"
     )
-
+    
     # Deduplicate (keep closest/first if ties)
     joined = joined[~joined.index.duplicated(keep='first')]
 
-    # Update species column using combine_first (fills NaNs in crowns with label from points)
-    crowns_gdf['species'] = crowns_gdf['species'].combine_first(joined[label_col])
+    # Update species column using the temporary column name
+    crowns_gdf['species'] = crowns_gdf['species'].combine_first(joined[temp_label_col])
     
     count = crowns_gdf['species'].notna().sum()
     
