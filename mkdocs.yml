@@ -43,6 +43,9 @@ plugins:
 
 nav:
   - Home: index.md
+  - Project Info:
+      - "Installation": installation.md
+      - "License": license.md
   - Tutorials:
       - "Pipeline Introduction": examples/intro_pipeline.ipynb
   - API Reference:
@@ -50,9 +53,7 @@ nav:
       - "Raster Tools": reference/raster.md
       - "Vector Tools": reference/vector.md
       - "Loaders": reference/loaders.md
-  - Project Info:
+  - Contributing:
       - "Contributing": contributing/contributing.md
       - "Code of Conduct": contributing/code_of_conduct.md
-      - "License": license.md
-      - "Installation": installation.md
       - "Releasing": contributing/releasing.md
