@@ -38,9 +38,9 @@
 ## Table of Contents
 | **Getting Started** | **Documentation** | **Community** |
 |:--:|:--:|:--:|
-| [About the Project](#about-the-project) | [Project Organization](CONTRIBUTING.md#project-structure) | [Contribute](#contribute) |
-| [Installation](#getting-started) | [Citation](#citation) | [Contact](#contact) |
-| [Usage](#usage) | [License](#license) | [Acknowledgments](#acknowledgments--funding) |
+| [About the Project](https://github.com/Louis-Gm/phytospatial#about-the-project) | [Project Organization](https://phytospatial.readthedocs.io/en/latest/contributing/contributing/) | [Contribute](https://phytospatial.readthedocs.io/en/latest/contributing/contributing/) |
+| [Installation](https://phytospatial.readthedocs.io/en/latest/installation/) | [Citation](https://github.com/Louis-Gm/phytospatial#citation) | [Contact](https://github.com/Louis-Gm/phytospatial#contact) |
+| [Usage](https://github.com/Louis-Gm/phytospatial#usage) | [License](https://phytospatial.readthedocs.io/en/latest/license/) | [Acknowledgments](https://github.com/Louis-Gm/phytospatial#acknowledgments--funding) |
 
 [end]: #
 
@@ -53,12 +53,6 @@
 * **Memory-Safe Processing:** Process massive rasters using windowed reading (via `rasterio`) without overloading RAM.
 * **Forestry Focused:** Specialized tools for tree crown validation and species labeling.
 * **Dual-Licensed:** Available under both MIT and Apache 2.0 licenses for maximum flexibility.
-
-[start]: #
-
-([Back to Top](#table-of-contents))
-
-[end]: #
 
 ## Getting Started
 
@@ -73,12 +67,6 @@ pip install -e .
 ```
 
 > **New to Python?** Check out our detailed [Installation Guide](https://phytospatial.readthedocs.io/en/latest/installation/) for Conda and Virtual Environment setup.
-
-[start]: #
-
-([Back to Top](#table-of-contents))
-
-[end]: #
 
 ## Usage
 
@@ -101,12 +89,6 @@ for stats in extractor.process_crowns(crowns):
 
 For a complete workflow, see the [Introduction Pipeline Tutorial](https://phytospatial.readthedocs.io/en/latest/examples/intro_pipeline/).
 
-[start]: #
-
-([Back to Top](#table-of-contents))
-
-[end]: #
-
 ## Contribute
 
 As an open-source project, we encourage and welcome contributions of students, researchers, or professional developers.
@@ -117,23 +99,11 @@ Not sure how to implement your idea, but want to contribute?
 <br />
 Feel free to leave a feature request <a href="https://github.com/Louis-Gm/phytospatial/issues">here</a>.
 
-[start]: #
-
-([Back to Top](#table-of-contents))
-
-[end]: #
-
 ## Citation
 
 If you use this project in your research, please cite it as:
 
 Grand'Maison, L.-V. (2026). Phytospatial (0.2.1-alpha). Zenodo. https://doi.org/10.5281/zenodo.18112045
-
-[start]: #
-
-([Back to Top](#table-of-contents))
-
-[end]: #
 
 ## Contact
 
@@ -145,12 +115,6 @@ Email - [lvgra@ulaval.ca](mailto:lvgra@ulaval.ca)
 <br />
 Linkedin - [grandmaison-lv](https://www.linkedin.com/in/grandmaison-lv/)
 
-[start]: #
-
-([Back to Top](#table-of-contents))
-
-[end]: #
-
 ## Acknowledgments & Funding
 
 This software is developed by Louis-Vincent Grand'Maison as part of a PhD project. The maintenance and development of this project is supported by several research scholarships:
@@ -158,12 +122,6 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 * Fonds de recherche du Québec – Nature et technologies (FRQNT) (Scholarship 2024-2025)
 * Natural Sciences and Engineering Research Council of Canada (NSERC) (Scholarship 2025-present)
 * Université Laval (Scholarship 2024-present)
-
-[start]: #
-
-([Back to Top](#table-of-contents))
-
-[end]: #
 
 ## License
 
