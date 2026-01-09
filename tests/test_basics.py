@@ -49,7 +49,12 @@ def test_vector_labeling(tmp_path):
     Test: Creates dummy crown and point files to test spatial join logic.
     """
     crown_geom = Polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
-    crowns = gpd.GeoDataFrame({'crown_id': [1], 'geometry': [crown_geom]}, crs="EPSG:32619")
+    
+    crowns = gpd.GeoDataFrame({
+        'crown_id': [1], 
+        'geometry': [crown_geom],
+        'species': [None] 
+    }, crs="EPSG:32619")
     
     point_geom = Point(0.5, 0.5)
     points = gpd.GeoDataFrame({'species': ['Oak'], 'geometry': [point_geom]}, crs="EPSG:32619")
