@@ -1,0 +1,35 @@
+# .github/workflows/manual_test_release.yml
+name: Manual Test Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_version:
+        description: 'Temporary TestPyPI Version (e.g., 4.2.0rc1)'
+        required: true
+        default: '4.2.0dev1'
+
+jobs:
+  test-pypi-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+
+      - name: Install Build Tools
+        run: pip install build twine
+
+      - name: Run Test Release Script
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          python scripts/test_release.py "${{ inputs.test_version }}"

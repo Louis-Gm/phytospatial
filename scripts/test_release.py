@@ -28,7 +28,14 @@ def main():
     current_version = match.group(1)
     print(f"Current Version: {current_version}")
     
-    new_version = input("Enter temporary test version (e.g., 4.2.0): ").strip()
+    # Check if version was passed as an argument (e.g. from GitHub Actions)
+    if len(sys.argv) > 1:
+        new_version = sys.argv[1].strip()
+        print(f"Using version from command line argument: {new_version}")
+    else:
+        # Fallback to interactive mode for local use
+        new_version = input("Enter temporary test version (e.g., 4.2.0): ").strip()
+
     if not new_version:
         sys.exit(f"{FAIL}Version required.{RESET}")
 
@@ -52,6 +59,7 @@ def main():
 
         # UPLOAD
         print(f"{CYAN}--- UPLOADING TO TESTPYPI ---{RESET}")
+        # Note: In CI, TWINE_USERNAME/PASSWORD env vars must be set
         subprocess.run(["twine", "upload", "--repository", "testpypi", "dist/*"], cwd=root, shell=True, check=True)
 
         print(f"{GREEN}Upload successful. Verification complete.{RESET}")
@@ -63,6 +71,7 @@ def main():
     finally:
         # REVERT CHANGES
         print(f"{YELLOW}--- REVERTING LOCAL CHANGES ---{RESET}")
+        # We use git checkout to ensure clean revert even if write failed
         subprocess.run(["git", "checkout", "pyproject.toml"], cwd=root, check=True)
         print(f"{GRAY}Reverted pyproject.toml to original state.{RESET}")
 
