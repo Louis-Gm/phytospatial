@@ -21,7 +21,7 @@ def main():
     
     # Remove unwanted newlines
     clean_content = re.sub(pattern, "", content, flags=re.DOTALL)
-    clean_content = re.sub(r"(\n\s*){3,}", "\n\n", clean_content)
+    clean_content = re.sub(r"(\n\s*){3,}", "\n\n  ", clean_content)
 
     # Add a new header
 # Add a visible blockquote warning (visible on GitHub, renders as a note)

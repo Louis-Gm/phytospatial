@@ -13,7 +13,7 @@
   <p align="center">
     <a href="https://phytospatial.readthedocs.io/"><strong>Explore the docs »</strong></a>
   </p>
-
+ 
   [end]: #
 
   <p>
