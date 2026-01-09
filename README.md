@@ -3,7 +3,7 @@
   <a href="https://github.com/Louis-Gm/phytospatial">
     <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/phytospatial.png" alt="Logo" width="420" height="420">
   </a>
-  <h2 align="center">phytospatial</h2>
+  <h1 align="center"><b>phytospatial</b></h1>
   <p align="center">
     A python package to process remote sensing data in forestry applications
   </p>
