@@ -18,10 +18,11 @@
   </p>
   
   <p align="center">
-    <img src="https://github.com/Louis-Gm/phytospatial/actions/workflows/test_suite.yml/badge.svg" alt="Build Status">
     <img src="https://img.shields.io/badge/python-3.10+-orange.svg" alt="Python versions">    
     <img src="https://img.shields.io/badge/License-MIT%20or%20Apache%202.0-blue.svg" alt="License">
     <img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.18112045-purple" alt="DOI">
+    <img src="https://github.com/Louis-Gm/phytospatial/actions/workflows/test_suite.yml/badge.svg" alt="Build Status">
+    <img src="https://readthedocs.org/projects/phytospatial/badge/?version=latest" alt="Documentation Status">
   </p>
 </div>
 
