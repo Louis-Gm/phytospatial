@@ -71,7 +71,7 @@ git push origin feat/your-feature-name
 
 ## Note on dependencies
 
-If your new feature requires installing a new Python library, please **mention it in your Pull Request description** so we can update environment.yml and requirements.txt.
+If your new feature requires installing a new Python library, please **mention it in your Pull Request description** so we can update `environment.yml`.
 
 ## Release Protocol
 
