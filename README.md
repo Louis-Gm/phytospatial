@@ -113,20 +113,20 @@ You are now ready to run the package, Celebrate! 🥂¨
 <!-- USAGE -->
 ## Usage
 
-   ```sh
-    from phytospatial import extract, loaders
+```python
+from phytospatial import extract, loaders
 
-    # Load tree crowns
-    crowns = loaders.load_crowns("data/crowns.shp")
+# Load tree crowns
+crowns = loaders.load_crowns("data/crowns.shp")
 
-    # Initialize extractor
-    extractor = extract.BlockExtractor("data/image.tif")
+# Initialize extractor
+extractor = extract.BlockExtractor("data/image.tif")
 
-    # Process
-    results = []
-    for stats in extractor.process_crowns(crowns):
-        results.append(stats)
-    ```
+# Process
+results = []
+for stats in extractor.process_crowns(crowns):
+    results.append(stats)
+```
     
 ([Back to Top](#table-of-contents))
 
