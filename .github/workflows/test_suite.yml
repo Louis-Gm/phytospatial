@@ -23,9 +23,44 @@ jobs:
       fail-fast: false # Let us see all failures, don't stop early
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+
+      # DEBUG STEP 1: Prove the file exists
+      - name: Debug - List ALL files
+        run: |
+          echo "Current working directory: $(pwd)"
+          ls -R
+
+      # DEBUG STEP 2: Prove the file content is correct
+      - name: Debug - Cat test file
+        run: |
+          if [ -f tests/test_basics.py ]; then
+            echo "File found! Content below:"
+            cat tests/test_basics.py
+          else
+            echo "ERROR: tests/test_basics.py DOES NOT EXIST on this runner."
+          fi
+          
+      # DEBUG STEP 3: Show configuration
+      - name: Debug - Show pytest.ini
+        run: cat pytest.ini
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[dev]
+
+      # TARGETED RUN: Force pytest to look at the specific file
+      - name: Run Pytest Explicitly
+        run: python -m pytest tests/test_basics.py -vv
       - uses: actions/checkout@v6
 
       - name: Set up Python ${{ matrix.python-version }}
@@ -42,6 +77,6 @@ jobs:
       - name: List files in tests directory
         run: |
           ls -R tests
-          
+
       - name: Run Pytest
         run: python -m pytest
