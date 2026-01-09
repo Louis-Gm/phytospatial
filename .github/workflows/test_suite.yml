@@ -5,13 +5,13 @@ on:
     branches: [ "main" ]
     paths:
       - 'src/**/*.py'      # Source code
-      - 'tests/*.py         # Tests
+      - 'tests/*.py'         # Tests
       - 'pyproject.toml'   # Dependencies
   pull_request:
     branches: [ "main" ]
     paths:
       - 'src/**/*.py'
-      - 'tests/*.py
+      - 'tests/*.py'
       - 'pyproject.toml'
 
 jobs:
