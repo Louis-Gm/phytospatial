@@ -45,7 +45,7 @@ nav:
   - Tutorials:
       - "Pipeline Introduction": examples/intro_pipeline.ipynb
   - API Reference:
-      - "Spectral Extraction": reference/extract.md
+      - "Mask Extraction": reference/extract.md
       - "Raster Tools": reference/raster.md
       - "Vector Tools": reference/vector.md
       - "Loaders": reference/loaders.md
