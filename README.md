@@ -33,17 +33,6 @@
   </p>
 </div>
 
-[start]: #
-
-## Table of Contents
-| **Getting Started** | **Documentation** | **Community** |
-|:--:|:--:|:--:|
-| [About the Project](https://github.com/Louis-Gm/phytospatial#about-the-project) | [Project Organization](https://phytospatial.readthedocs.io/en/latest/contributing/contributing/) | [Contribute](https://phytospatial.readthedocs.io/en/latest/contributing/contributing/) |
-| [Installation](https://phytospatial.readthedocs.io/en/latest/installation/) | [Citation](https://github.com/Louis-Gm/phytospatial#citation) | [Contact](https://github.com/Louis-Gm/phytospatial#contact) |
-| [Usage](https://github.com/Louis-Gm/phytospatial#usage) | [License](https://phytospatial.readthedocs.io/en/latest/license/) | [Acknowledgments](https://github.com/Louis-Gm/phytospatial#acknowledgments--funding) |
-
-[end]: #
-
 ## About The Project
 
 **Phytospatial** is a Python toolkit designed to streamline the processing of remote sensing data for forestry and vegetation analysis. It provides tools for handling large hyperspectral rasters, validating vector geometries, and extracting spectral statistics from tree crowns. It also allows for passive-active raster-level fusion via its image processing module.
