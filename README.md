@@ -3,14 +3,16 @@
   <a href="https://github.com/Louis-Gm/phytospatial">
     <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/phytospatial.png" alt="Logo" width="420" height="420">
   </a>
-
+  <br />
   <h3 align="center">phytospatial</h3>
-
+  <br />  
+  <p align="center">
+    A python package to process remote sensing data in forestry applications
+  </p>
+  
   [start]: #
 
   <p align="center">
-    A python package to process remote sensing data in forestry applications
-    <br />
     <a href="https://phytospatial.readthedocs.io/"><strong>Explore the docs »</strong></a>
   </p>
 
@@ -52,7 +54,11 @@
 * **Forestry Focused:** Specialized tools for tree crown validation and species labeling.
 * **Dual-Licensed:** Available under both MIT and Apache 2.0 licenses for maximum flexibility.
 
+[start]: #
+
 ([Back to Top](#table-of-contents))
+
+[end]: #
 
 ## Getting Started
 
@@ -68,7 +74,11 @@ pip install -e .
 
 > **New to Python?** Check out our detailed [Installation Guide](https://phytospatial.readthedocs.io/en/latest/installation/) for Conda and Virtual Environment setup.
 
+[start]: #
+
 ([Back to Top](#table-of-contents))
+
+[end]: #
 
 ## Usage
 
@@ -91,7 +101,11 @@ for stats in extractor.process_crowns(crowns):
 
 For a complete workflow, see the [Introduction Pipeline Tutorial](https://phytospatial.readthedocs.io/en/latest/examples/intro_pipeline/).
 
+[start]: #
+
 ([Back to Top](#table-of-contents))
+
+[end]: #
 
 ## Contribute
 
@@ -103,7 +117,11 @@ Not sure how to implement your idea, but want to contribute?
 <br />
 Feel free to leave a feature request <a href="https://github.com/Louis-Gm/phytospatial/issues">here</a>.
 
+[start]: #
+
 ([Back to Top](#table-of-contents))
+
+[end]: #
 
 ## Citation
 
@@ -111,7 +129,11 @@ If you use this project in your research, please cite it as:
 
 Grand'Maison, L.-V. (2026). Phytospatial (0.2.1-alpha). Zenodo. https://doi.org/10.5281/zenodo.18112045
 
+[start]: #
+
 ([Back to Top](#table-of-contents))
+
+[end]: #
 
 ## Contact
 
@@ -123,7 +145,11 @@ Email - [lvgra@ulaval.ca](mailto:lvgra@ulaval.ca)
 <br />
 Linkedin - [grandmaison-lv](https://www.linkedin.com/in/grandmaison-lv/)
 
+[start]: #
+
 ([Back to Top](#table-of-contents))
+
+[end]: #
 
 ## Acknowledgments & Funding
 
@@ -133,7 +159,11 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 * Natural Sciences and Engineering Research Council of Canada (NSERC) (Scholarship 2025-present)
 * Université Laval (Scholarship 2024-present)
 
+[start]: #
+
 ([Back to Top](#table-of-contents))
+
+[end]: #
 
 ## License
 
@@ -143,4 +173,8 @@ Unless you explicitly state otherwise, any contribution you intentionally submit
 
 See [LICENSE](https://phytospatial.readthedocs.io/en/latest/license/) for more information on licensing and copyright.
 
+[start]: #
+
 ([Back to Top](#table-of-contents))
+
+[end]: #
