@@ -1,4 +1,4 @@
-# Spectral Extraction
+# Mask Extraction
 
 This module handles the windowed reading of raster data and the extraction of statistics for specific tree crown geometries.
 
