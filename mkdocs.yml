@@ -29,6 +29,7 @@ theme:
 
 plugins:
   - search
+  - mkdocs-jupyter
   - mkdocstrings:
       default_handler: python
       handlers:
@@ -53,4 +54,4 @@ nav:
       - "Contributing": contributing.md
       - "Code of Conduct": code_of_conduct.md
       - "License": license.md
-      - "Installation": docs/installation.md
+      - "Installation": installation.md
