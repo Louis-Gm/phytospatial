@@ -23,7 +23,6 @@
     <img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.18112045-purple" alt="DOI">
     <br />
     <img src="https://github.com/Louis-Gm/phytospatial/actions/workflows/test_suite.yml/badge.svg" alt="Build Status">
-    <img src="https://readthedocs.org/projects/phytospatial/badge/?version=latest" alt="Documentation Status">
   </p>
 </div>
 
