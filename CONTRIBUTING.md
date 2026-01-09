@@ -15,12 +15,12 @@ By contributing to this repository (via Pull Request, Issue, or otherwise), you 
 
 ## Project Structure
 
-* `src/phytospatial`: Core source code.
-* `tests`: Pytest suite.
-* `.github`: CI/CD workflows (Tests, Release).
-* `scripts`: Maintenance scripts (Release triggers).
-* `examples`: Jupyter notebooks and tutorials.
-* `docs`: Documentation files.
+* `src/phytospatial`: Core source code files.
+* `tests`: Pytest suite for the source code.
+* `.github`: CI/CD workflows (Tests, Release). Also contains issue templates for bug reports or feature requests.
+* `scripts`: Maintenance scripts for the project.
+* `docs`: Documentation files for the project. Contains an `examples` subdirectory for tutorial jupyter notebooks and a `reference` subdirectory for source code documentation.
+* `paper`: Files for the publication in JOSS associated with the package.
 
 ## How to Contribute
 
