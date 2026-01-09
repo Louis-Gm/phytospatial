@@ -15,7 +15,7 @@ def test_imports():
 def test_compute_stats():
     """
     Module: extract
-    Function: compute_basic_stats 
+    Function: compute_basic_stats
     Test: logic verification on dummy pixels (no file needed).
     """
     dummy_pixels = np.array([1, 2, 3, 4, 5])
