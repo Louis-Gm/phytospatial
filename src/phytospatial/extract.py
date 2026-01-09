@@ -212,33 +212,3 @@ class BlockExtractor:
                 stats_out.update(band_stats)
             
         return stats_out
-    
-if __name__ == "__main__":
-    import geopandas as gpd
-    import pandas as pd
-    
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-    # Example Usage
-    raster_file = "path/to/raster.tif"
-    crowns_file = "path/to/crowns.shp"
-    
-    # Load crowns
-    gdf = gpd.read_file(crowns_file)
-
-    # Initialize Extractor with 1GB (1024MB) Cache
-    extractor = BlockExtractor(
-        raster_path=raster_file,
-        gdal_cache_max=1024
-    )
-
-    try:
-        results = []
-        for result in extractor.process_crowns(gdf):
-            results.append(result)
-        
-        df = pd.DataFrame(results)
-        print(df.head())
-        
-    finally:
-        extractor.close()

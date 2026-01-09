@@ -158,7 +158,3 @@ def stack_rasters(input_paths: list, output_path: str):
                 for ji, window in src.block_windows(1):
                     block_data = src.read(1, window=window)
                     dst.write(block_data, indexes=idx, window=window)
-
-if __name__ == "__main__":
-    # Example usage
-    convert_envi_to_geotiff("./data/input_hdrs", "./data/output_tifs")
