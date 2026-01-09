@@ -3,9 +3,7 @@
   <a href="https://github.com/Louis-Gm/phytospatial">
     <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/phytospatial.png" alt="Logo" width="420" height="420">
   </a>
-  <br />
-  <h3 align="center">phytospatial</h3>
-  <br />  
+  <h2 align="center">phytospatial</h2>
   <p align="center">
     A python package to process remote sensing data in forestry applications
   </p>
@@ -23,7 +21,6 @@
     ·
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Request Feature</a>
   </p>
-  <br />
   <p align="center">
     <img src="https://img.shields.io/badge/python-3.10+-orange.svg" alt="Python versions">    
     <img src="https://img.shields.io/badge/License-MIT%20or%20Apache%202.0-blue.svg" alt="License">
@@ -119,7 +116,6 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 Unless you explicitly state otherwise, any contribution you intentionally submit for inclusion in this repository (as defined by Apache-2.0) shall be dual-licensed as above, without any additional terms or conditions.
 
 See [LICENSE](https://phytospatial.readthedocs.io/en/latest/license/) for more information on licensing and copyright.
-
 
 [start]: #
 
