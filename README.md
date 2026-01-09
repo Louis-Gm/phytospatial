@@ -9,7 +9,7 @@
   <p align="center">
     A python package to process remote sensing data in forestry applications
   </p>
-  
+
   [start]: #
 
   <p align="center">
@@ -119,6 +119,7 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 Unless you explicitly state otherwise, any contribution you intentionally submit for inclusion in this repository (as defined by Apache-2.0) shall be dual-licensed as above, without any additional terms or conditions.
 
 See [LICENSE](https://phytospatial.readthedocs.io/en/latest/license/) for more information on licensing and copyright.
+
 
 [start]: #
 
