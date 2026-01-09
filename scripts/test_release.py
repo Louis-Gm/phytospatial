@@ -60,7 +60,7 @@ def main():
         # UPLOAD
         print(f"{CYAN}--- UPLOADING TO TESTPYPI ---{RESET}")
         # Note: In CI, TWINE_USERNAME/PASSWORD env vars must be set
-        subprocess.run(["twine", "upload", "--repository", "testpypi", "dist/*"], cwd=root, shell=True, check=True)
+        subprocess.run("twine upload --repository testpypi dist/*", cwd=root, shell=True, check=True)
 
         print(f"{GREEN}Upload successful. Verification complete.{RESET}")
 
