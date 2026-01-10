@@ -8,11 +8,7 @@ MAIN_BRANCH = "main"
 FILES_TO_STAGE = [
     "pyproject.toml",
     "README.md",
-    "LICENSE-MIT",
-    "LICENSE-APACHE",
-    "NOTICE",
-    "CITATION.cff",
-    "src/phytospatial/__init__.py"
+    "CITATION.cff"
 ]
 
 # colors for Terminal Output
@@ -131,4 +127,5 @@ def main():
     log("Monitor the upload progress here: https://github.com/Louis-Gm/phytospatial/actions", Colors.ENDC)
 
 if __name__ == "__main__":
+
     main()
