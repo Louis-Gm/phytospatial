@@ -1,6 +1,6 @@
 # Phytospatial Release Process
 
-This document outlines the steps required to release a new version of phytospatial. The project utilizes a dual MIT and Apache-2.0 license, and several automated scripts handle the synchronization of version numbers and legal notices across the codebase.
+This document outlines the steps required to release a new version of phytospatial.
 
 ## Prerequisites
 
@@ -32,13 +32,11 @@ The production release is managed by scripts/publish_trigger.ps1. This script co
 4.  **Automated Updates**: The script calls version_bumper.ps1 to update the following:
     * pyproject.toml: Updates the version string.
     * README.md: Updates the citation year and version.
-    * LICENSE-MIT and NOTICE: Updates the copyright year range to 2024-YYYY.
-    * src/phytospatial/__init__.py: Updates the internal copyright header.
     * CITATION.cff: Updates version and release date.
 
 ## Step 3: Git Tagging and Remote Sync
 
-The publish script stages the modified files (pyproject.toml, README.md, LICENSE-MIT, LICENSE-APACHE, NOTICE, CITATION.cff, and src/phytospatial/__init__.py). It then commits them with a version-specific message and creates an annotated git tag (e.g., v0.2.1). Finally, it pushes both the branch and the tag to GitHub.
+The publish script stages the modified files (pyproject.toml, README.md and CITATION.cff). It then commits them with a version-specific message and creates an annotated git tag (e.g., v0.2.1). Finally, it pushes both the branch and the tag to GitHub.
 
 ## Step 4: GitHub Release and PyPI Deployment
 

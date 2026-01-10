@@ -29,7 +29,7 @@ def main():
 
     print(f"--- STARTING FILE UPDATES IN: {project_root} ---")
 
-    # 1. pyproject.toml (Version)
+    # pyproject.toml (Version)
     file_path = project_root / "pyproject.toml"
     print(f"Updating {file_path.name}...")
     
@@ -46,7 +46,7 @@ def main():
     else:
         print(f"  [!] Error: {file_path.name} not found.")
 
-    # 2. README.md (Citation)
+    # README.md (Citation)
     file_path = project_root / "README.md"
     print(f"Updating {file_path.name} Citation...")
     
@@ -57,40 +57,7 @@ def main():
         
         file_path.write_text(update_content(content, pattern, replacement), encoding="utf-8")
 
-    # 3. LICENSE-MIT (Copyright)
-    file_path = project_root / "LICENSE-MIT"
-    print(f"Updating {file_path.name} Copyright...")
-
-    if file_path.exists():
-        content = file_path.read_text(encoding="utf-8")
-        pattern = r"Copyright \(c\) 2024-\d{4}"
-        replacement = f"Copyright (c) 2024-{year}"
-        
-        file_path.write_text(update_content(content, pattern, replacement), encoding="utf-8")
-
-    # 4. NOTICE (copyright)
-    file_path = project_root / "NOTICE"
-    print(f"Updating {file_path.name}...")
-
-    if file_path.exists():
-        content = file_path.read_text(encoding="utf-8")
-        pattern = r"Copyright 2024-\d{4}"
-        replacement = f"Copyright 2024-{year}"
-        
-        file_path.write_text(update_content(content, pattern, replacement), encoding="utf-8")
-
-    # 5. src/phytospatial/__init__.py (Copyright)
-    file_path = project_root / "src" / "phytospatial" / "__init__.py"
-    print(f"Updating {file_path.name}...")
-
-    if file_path.exists():
-        content = file_path.read_text(encoding="utf-8")
-        pattern = r"# Copyright 2024-\d{4}"
-        replacement = f"# Copyright 2024-{year}"
-        
-        file_path.write_text(update_content(content, pattern, replacement), encoding="utf-8")
-
-    # 6. CITATION.cff (Release date and version)
+    # CITATION.cff (Release date and version)
     file_path = project_root / "CITATION.cff"
     print(f"Updating {file_path.name}...")
 
