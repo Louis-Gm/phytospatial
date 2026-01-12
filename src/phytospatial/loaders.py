@@ -26,7 +26,6 @@ def load_crowns(path: str, id_col: str = None, species_col: str = None) -> gpd.G
     if not gdf.is_valid.all():
         # Identify invalid row indices
         invalid_rows = gdf[~gdf.is_valid]
-
         invalid_indices = invalid_rows.index.tolist()
         
         log.warning(
@@ -58,7 +57,7 @@ def load_crowns(path: str, id_col: str = None, species_col: str = None) -> gpd.G
     elif 'species' not in gdf.columns:
         gdf['species'] = None
 
-    # Final Cleanup
-    gdf.set_index('crown_id', drop=False, inplace=True)
+    gdf.index = gdf['crown_id']
+    gdf.index.name = None
     
     return gdf

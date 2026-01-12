@@ -1,4 +1,4 @@
-# src/phytospatial/spectral_extraction.py
+# src/phytospatial/extract.py
 
 import logging
 import rasterio
@@ -91,7 +91,7 @@ class BlockExtractor:
         """
         # CRS Check
         if crowns_gdf.crs != self.src.crs:
-            log.warning(f"Reprojecting crowns to match raster {self.name} (from {crowns_gdf.crs.name} to {self.src.crs.name})...")
+            log.warning(f"Reprojecting crowns to match raster {self.name} (from {crowns_gdf.crs.name} to {self.src.crs.to_string()})...")
             crowns_gdf = crowns_gdf.to_crs(self.src.crs)
 
         # Check for duplicate IDs which could cause confusion
@@ -101,7 +101,7 @@ class BlockExtractor:
 
         centroids = crowns_gdf.geometry.centroid
         sorted_indices = centroids.y.argsort()
-        crowns_gdf = crowns_gdf.loc[sorted_indices]
+        crowns_gdf = crowns_gdf.iloc[sorted_indices]
 
         # Loop over trees. tqdm is used as a progress bar
         for idx, row in tqdm(crowns_gdf.iterrows(), total=len(crowns_gdf), desc=f"Extracting {self.name}"):
@@ -160,23 +160,21 @@ class BlockExtractor:
         out_shape = (data_array.shape[1], data_array.shape[2])
         
         try:
-            # Create a boolean mask where True = Inside Tree
             mask = geometry_mask(
                 [geometry], 
                 out_shape=out_shape, 
                 transform=transform, 
-                invert=True,  # Invert so True means "inside"
-                all_touched=False # Strict (center must be in)
+                invert=True,
+                all_touched=False
             )
             
-            # Fallback for thin trees
             if not np.any(mask):
                  mask = geometry_mask(
                      [geometry], 
                      out_shape=out_shape, 
                      transform=transform, 
                      invert=True, 
-                     all_touched=True # Relaxed (any touch)
+                     all_touched=True
                 )
         except ValueError:
             return None
