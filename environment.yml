@@ -6,4 +6,4 @@ dependencies:
   - python=3.10
   - pip
   - pip:
-    - -e .[analysis, docs, dev]
+    - -e .[analysis,docs,dev]
