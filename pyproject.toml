@@ -59,6 +59,7 @@ dev = [                         # pip install .[dev]
     "pre-commit",
     "black",
     "flake8",
+    "memory_profiler",
 ]
 
 [tool.setuptools.packages.find]
