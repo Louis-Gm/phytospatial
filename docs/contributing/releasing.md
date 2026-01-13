@@ -25,7 +25,7 @@ Before initiating a release, verify the integrity of the package:
 
 ## Step 2: Executing the Production Release
 
-The production release is managed by scripts/publish_trigger.ps1. This script coordinates the entire workflow:
+The production release is managed by scripts/release.py. This script coordinates the entire workflow:
 
 1.  **Launch the Trigger**: Run scripts/release.py
 2.  **Automated Checks**: The script will verify git status, sync with origin, and run pytest one final time.
