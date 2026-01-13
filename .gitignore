@@ -1,5 +1,6 @@
 old/
 src/unfinished
+.VSCodeCounter
 __pycache__/
 data/
 .vscode/
