@@ -8,7 +8,7 @@ As an academic open-source project, we encourage and welcome collaborations from
 
 ## Legal & Licensing
 
-By contributing to this repository (via Pull Request, Issue, or otherwise), you agree to the following terms:
+By contributing to this repository (via Pull Requests, Issues, or otherwise), you agree to the following terms:
 
 1.  **License Agreement:** You agree that your contributions will be distributed under the project's  **dual MIT and Apache-2.0 license**. See [LICENSE](https://phytospatial.readthedocs.io/en/latest/license/) for more information on licensing and copyright.
 2.  **Academic Integrity:** As this project is part of active research, please ensure any citations or algorithms added are properly referenced.
@@ -17,7 +17,7 @@ By contributing to this repository (via Pull Request, Issue, or otherwise), you 
 ## Project Structure
 
 * `src/phytospatial`: Core source code files.
-* `tests`: Pytest suite for the source code.
+* `tests`: Pytest suite for the source code. Unit tests are for single modules whereas integration tests aim to capture interactions between modules.
 * `.github`: CI/CD workflows (Tests, Release). Also contains issue templates for bug reports or feature requests.
 * `scripts`: Maintenance scripts for the project.
 * `docs`: Documentation files for the project. Contains an `examples` subdirectory for tutorial jupyter notebooks and a `reference` subdirectory for source code documentation.
