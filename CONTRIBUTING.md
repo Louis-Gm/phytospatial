@@ -75,6 +75,6 @@ If your new feature requires installing a new Python library, please **mention i
 
 ## Release Protocol
 
-We follow a strict, automated protocol for releasing new versions to ensure consistency across PyPI, GitHub, and our documentation. Manual version bumps are strongly discouraged.
+We follow a strict, automated protocol for releasing new versions to ensure consistency across PyPI, GitHub, and our [readthedocs](https://phytospatial.readthedocs.io/en/latest/) website. Manual version bumps are strongly discouraged.
 
 If you are a contributor looking to publish a new version, please strictly follow the steps outlined in [RELEASING](https://phytospatial.readthedocs.io/en/latest/contributing/releasing/).
