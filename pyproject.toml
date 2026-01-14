@@ -30,6 +30,7 @@ dependencies = [
     "tqdm",
     "rasterio>=1.4",
     "numpy>=1.24",
+    "psutil",
 ]
 
 [project.urls]

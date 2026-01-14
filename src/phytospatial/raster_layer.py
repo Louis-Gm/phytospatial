@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Union, Optional, Dict, Any, Tuple, List, Callable, Iterator
 
 import copy
+import psutil
 from functools import wraps
 import numpy as np
 import rasterio
@@ -98,13 +99,73 @@ class Raster:
                 return binary_path
         return path
 
-    @classmethod
+    @staticmethod
+    def check_memory_safety(path: Union[str, Path], safety_factor: float = 2) -> Tuple[bool, str]:
+        """
+        Estimates if loading the file at 'path' is safe for available system RAM.
+
+        This method calculates the uncompressed size of the raster (Count * Height * Width * dtype)
+        and compares it against currently available memory.
+
+        Args:
+            path: Path to the raster file.
+            safety_factor: Multiplier for overhead. Python and NumPy require significantly
+                           more memory than the raw data size to perform operations.
+                           Defaults to 2 (safe for heavy processing).
+
+        Returns:
+            Tuple[bool, str]: 
+                - bool: True if safe to load, False if dangerous.
+                - str: A human-readable message explaining the memory math.
+        """
+        path = Raster._resolve_envi_path(Path(path))
+        
+        try:
+            # Open in read mode just to check metadata (does not load pixels)
+            with rasterio.open(path) as src:
+                # Calculate Raw Uncompressed Size (Bands * Height * Width)
+                total_pixels = src.count * src.height * src.width
+                
+                # Get bytes per pixel based on dtype (float32 = 4 bytes, uint8 = 1 byte)
+                # NOTE: We assume the first band is representative of all.
+                bytes_per_pixel = np.dtype(src.dtypes[0]).itemsize
+                
+                raw_bytes = total_pixels * bytes_per_pixel
+                estimated_ram_usage = raw_bytes * safety_factor
+                
+                # Check vram availability
+                available_ram = psutil.virtual_memory().available
+                
+                # Convert to GB for readable messaging
+                req_gb = estimated_ram_usage / (1024**3)
+                avail_gb = available_ram / (1024**3)
+
+                if estimated_ram_usage > available_ram:
+                    msg = (
+                        f"Insufficient Memory: File requires ~{req_gb:.2f} GB RAM "
+                        f"(Raw: {raw_bytes/(1024**3):.2f} GB * Factor: {safety_factor}), "
+                        f"but only {avail_gb:.2f} GB is available."
+                    )
+                    return False, msg
+                else:
+                    msg = (
+                        f"Memory Check Passed: Requires ~{req_gb:.2f} GB "
+                        f"(Available: {avail_gb:.2f} GB)."
+                    )
+                    return True, msg
+
+        except Exception as e:
+            # If we can't check, we default to False/Warning to be safe.
+            return False, f"Could not verify memory safety: {e}"
+        
+@classmethod
     def from_file(
         cls, 
         path: Union[str, Path], 
         bands: Optional[Union[int, List[int]]] = None,
         driver: str = None,
-        window: Optional[Window] = None
+        window: Optional[Window] = None,
+        check_memory: bool = True
     ) -> 'Raster':
         """
         Load a Raster from disk into memory.
@@ -115,12 +176,20 @@ class Raster:
             path: Path to the raster file.
             bands: Specific band index (int) or list of indices to load (1-based).
                    If None, loads all bands.
-            driver: Optional GDAL driver name.
+            driver: Optional GDAL driver name. 
+                    If None, lets rasterio auto-detect.
             window: Optional rasterio Window object to load only a specific subset 
                     of the raster.
+            check_memory: If True (default), estimates required RAM before loading.
+                          Raises MemoryError if the file is too large for the system.
+                          Ignored if 'window' is provided (as windows are assumed small).
 
         Returns:
             Raster: A new Raster instance.
+        
+        Raises:
+            MemoryError: If check_memory is True and the file is too large.
+            RasterIOError: If the file cannot be read.
         """
         path = Path(path)
 
@@ -128,6 +197,20 @@ class Raster:
 
         if not path.exists():
             raise FileNotFoundError(f"File not found: {path}")
+
+        # We only check memory if we are loading the WHOLE file.
+        # If the user asks for a specific window, we assume they know it fits.
+        if check_memory and window is None:
+            is_safe, msg = cls.check_memory_safety(path)
+            if not is_safe:
+                log.error(msg)
+                raise MemoryError(
+                    f"{msg}\n"
+                    "Tip: Use Raster.iter_tiles() to process this file in chunks, "
+                    "or set check_memory=False to force load."
+                )
+            else:
+                log.debug(msg)
 
         log.debug(f"Loading Raster from: {path.name}")
         
@@ -148,14 +231,12 @@ class Raster:
                     data = src.read(bands, window=window)
 
                 # Attempt to extract band names from metadata tags
-                # (Simple best-effort mapping)
                 band_names = {}
                 for i, idx in enumerate(indexes):
                     desc = src.descriptions[idx - 1]
                     if desc:
                         band_names[desc] = i + 1
 
-                # Calculate transform
                 # If a window was used, the transform must be updated to reflect the new origin
                 if window is not None:
                     current_transform = src.window_transform(window)
