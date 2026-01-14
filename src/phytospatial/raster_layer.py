@@ -12,6 +12,7 @@ import rasterio
 from rasterio.transform import Affine
 from rasterio.crs import CRS
 from rasterio.windows import Window
+from rasterio.windows import transform as compute_window_transform
 
 from unfinished.exceptions import RasterError, RasterIOError, RasterValidationError
 
@@ -60,7 +61,7 @@ class Raster:
         Raises:
             RasterValidationError: If dimensions mismatch or types are incorrect.
         """
-        self._validate_inputs(data, transform, crs)
+        self.validate_inputs(data, transform, crs)
 
         # Enforce 3D structure (Bands, Height, Width)
         if data.ndim == 2:
@@ -72,7 +73,7 @@ class Raster:
         self.nodata = nodata
         self.band_names = band_names or {}
 
-    def _validate_inputs(self, data: np.ndarray, transform: Affine, crs: CRS):
+    def validate_inputs(self, data: np.ndarray, transform: Affine, crs: CRS):
         """Internal validation logic."""
         if not isinstance(data, np.ndarray):
             raise TypeError(f"Data must be numpy.ndarray, got {type(data)}")
@@ -84,7 +85,7 @@ class Raster:
             raise TypeError(f"Transform must be rasterio.Affine, got {type(transform)}")
 
     @staticmethod
-    def _resolve_envi_path(path: Path) -> Path:
+    def resolve_envi_path(path: Path) -> Path:
         """
         Helper: Handles ENVI header/binary confusion.
         
@@ -118,7 +119,7 @@ class Raster:
                 - bool: True if safe to load, False if dangerous.
                 - str: A human-readable message explaining the memory math.
         """
-        path = Raster._resolve_envi_path(Path(path))
+        path = Raster.resolve_envi_path(Path(path))
         
         try:
             # Open in read mode just to check metadata (does not load pixels)
@@ -133,7 +134,7 @@ class Raster:
                 raw_bytes = total_pixels * bytes_per_pixel
                 estimated_ram_usage = raw_bytes * safety_factor
                 
-                # Check vram availability
+                # Check RAM availability
                 available_ram = psutil.virtual_memory().available
                 
                 # Convert to GB for readable messaging
@@ -157,8 +158,39 @@ class Raster:
         except Exception as e:
             # If we can't check, we default to False/Warning to be safe.
             return False, f"Could not verify memory safety: {e}"
+
+    @classmethod
+    def process_smart(
+        cls, 
+        path: Union[str, Path], 
+        func: Callable[['Raster'], Any], 
+        safety_factor: float = 2
+    ):
+        """
+        Smart Executor: Automatically chooses between in-memory or tiled processing 
+        based on available RAM.
         
-@classmethod
+        Args:
+            path: File path.
+            func: A function that takes a single Raster object as input.
+        """
+        path = cls.resolve_envi_path(Path(path))
+        
+        # Check Safety
+        is_safe, msg = cls.check_memory_safety(path, safety_factor=safety_factor)
+        
+        if is_safe:
+            log.info(f"Memory Safe. Loading full raster: {msg}")
+            # Strategy A: Load once, run once
+            full_raster = cls.from_file(path, check_memory=False)
+            yield func(full_raster)
+        else:
+            log.warning(f"Memory Unsafe. Switching to tiled stream: {msg}")
+            # Strategy B: Stream tiles, run many times
+            for window, tile_raster in cls.iter_tiles(path):
+                yield func(tile_raster)
+
+    @classmethod
     def from_file(
         cls, 
         path: Union[str, Path], 
@@ -192,8 +224,7 @@ class Raster:
             RasterIOError: If the file cannot be read.
         """
         path = Path(path)
-
-        path = cls._resolve_envi_path(path)
+        path = cls.resolve_envi_path(Path(path))
 
         if not path.exists():
             raise FileNotFoundError(f"File not found: {path}")
@@ -206,8 +237,7 @@ class Raster:
                 log.error(msg)
                 raise MemoryError(
                     f"{msg}\n"
-                    "Tip: Use Raster.iter_tiles() to process this file in chunks, "
-                    "or set check_memory=False to force load."
+                    "Tip: Use Raster.iter_tiles() or Raster.process_smart()"
                 )
             else:
                 log.debug(msg)
@@ -275,7 +305,7 @@ class Raster:
         """
         path = Path(path)
         
-        path = cls._resolve_envi_path(path)
+        path = cls.resolve_envi_path(path)
 
         log.debug(f"Streaming tiles from: {path.name}")
 
@@ -291,6 +321,64 @@ class Raster:
                     yield window, tile_raster
         except Exception as e:
              raise RasterIOError(f"Failed to iterate tiles for {path}: {e}") from e
+
+    def iter_windows(
+        self, 
+        tile_width: int = 512, 
+        tile_height: int = 512,
+        overlap: int = 0
+    ) -> Iterator[Tuple[Window, 'Raster']]:
+        """
+        Generates small Raster tiles from this in-memory object by slicing.
+        Allows for custom tile sizes and overlaps for efficient processing.
+
+        Args:
+            tile_width: Width of each tile in pixels.
+            tile_height: Height of each tile in pixels.
+            overlap: Amount of pixel overlap between tiles (useful for convolutions).
+                     Note: The yielded Window tracks the valid data area.
+        
+        Yields:
+            (Window, Raster): A tuple containing the spatial window definition 
+                              and the new Raster object for that specific slice.
+        """
+        # Iterate over the grid
+        # We step by the tile size minus overlap to create the sliding effect
+        step_w = tile_width - overlap
+        step_h = tile_height - overlap
+
+        for row_off in range(0, self.height, step_h):
+            for col_off in range(0, self.width, step_w):
+                
+                # Calculate actual dimensions (handle edge cases at right/bottom)
+                width = min(tile_width, self.width - col_off)
+                height = min(tile_height, self.height - row_off)
+                
+                # Define the window
+                window = Window(col_off=col_off, row_off=row_off, width=width, height=height)
+                
+                # Slice the Data
+                # NOTE: Rasterio windows use (col, row), Numpy uses (row, col),
+                # but our data format is (Bands, Height, Width)
+                window_data = self._data[
+                    :, 
+                    row_off : row_off + height, 
+                    col_off : col_off + width
+                ].copy()  # Copy to ensure independence
+                
+                # We shift the origin (top-left) to the new window location.
+                window_transform = compute_window_transform(window, self.transform)
+                
+                # 3. Create the Child Raster
+                tile_raster = Raster(
+                    data=window_data,
+                    transform=window_transform,
+                    crs=self.crs,
+                    nodata=self.nodata,
+                    band_names=self.band_names
+                )
+                
+                yield window, tile_raster
 
     # Dynamic metadata properties
 
@@ -504,6 +592,9 @@ def resolve_raster(func: Callable):
         # Resolve input raster as either path or Raster object
         if isinstance(input_obj, (str, Path)):
             try:
+                # NOTE: We let from_file handle memory checks internally.
+                # If a user wants to bypass, they should call from_file directly
+                # rather than relying on the decorator.
                 raster = Raster.from_file(input_obj)
             except Exception as e:
                 log.error(f"Auto-loading failed for {input_obj}")
