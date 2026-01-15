@@ -5,7 +5,7 @@
   </a>
   <h1 align="center"><b>phytospatial</b></h1>
   <p align="center">
-    A python package to process remote sensing data in forestry applications
+    A python package that processes lidar and imagery data in forestry
   </p>
 
   [start]: #
