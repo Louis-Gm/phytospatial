@@ -52,8 +52,8 @@ def main():
     
     if file_path.exists():
         content = file_path.read_text(encoding="utf-8")
-        pattern = r"Grand'Maison, L\.-V\. \(\d{4}\)\. Phytospatial: a python package dedicated to processing lidar and imagery data in forestry \(.*?\)\ \[software\]\. Zenodo"
-        replacement = f"Grand'Maison, L.-V. ({year}). Phytospatial: a python package dedicated to processing lidar and imagery data in forestry ({new_ver}) [software]. Zenodo"
+        pattern = r"Grand'Maison, L\.-V\. \(\d{4}\)\. Phytospatial: a python package that processes lidar and imagery data in forestry \(.*?\)\ \[software\]\. Zenodo"
+        replacement = f"Grand'Maison, L.-V. ({year}). Phytospatial: a python package that processes lidar and imagery data in forestry ({new_ver}) [software]. Zenodo"
         
         file_path.write_text(update_content(content, pattern, replacement, flags=re.IGNORECASE), encoding="utf-8")
 
