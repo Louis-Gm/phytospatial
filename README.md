@@ -89,7 +89,7 @@ Feel free to leave a feature request <a href="https://github.com/Louis-Gm/phytos
 
 If you use this project in your research, please cite it as:
 
-Grand'Maison, L.-V. (2026). Phytospatial: a python package dedicated to processing lidar and imagery data in forestry (0.3.1) [software]. Zenodo. https://doi.org/10.5281/zenodo.18112045
+Grand'Maison, L.-V. (2026). Phytospatial: a python package that processes lidar and imagery data in forestry (0.3.1) [software]. Zenodo. https://doi.org/10.5281/zenodo.18112045
 
 ## Contact
 
