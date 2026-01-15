@@ -8,7 +8,7 @@ authors:
     email: "lvgra@ulaval.ca"
     affiliation: "Université Laval, Département des sciences géomatiques"
     orcid: "https://orcid.org/0009-0006-2726-9677"
-version: 0.3.0
+version: v0.3.0
 date-released: 2026-01-11
 license: MIT
 repository-code: "https://github.com/Louis-Gm/phytospatial"
