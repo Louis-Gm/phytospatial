@@ -119,7 +119,7 @@ def main():
     log("Creating GitHub Release Draft...")
     # requires github CLI
     run_command(
-        f'gh release create "v{new_version}" --generate-notes --title "v{new_version}"',
+        f'gh release create "v{new_version}" --generate-notes --title "Phytospatial v{new_version}"',
         cwd=project_root
     )
 
