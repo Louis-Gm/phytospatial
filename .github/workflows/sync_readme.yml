@@ -10,7 +10,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   sync-docs:
@@ -19,7 +18,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          persist-credentials: false
+          persist-credentials: true
+          token: ${{ secrets.ADMIN_TOKEN }}
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -29,13 +30,16 @@ jobs:
       - name: Run Sync Script
         run: python scripts/sync_readme.py
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v8
-        with:
-          commit-message: "docs: auto-sync README to index.md"
-          title: "docs: Sync README to ReadTheDocs"
-          body: "This PR auto-syncs changes from `README.md` to `docs/index.md` by stripping unwanted sections. See .github/workflows/sync_readme.yml for more information."
-          branch: "bot/sync-readme"
-          base: "main"
-          delete-branch: true
-          labels: "documentation"
+      - name: Commit and Push Changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Check if there are changes to docs/index.md
+          if [[ -n $(git status -s docs/index.md) ]]; then
+            git add docs/index.md
+            git commit -m "docs: auto-sync README to index.md [skip ci]"
+            git push origin main
+          else
+            echo "No changes to sync."
+          fi
