@@ -130,8 +130,11 @@ def main():
     run_command(f'git push origin "v{new_version}"', cwd=project_root)
 
     # GITHUB RELEASE
+    # NOTE: requires github CLI properly authenticated
     log("Creating GitHub Release Draft...")
-    # requires github CLI
+
+    # Generate release notes and create release
+    # NOTE: generate notes requires proper formatting of PRs and commits (for instance "fix", "feat" or "docs" keywords)
     run_command(
         f'gh release create "v{new_version}" --generate-notes --title "Phytospatial v{new_version}"',
         cwd=project_root
