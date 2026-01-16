@@ -14,7 +14,7 @@ def update_content(content: str, pattern: str, replacement: str, flags=0) -> str
 
 def main():
     parser = argparse.ArgumentParser(description="Bump version numbers and dates across the project.")
-    parser.add_argument("new_version", help="The new release version (e.g., 0.2.2)")
+    parser.add_argument("new_version", help="The new release version (format: 4.2.0)")
     parser.add_argument("current_version", help="The current version found in pyproject.toml")
     
     args = parser.parse_args()
