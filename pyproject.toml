@@ -59,8 +59,8 @@ dev = [                         # pip install .[dev]
     "twine",
     "pre-commit",
     "black",
-    "flake8",
     "memory_profiler",
+    "ruff",
 ]
 
 [tool.setuptools.packages.find]
