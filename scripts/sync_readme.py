@@ -1,4 +1,5 @@
 # scripts/sync_readme.py
+
 import re
 from pathlib import Path
 

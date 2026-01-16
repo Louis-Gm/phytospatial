@@ -1,3 +1,5 @@
+# .github/workflows/sync_readme.yml
+
 name: Sync README to Docs
 
 on:

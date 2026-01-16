@@ -1,3 +1,5 @@
+# pre-commit-config.yml
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
@@ -12,7 +14,6 @@ repos:
       # if large data files are deemed necessary for testing
         args: ['--maxkb=30000']
 
-  # Standard Python Formatting (Black)
   - repo: https://github.com/psf/black
     rev: 24.1.1
     hooks:

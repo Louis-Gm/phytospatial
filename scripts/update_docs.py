@@ -1,4 +1,5 @@
 # scripts/update_docs.py
+
 import argparse
 import re
 from datetime import datetime

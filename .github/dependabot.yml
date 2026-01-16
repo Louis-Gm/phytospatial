@@ -1,3 +1,5 @@
+# .github/dependabot.yml
+
 version: 2
 updates:
   # Ecosystem 1: Python Dependencies (pyproject.toml)

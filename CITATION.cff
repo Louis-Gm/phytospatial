@@ -1,3 +1,5 @@
+# CITATION.cff
+
 cff-version: 1.2.0
 message: "If you use this software, please use the citation format listed below."
 title: "Phytospatial"
@@ -10,7 +12,7 @@ authors:
     orcid: "https://orcid.org/0009-0006-2726-9677"
 version: 0.3.2
 date-released: 2026-01-15
-license: MIT
+license: Apache-2.0
 repository-code: "https://github.com/Louis-Gm/phytospatial"
 keywords:
   - forestry

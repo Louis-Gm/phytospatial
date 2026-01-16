@@ -1,0 +1,23 @@
+# .gitattributes
+
+* text=auto
+
+*.py text eol=lf
+*.sh text eol=lf
+
+*.toml linguist-detectable=true linguist-language=TOML
+*.yaml linguist-detectable=true linguist-language=YAML
+*.yml  linguist-detectable=true linguist-language=YAML
+
+*.shp binary
+*.dbf binary
+*.prj binary
+*.shx binary
+*.hdr binary
+*.bin binary
+*.dat binary
+*.jpg binary
+*.png binary
+*.pdf binary
+*.tif binary
+*.tiff binary
