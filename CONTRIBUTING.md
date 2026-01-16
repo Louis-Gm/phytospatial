@@ -10,7 +10,7 @@ As an academic open-source project, we encourage and welcome collaborations from
 
 By contributing to this repository (via Pull Requests, Issues, or otherwise), you agree to the following terms:
 
-1.  **License Agreement:** You agree that your contributions will be distributed under the project's  **dual MIT and Apache-2.0 license**. See [LICENSE](https://phytospatial.readthedocs.io/en/latest/license/) for more information on licensing and copyright.
+1.  **License Agreement:** You agree that your contributions will be distributed under the project's  **Apache-2.0 license**. See [LICENSE](https://phytospatial.readthedocs.io/en/latest/license/) for more information on licensing and copyright.
 2.  **Academic Integrity:** As this project is part of active research, please ensure any citations or algorithms added are properly referenced.
 3.  **Code of conduct:** As an open-sourced project, it is important to understand our code of conduct prior to contributing. See [CODE_OF_CONDUCT](https://phytospatial.readthedocs.io/en/latest/contributing/code_of_conduct/) prior to contributing.
 
