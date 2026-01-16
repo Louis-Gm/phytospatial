@@ -181,12 +181,12 @@ class Raster:
         
         if is_safe:
             log.info(f"Memory Safe. Loading full raster: {msg}")
-            # Strategy A: Load once, run once
+            # Load once into memory and run function directly
             full_raster = cls.from_file(path, check_memory=False)
             yield func(full_raster)
         else:
             log.warning(f"Memory Unsafe. Switching to tiled stream: {msg}")
-            # Strategy B: Stream tiles, run many times
+            # Stream tiles and iterate function over each
             for window, tile_raster in cls.iter_tiles(path):
                 yield func(tile_raster)
 
@@ -249,20 +249,20 @@ class Raster:
                 # Handle band selection and windowed reading
                 if bands is None:
                     # Read all bands (in window if provided)
-                    indexes = src.indexes
+                    indices = src.indices
                     data = src.read(window=window)
                 elif isinstance(bands, int):
                     # Read single band, keep it 3D
-                    indexes = [bands]
+                    indices = [bands]
                     data = src.read([bands], window=window)
                 else:
                     # Read specific list
-                    indexes = bands
+                    indices = bands
                     data = src.read(bands, window=window)
 
                 # Attempt to extract band names from metadata tags
                 band_names = {}
-                for i, idx in enumerate(indexes):
+                for i, idx in enumerate(indices):
                     desc = src.descriptions[idx - 1]
                     if desc:
                         band_names[desc] = i + 1
@@ -499,7 +499,7 @@ class Raster:
         except Exception as e:
             raise RasterIOError(f"Failed to save {path}: {e}") from e
 
-    def write_window(self, path: Union[str, Path], window: Window, indexes: Optional[List[int]] = None):
+    def write_window(self, path: Union[str, Path], window: Window, indices: Optional[List[int]] = None):
         """
         Writes the current Raster data into a specific window of an EXISTING file on disk.
         
@@ -508,16 +508,15 @@ class Raster:
         Args:
             path: Path to the existing target file (must be opened in read/write mode).
             window: The window in the target file where data should be placed.
-            indexes: Specific band indices in the target file to write to.
+            indices: Specific band indices in the target file to write to.
         """
         if not Path(path).exists():
             raise FileNotFoundError(f"Target file for window write does not exist: {path}")
 
         try:
-            # Open in read/write mode
             with rasterio.open(path, 'r+') as dst:
-                if indexes:
-                    dst.write(self._data, window=window, indexes=indexes)
+                if indices:
+                    dst.write(self._data, window=window, indices=indices)
                 else:
                     # Write all bands
                     dst.write(self._data, window=window)
@@ -551,17 +550,15 @@ class Raster:
             self.nodata == other.nodata and
             self.shape == other.shape
         )
-        if not meta_eq:
+        if not meta_eq: # No data checks needed
             return False
             
         # Check data only if necessary (expensive)
-        return np.array_equal(self._data, other.data)
+        return np.array_equal(self._data, other._data, equal_nan=True) # Handle NaNs as equal
 
     def __array__(self) -> np.ndarray:
         """Allows np.array(raster_obj) to work directly."""
         return self._data
-
-# Resolve decorator to handle polymorphic inputs
 
 def resolve_raster(func: Callable):
     """
