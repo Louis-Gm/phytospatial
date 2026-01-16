@@ -106,9 +106,9 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 
 ## License
 
-`phytospatial` is distributed under the Apache License, Version 2.0 or the MIT License, at your option.
-
-Unless you explicitly state otherwise, any contribution you intentionally submit for inclusion in this repository (as defined by Apache-2.0) shall be dual-licensed as above, without any additional terms or conditions.
+`phytospatial` is distributed under the Apache License, Version 2.0.
+<br />
+See the LICENSE file for the full text. This license includes a permanent, world-wide, non-exclusive, no-charge, royalty-free, irrevocable patent license for all users.
 
 See [LICENSE](https://phytospatial.readthedocs.io/en/latest/license/) for more information on licensing and copyright.
 
