@@ -3,12 +3,15 @@
 import logging
 from typing import Optional
 
+import geopandas as gpd
+
 from phytospatial.vector import Vector, resolve_vector
 
 log = logging.getLogger(__name__)
 
 __all__ = [
     "load_crowns"
+    "label_crowns"
 ]
 
 @resolve_vector
@@ -121,3 +124,61 @@ def load_crowns(
     )
     
     return crowns
+
+
+@resolve_vector
+def label_crowns(
+    target_vector: Vector,
+    source_points: Vector,
+    label_col: str, 
+    max_dist: float = 2.0
+) -> Vector:
+    """
+    Transfers labels from points to crowns based on proximity. Inputs and outputs can 
+    be Vector objects or file paths (strings). Uses spatial join to assign labels
+    from source_points to target_vector crowns within max_dist.
+
+    Args:
+        target_vector: Vector of crown polygons to be labeled.
+        source_points: Vector of points containing labels.
+        label_col: Name of the column in source_points to transfer as labels.
+        max_dist: Maximum distance (in CRS units) to consider a point for labeling.
+
+    Returns:
+        Vector: Updated target_vector with labels assigned from source_points.
+    """
+    crowns_gdf = target_vector.data
+    points_gdf = source_points.data
+
+    if label_col not in points_gdf.columns:
+        raise ValueError(f"Column '{label_col}' not found in source points.")
+
+    if crowns_gdf.crs != points_gdf.crs:
+        log.info("CRS mismatch. Reprojecting points...")
+        points_gdf = points_gdf.to_crs(crowns_gdf.crs)
+
+    temp_col = "pts_label_temp"
+    points_subset = points_gdf[[label_col, 'geometry']].rename(columns={label_col: temp_col})
+
+    try:
+        joined = gpd.sjoin_nearest(
+            crowns_gdf,
+            points_subset,
+            how='left',
+            max_distance=max_dist,
+            distance_col="dist"
+        )
+    except NotImplementedError:
+        raise ImportError("Geopandas 0.10+ required")
+
+    joined = joined[~joined.index.duplicated(keep='first')]
+
+    if 'species' not in crowns_gdf.columns:
+        crowns_gdf['species'] = None
+    
+    crowns_gdf['species'] = crowns_gdf['species'].combine_first(joined[temp_col])
+    
+    log.info(f"Labeling complete. {crowns_gdf['species'].notna().sum()} crowns labeled.")
+    
+    target_vector.data = crowns_gdf
+    return target_vector
