@@ -50,11 +50,13 @@ nav:
       - "License": license.md
   - Tutorials:
       - "Pipeline Introduction": examples/intro_pipeline.ipynb
+  # REF_START
   - API Reference:
       - "Mask Extraction": reference/extract.md
-      - "Raster Tools": reference/raster_layer.md
+      - "Raster Geometry": reference/geom.md
       - "Vector Tools": reference/vector.md
       - "Loaders": reference/loaders.md
+  # REF_END
   - Contributing:
       - "Contributing": contributing/contributing.md
       - "Code of Conduct": contributing/code_of_conduct.md
