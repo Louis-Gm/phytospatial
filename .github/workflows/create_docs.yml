@@ -1,5 +1,7 @@
 name: Auto-Sync Documentation
 on:
+  workflow_dispatch:
+  
   push:
     branches: [main]
     paths:
@@ -9,11 +11,14 @@ on:
 jobs:
   sync-docs:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@v6
-      
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: true
+          token: ${{ secrets.ADMIN_TOKEN }} 
+          fetch-depth: 0 
+
       - name: Make script executable
         run: chmod +x scripts/create_docs.sh
 
