@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false # Let us see all failures, don't stop early
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
