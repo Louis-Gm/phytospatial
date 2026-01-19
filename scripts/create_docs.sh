@@ -5,16 +5,14 @@ SRC_ROOT="src"
 DOCS_DIR="docs/reference"
 MKDOCS_FILE="mkdocs.yml"
 
-echo "Starting Enhanced Documentation Sync..."
-
+echo "Starting Documentation Sync..."
 find "$SRC_ROOT/phytospatial" -name "*.py" | while read py_file; do    
-    rel_path="${py_file#$SRC_ROOT/}"              # phytospatial/raster/example.py
-    import_path="${rel_path%.py}"                 # phytospatial/raster/example
-    import_path="${import_path//\//.}"            # phytospatial.raster.example
-    dir_name=$(dirname "$rel_path")               # phytospatial/raster
-    module_name=$(basename "$rel_path" .py)       # example
+    rel_path="${py_file#$SRC_ROOT/}"
+    import_path="${rel_path%.py}"
+    import_path="${import_path//\//.}"
+    dir_name=$(dirname "$rel_path")
+    module_name=$(basename "$rel_path" .py)
     
-    # skip init files
     if [ "$module_name" == "__init__" ]; then continue; fi
 
     sub_dirs="${dir_name#phytospatial}"
@@ -28,7 +26,6 @@ find "$SRC_ROOT/phytospatial" -name "*.py" | while read py_file; do
       show_root_heading: true
       show_source: true
 EOF
-
     echo "Generated: $target_md"
 done
 
@@ -37,17 +34,19 @@ echo "  - API Reference:" > "$TMP_YAML"
 
 last_dir=""
 
-find "$SRC_ROOT/phytospatial" -name "*.py" | sort | while read py_file; do
+(
+    find "$SRC_ROOT/phytospatial" -mindepth 2 -name "*.py" | sort
+    find "$SRC_ROOT/phytospatial" -maxdepth 1 -name "*.py" | sort
+) | while read py_file; do
+    
     rel_path="${py_file#$SRC_ROOT/}"
     module_name=$(basename "$rel_path" .py)
     
     if [ "$module_name" == "__init__" ]; then continue; fi
 
     dir_name=$(dirname "$rel_path")
-    
     clean_dir=$(basename "$dir_name" | sed -r 's/_/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
     clean_mod=$(echo "$module_name" | sed -r 's/_/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
-
     sub_dirs="${rel_path#phytospatial/}"
     md_rel_path="reference/${sub_dirs%.py}.md"
 
@@ -63,7 +62,7 @@ find "$SRC_ROOT/phytospatial" -name "*.py" | sort | while read py_file; do
     fi
 done
 
-# mkdocs injection
+# inject into mkdocs.yml
 sed -i -e "/# REF_START/,/# REF_END/{ 
     /# REF_START/!{ 
         /# REF_END/!d 
