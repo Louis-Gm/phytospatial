@@ -1,11 +1,11 @@
 <br />
 <div align="center">
   <a href="https://github.com/Louis-Gm/phytospatial">
-    <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/phytospatial.png" alt="Logo" width="420" height="420">
+    <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/phytospatial-logo.png" alt="Logo" width="420" height="420">
   </a>
   <h1 align="center"><b>phytospatial</b></h1>
   <p align="center">
-    A python package to process remote sensing data in forestry applications
+    A python package that processes lidar and imagery data in forestry
   </p>
 
   [start]: #
@@ -23,7 +23,7 @@
   </p>
   <p align="center">
     <img src="https://img.shields.io/badge/python-3.10+-orange.svg" alt="Python versions">    
-    <img src="https://img.shields.io/badge/License-MIT%20or%20Apache%202.0-blue.svg" alt="License">
+    <img src="https://img.shields.io/badge/Apache%202.0-blue.svg" alt="License">
     <img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.18112045-purple" alt="DOI">
     <br />
     <img src="https://github.com/Louis-Gm/phytospatial/actions/workflows/test_suite.yml/badge.svg" alt="Build Status">
@@ -89,7 +89,7 @@ Feel free to leave a feature request <a href="https://github.com/Louis-Gm/phytos
 
 If you use this project in your research, please cite it as:
 
-Grand'Maison, L.-V. (2026). Phytospatial (0.3.0). Zenodo. https://doi.org/10.5281/zenodo.18112045
+Grand'Maison, L.-V. (2026). Phytospatial: a python package that processes lidar and imagery data in forestry (0.3.2) [software]. Zenodo. https://doi.org/10.5281/zenodo.18112045
 
 ## Contact
 
@@ -111,9 +111,9 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 
 ## License
 
-`phytospatial` is distributed under the Apache License, Version 2.0 or the MIT License, at your option.
-
-Unless you explicitly state otherwise, any contribution you intentionally submit for inclusion in this repository (as defined by Apache-2.0) shall be dual-licensed as above, without any additional terms or conditions.
+`phytospatial` is distributed under the Apache License, Version 2.0.
+<br />
+See the LICENSE file for the full text. This license includes a permanent, world-wide, non-exclusive, no-charge, royalty-free, irrevocable patent license for all users.
 
 See [LICENSE](https://phytospatial.readthedocs.io/en/latest/license/) for more information on licensing and copyright.
 

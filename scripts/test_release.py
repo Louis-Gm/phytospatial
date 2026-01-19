@@ -1,4 +1,5 @@
 # scripts/test_release.py
+
 import sys
 import subprocess
 import re
@@ -17,7 +18,7 @@ def main():
     root = Path(__file__).resolve().parent.parent
     pyproject = root / "pyproject.toml"
 
-    print(f"{YELLOW}--- TEST RELEASE ---{RESET}")
+    print(f"{YELLOW}TEST RELEASE{RESET}")
 
     # Ask for Temporary Version
     content = pyproject.read_text("utf-8")
@@ -28,13 +29,13 @@ def main():
     current_version = match.group(1)
     print(f"Current Version: {current_version}")
     
-    # Check if version was passed as an argument (e.g. from GitHub Actions)
+    # Check if version was passed as an argument
     if len(sys.argv) > 1:
         new_version = sys.argv[1].strip()
         print(f"Using version from command line argument: {new_version}")
     else:
         # Fallback to interactive mode for local use
-        new_version = input("Enter temporary test version (e.g., 4.2.0): ").strip()
+        new_version = input("Enter temporary test version (format: 4.2.0): ").strip()
 
     if not new_version:
         sys.exit(f"{FAIL}Version required.{RESET}")
@@ -45,7 +46,7 @@ def main():
 
     try:
         # CLEAN BUILD ARTIFACTS
-        print(f"{CYAN}--- CLEANING OLD BUILDS ---{RESET}")
+        print(f"{CYAN}CLEANING OLD BUILDS{RESET}")
         if (root / "dist").exists():
             shutil.rmtree(root / "dist")
         if (root / "build").exists():
@@ -54,12 +55,13 @@ def main():
             shutil.rmtree(path)
 
         # BUILD
-        print(f"{CYAN}--- BUILDING PACKAGE ---{RESET}")
+        print(f"{CYAN}BUILDING PACKAGE{RESET}")
         subprocess.run([sys.executable, "-m", "build"], cwd=root, check=True)
 
         # UPLOAD
-        print(f"{CYAN}--- UPLOADING TO TESTPYPI ---{RESET}")
-        # Note: In CI, TWINE_USERNAME/PASSWORD env vars must be set
+        print(f"{CYAN}UPLOADING TO TESTPYPI{RESET}")
+
+        # NOTE: In CI, TWINE_USERNAME/PASSWORD env vars must be set
         subprocess.run("twine upload --repository testpypi dist/*", cwd=root, shell=True, check=True)
 
         print(f"{GREEN}Upload successful. Verification complete.{RESET}")
@@ -70,7 +72,8 @@ def main():
 
     finally:
         # REVERT CHANGES
-        print(f"{YELLOW}--- REVERTING LOCAL CHANGES ---{RESET}")
+        print(f"{YELLOW}REVERTING LOCAL CHANGES{RESET}")
+
         # We use git checkout to ensure clean revert even if write failed
         subprocess.run(["git", "checkout", "pyproject.toml"], cwd=root, check=True)
         print(f"{GRAY}Reverted pyproject.toml to original state.{RESET}")

@@ -1,3 +1,5 @@
+# .gitignore
+
 old/
 src/unfinished
 .VSCodeCounter

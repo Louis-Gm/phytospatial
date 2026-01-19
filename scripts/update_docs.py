@@ -1,4 +1,5 @@
 # scripts/update_docs.py
+
 import argparse
 import re
 from datetime import datetime
@@ -13,7 +14,7 @@ def update_content(content: str, pattern: str, replacement: str, flags=0) -> str
 
 def main():
     parser = argparse.ArgumentParser(description="Bump version numbers and dates across the project.")
-    parser.add_argument("new_version", help="The new release version (e.g., 0.2.2)")
+    parser.add_argument("new_version", help="The new release version (format: 4.2.0)")
     parser.add_argument("current_version", help="The current version found in pyproject.toml")
     
     args = parser.parse_args()
@@ -52,10 +53,10 @@ def main():
     
     if file_path.exists():
         content = file_path.read_text(encoding="utf-8")
-        pattern = r"Grand'Maison, L\.-V\. \(\d{4}\)\. Phytospatial \(.*?\)\. Zenodo"
-        replacement = f"Grand'Maison, L.-V. ({year}). Phytospatial ({new_ver}). Zenodo"
+        pattern = r"Grand'Maison, L\.-V\. \(\d{4}\)\. Phytospatial: a python package that processes lidar and imagery data in forestry \(.*?\)\ \[software\]\. Zenodo"
+        replacement = f"Grand'Maison, L.-V. ({year}). Phytospatial: a python package that processes lidar and imagery data in forestry ({new_ver}) [software]. Zenodo"
         
-        file_path.write_text(update_content(content, pattern, replacement), encoding="utf-8")
+        file_path.write_text(update_content(content, pattern, replacement, flags=re.IGNORECASE), encoding="utf-8")
 
     # CITATION.cff (Release date and version)
     file_path = project_root / "CITATION.cff"

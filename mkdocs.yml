@@ -1,3 +1,5 @@
+# mkdocs.yml
+
 site_name: Phytospatial
 site_description: A python package for hyperspectral image processing in forestry.
 site_url: https://phytospatial.readthedocs.io/
@@ -50,7 +52,7 @@ nav:
       - "Pipeline Introduction": examples/intro_pipeline.ipynb
   - API Reference:
       - "Mask Extraction": reference/extract.md
-      - "Raster Tools": reference/raster.md
+      - "Raster Tools": reference/raster_layer.md
       - "Vector Tools": reference/vector.md
       - "Loaders": reference/loaders.md
   - Contributing:

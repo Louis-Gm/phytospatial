@@ -1,7 +1,9 @@
 # scripts/release.py
+
 import sys
 import subprocess
 import re
+import argparse
 from pathlib import Path
 
 MAIN_BRANCH = "main"
@@ -18,6 +20,7 @@ class Colors:
     OKGREEN = '\033[92m'
     FAIL = '\033[91m'
     ENDC = '\033[0m'
+    WARNING = '\033[93m'
 
 def log(message, color=Colors.OKBLUE):
     print(f"{color}{message}{Colors.ENDC}")
@@ -45,10 +48,19 @@ def run_command(command, cwd=None, capture_output=False):
         error_exit(f"Command failed: {command}\n{e.stderr if capture_output else ''}")
 
 def main():
+
+    parser = argparse.ArgumentParser(description="Trigger a new release.")
+    parser.add_argument(
+        "--skip-tests", 
+        action="store_true", 
+        help="Bypass the pytest suite (Use only for docs/metadata updates)"
+    )
+    args = parser.parse_args()
+
     script_path = Path(__file__).resolve()
     project_root = script_path.parent.parent
     
-    log("--- PRODUCTION RELEASE TRIGGER ---", Colors.HEADER)
+    log("PRODUCTION RELEASE TRIGGER", Colors.HEADER)
 
     # VERIFICATION CHECKS
     log("Checking Git Status...")
@@ -65,10 +77,12 @@ def main():
     if local_hash != remote_hash:
         error_exit("Local branch is not in sync with remote. Pull or Push first.")
 
-    # RUN TEST SUITE
-    log("--- RUNNING TEST SUITE ---", Colors.OKBLUE)
-    run_command(f"{sys.executable} -m pytest", cwd=project_root)
-    log("Tests passed.", Colors.OKGREEN)
+    if args.skip_tests:
+        log("WARNING: SKIPPING TEST SUITE AS REQUESTED", Colors.WARNING)
+    else:
+        log("RUNNING TEST SUITE", Colors.OKBLUE)
+        run_command(f"{sys.executable} -m pytest", cwd=project_root)
+        log("Tests passed.", Colors.OKGREEN)
 
     # VERSION INPUT
     pyproject_path = project_root / "pyproject.toml"
@@ -106,7 +120,7 @@ def main():
     run_command(f"git add {files_str}", cwd=project_root)
     
     # Commit
-    run_command(f'git commit -m "Bump version to {new_version}"', cwd=project_root)
+    run_command(f'git commit -m "Bump version to v{new_version}"', cwd=project_root)
     
     # Tag
     run_command(f'git tag -a "v{new_version}" -m "Release v{new_version}"', cwd=project_root)
@@ -116,10 +130,13 @@ def main():
     run_command(f'git push origin "v{new_version}"', cwd=project_root)
 
     # GITHUB RELEASE
+    # NOTE: requires github CLI properly authenticated
     log("Creating GitHub Release Draft...")
-    # requires github CLI
+
+    # Generate release notes and create release
+    # NOTE: generate notes requires proper formatting of PRs and commits (for instance "fix", "feat" or "docs" keywords)
     run_command(
-        f'gh release create "v{new_version}" --generate-notes --title "v{new_version}"',
+        f'gh release create "v{new_version}" --generate-notes --title "Phytospatial v{new_version}"',
         cwd=project_root
     )
 
@@ -127,5 +144,4 @@ def main():
     log("Monitor the upload progress here: https://github.com/Louis-Gm/phytospatial/actions", Colors.ENDC)
 
 if __name__ == "__main__":
-
     main()
