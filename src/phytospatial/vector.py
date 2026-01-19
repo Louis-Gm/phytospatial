@@ -56,6 +56,13 @@ class Vector:
     def data(self) -> gpd.GeoDataFrame:
         """Access the underlying GeoDataFrame."""
         return self._data
+    
+    @data.setter
+    def data(self, value: gpd.GeoDataFrame):
+        """Update the underlying GeoDataFrame."""
+        if not isinstance(value, gpd.GeoDataFrame):
+            raise TypeError(f"Expected GeoDataFrame, got {type(value)}")
+        self._data = value
 
     @property
     def crs(self):
