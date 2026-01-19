@@ -206,6 +206,12 @@ class Vector:
 def resolve_vector(func: Callable):
     """
     Decorator: Automatically loads file paths into Vector objects.
+
+    Args:
+        func: Function that takes a Vector as first argument
+
+    Returns:
+        Wrapped function that accepts file paths or Vector objects
     """
     @wraps(func)
     def wrapper(input_obj: Union[str, Path, Vector], *args, **kwargs):
