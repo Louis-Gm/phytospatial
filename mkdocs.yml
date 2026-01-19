@@ -52,10 +52,16 @@ nav:
       - "Pipeline Introduction": examples/intro_pipeline.ipynb
   # REF_START
   - API Reference:
-      - "Mask Extraction": reference/extract.md
-      - "Raster Geometry": reference/geom.md
-      - "Vector Tools": reference/vector.md
+      - "Extract": reference/extract.md
       - "Loaders": reference/loaders.md
+      - "Raster: Engine": reference/raster/engine.md
+      - "Raster: Geom": reference/raster/geom.md
+      - "Raster: Io": reference/raster/io.md
+      - "Raster: Layer": reference/raster/layer.md
+      - "Raster: Partition": reference/raster/partition.md
+      - "Raster: Resources": reference/raster/resources.md
+      - "Raster: Utils": reference/raster/utils.md
+      - "Vector": reference/vector.md
   # REF_END
   - Contributing:
       - "Contributing": contributing/contributing.md

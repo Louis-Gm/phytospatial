@@ -1,6 +1,6 @@
-# Data Loaders
+# Loaders
 
-This module handles the secure loading of geospatial data, including geometry validation and cleaning of invalid polygons.
+This module manages crown vector data loading and labeling.
 
 ::: phytospatial.loaders
     options:

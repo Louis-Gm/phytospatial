@@ -1,6 +1,6 @@
-# Mask Extraction
+# Extract
 
-This module handles the windowed reading of raster data and the extraction of statistics for specific tree crown geometries.
+This module performs object-based extraction from raster data.
 
 ::: phytospatial.extract
     options:

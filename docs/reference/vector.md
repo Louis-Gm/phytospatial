@@ -1,6 +1,6 @@
-# Vector Tools
+# Vector
 
-This module provides tools for spatial operations on vector data, such as spatial joining and crown labeling.
+This module loads vector data into memory as Vector objects.
 
 ::: phytospatial.vector
     options:
