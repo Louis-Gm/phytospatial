@@ -3,17 +3,13 @@
 name: Test Suite
 
 on:
+  workflow_dispatch:
+
   push:
     branches: [ "main" ]
     paths:
       - 'src/**/*.py'      # Source code
       - 'tests/*.py'         # Tests
-      
-  pull_request:
-    branches: [ "main" ]
-    paths:
-      - 'src/**/*.py'
-      - 'tests/*.py'
 
 jobs:
   test:
