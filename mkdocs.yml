@@ -52,8 +52,6 @@ nav:
       - "Pipeline Introduction": examples/intro_pipeline.ipynb
   # REF_START
   - API Reference:
-      - "Extract": reference/extract.md
-      - "Loaders": reference/loaders.md
       - Raster:
           - "Engine": reference/raster/engine.md
           - "Geom": reference/raster/geom.md
@@ -62,6 +60,8 @@ nav:
           - "Partition": reference/raster/partition.md
           - "Resources": reference/raster/resources.md
           - "Utils": reference/raster/utils.md
+      - "Extract": reference/extract.md
+      - "Loaders": reference/loaders.md
       - "Vector": reference/vector.md
   # REF_END
   - Contributing:
