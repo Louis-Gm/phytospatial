@@ -2,28 +2,24 @@
 
 version: 2
 updates:
-  # Ecosystem 1: Python Dependencies (pyproject.toml)
+# Python dependencies
   - package-ecosystem: "pip"
-    # Look for dependency files in the root directory
     directory: "/"
     schedule:
       interval: "monthly"
     
-    # Instead of 5 PRs for 5 libraries, create 1 PR containing all updates.
     groups:
       python-dependencies:
         patterns:
           - "*"
     
-    # 3 PR limit to avoid flooding
     open-pull-requests-limit: 3
     
-    # filters PRs
     labels:
       - "dependencies"
       - "python"
 
-  # Ecosystem 2: GitHub Actions (CI/CD Workflows)
+# GitHub Actions dependencies
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
