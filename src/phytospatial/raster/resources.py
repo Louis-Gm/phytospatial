@@ -1,10 +1,11 @@
 # src/phytospatial/raster/resources.py
 
 """
-This module performs static analysis on raster files and 
-system hardware to answer two critical questions:
-1. Is there enough RAM to load this file? (Memory Safety)
-2. Is this file structured efficiently for streaming? (Structure Analysis)
+This module performs static analysis on raster files and system hardware.
+
+It checks two key aspects before processing:
+- Memory safety for loading into RAM (Memory Estimation)
+- Internal block/tile structure of the raster (Block Structure Analysis)
 """
 
 import logging

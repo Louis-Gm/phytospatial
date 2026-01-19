@@ -1,7 +1,8 @@
 # src/phytospatial/raster/geom.py
 
 """
-This module acts as a processing frontend (User-Facing).
+This module applies various geometric transformations to raster data.
+
 It uses other raster modules under the hood to balance performance 
 and safety (memory-awareness).
 """

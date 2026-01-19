@@ -1,5 +1,14 @@
 # src/phytospatial/extract.py
 
+"""
+This module performs object-based extraction from raster data.
+
+It manages interactions between raster and vector data, orchestrating the extraction
+of pixel values for specified geometries. Features include adaptive processing
+strategies (in-memory, tiled, blocked), handling of boundary-crossing geometries,
+and optimized I/O operations.
+"""
+
 import logging
 from typing import Union, List, Optional, Generator, Dict, Any, Literal, Tuple
 from pathlib import Path

@@ -1,7 +1,9 @@
 # src/phytospatial/raster/io.py
 
 """
-This module handles all disk-based operations:
+This module handles all disk-based operations for raster data.
+
+Functionality includes:
 - Loading rasters from files
 - Saving rasters to disk
 - Writing to specific windows in existing files

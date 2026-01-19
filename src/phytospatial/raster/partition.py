@@ -1,10 +1,10 @@
 # src/phytospatial/raster/partition.py
 
 """
-This module provides partitioning strategies for raster data,
-including block-based, tile-based, and window-based iteration.
+This module provides partitioning strategies for raster data.
 
-It also includes a TileStitcher class for reassembling raster tiles
+It includes functions for block-based, tile-based, and window-based iteration,
+as well as a TileStitcher class for reassembling raster tiles
 into a single raster file on disk.
 """
 

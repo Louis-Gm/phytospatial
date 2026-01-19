@@ -1,5 +1,15 @@
 # src/phytospatial/vector.py
 
+"""
+This module loads vector data into memory as Vector objects.
+
+It supports various vector file formats (Shapefile, GeoJSON, GeoPackage, etc.)
+and provides functionality for reprojection, validation, filtering,
+and saving vector data. 
+
+All spatial primitives (Points, Lines, Polygons) are supported.
+"""
+
 import logging
 from pathlib import Path
 from typing import Union, Callable

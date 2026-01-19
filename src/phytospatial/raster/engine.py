@@ -1,8 +1,9 @@
 # src/phytospatial/raster/engine.py
 
 """
-This module manages interaction between multiple architecture tiers and
-serves as the core dispatch mechanism for raster processing.
+This module manages interactions between other raster modules.
+
+It serves as the core dispatch mechanism for raster processing.
 """
 
 import logging

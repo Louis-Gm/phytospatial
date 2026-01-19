@@ -1,5 +1,13 @@
 # src/phytospatial/loaders.py
 
+"""
+This module manages crown vector data loading and labeling.
+
+Functions include loading crown geometries with validation and
+standardized columns, as well as transferring labels from point
+data to crown polygons based on spatial proximity.
+"""
+
 import logging
 from typing import Optional
 
@@ -10,7 +18,7 @@ from phytospatial.vector import Vector, resolve_vector
 log = logging.getLogger(__name__)
 
 __all__ = [
-    "load_crowns"
+    "load_crowns",
     "label_crowns"
 ]
 
@@ -33,9 +41,7 @@ def load_crowns(
     4. Index setup for efficient lookups
     
     Args:
-        vector: The input Vector object. 
-                (If a path string is passed, @resolve_vector converts it 
-                 to a Vector object before this function runs).
+        vector: The input Vector object.
         id_col: Name of the column containing tree IDs.
                 If None, uses the DataFrame index.
                 Will be renamed to 'crown_id'.

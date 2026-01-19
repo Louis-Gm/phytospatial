@@ -1,8 +1,7 @@
 # src/phytospatial/raster/layer.py
 
 """
-This module defines the Raster data structure. It is the core
-unit of raster data in phytospatial.
+This module defines the Raster object data structure. 
 
 It synchronizes pixel data (NumPy array) with geospatial context (CRS, Transform).
 """

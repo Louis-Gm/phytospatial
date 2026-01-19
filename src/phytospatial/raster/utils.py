@@ -1,8 +1,9 @@
 # src/phytospatial/raster/utils.py
 
 """
-This module provides shared utility functions for raster operations,
-including path resolution and band extraction.
+This module provides shared utility functions for raster operations.
+Functions include path resolution for ENVI files,
+band extraction, and other common tasks.
 """
 
 from pathlib import Path
