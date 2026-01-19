@@ -6,7 +6,7 @@
 *.sh text eol=lf
 
 *.toml linguist-detectable=true linguist-language=TOML
-*.yaml linguist-detectable=true linguist-language=YAML
+*.sh   linguist-detectable=true linguist-language=Shell
 *.yml  linguist-detectable=true linguist-language=YAML
 
 *.shp binary
@@ -21,3 +21,4 @@
 *.pdf binary
 *.tif binary
 *.tiff binary
+
