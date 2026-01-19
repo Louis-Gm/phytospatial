@@ -54,13 +54,14 @@ nav:
   - API Reference:
       - "Extract": reference/extract.md
       - "Loaders": reference/loaders.md
-      - "Raster: Engine": reference/raster/engine.md
-      - "Raster: Geom": reference/raster/geom.md
-      - "Raster: Io": reference/raster/io.md
-      - "Raster: Layer": reference/raster/layer.md
-      - "Raster: Partition": reference/raster/partition.md
-      - "Raster: Resources": reference/raster/resources.md
-      - "Raster: Utils": reference/raster/utils.md
+      - Raster:
+          - "Engine": reference/raster/engine.md
+          - "Geom": reference/raster/geom.md
+          - "Io": reference/raster/io.md
+          - "Layer": reference/raster/layer.md
+          - "Partition": reference/raster/partition.md
+          - "Resources": reference/raster/resources.md
+          - "Utils": reference/raster/utils.md
       - "Vector": reference/vector.md
   # REF_END
   - Contributing:
