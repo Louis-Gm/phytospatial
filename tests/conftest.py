@@ -36,4 +36,4 @@ def source_envi_path(tmp_path):
     with rasterio.open(p, 'w', **profile) as dst:
         dst.write(data)
         
-    return p.with_suffix(".hdr") # tests the resolve_envi_path logic
+    return p.with_suffix(".hdr")
