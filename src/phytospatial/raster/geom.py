@@ -325,7 +325,6 @@ def align_rasters(
     Args:
         rasters: List of input rasters (Paths or Objects).
         method: Alignment strategy. Default is 'first' (align to first raster).
-                TODO: implement other methods or remove argument.
         resampling: Interpolation method.
 
     Returns:
