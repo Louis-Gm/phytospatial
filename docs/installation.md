@@ -10,26 +10,6 @@ Before starting, ensure you have the following installed:
 
 ---
 
-## 1. Get the Code (Cloning)
-
-To avoid conflicts with other software, we recommend creating a dedicated "virtual environment." Choose one of the methods below.
-
-1. Open your terminal (Command Prompt, PowerShell, or Terminal).
-2. Navigate to the folder where you want to store the project:
-   ```sh
-   cd path/to/your/projects/folder
-   ```
-3. Clone the repository:
-   ```sh
-   git clone https://github.com/Louis-Gm/phytospatial.git
-   ```
-4. Enter the project directory:
-   ```sh
-   cd phytospatial
-   ```
-
----
-
 ## 1. Set Up Your Environment
 
 To avoid conflicts with other software, we recommend creating a dedicated virtual environment for this project. Choose **one** of the methods below.
