@@ -5,6 +5,7 @@ SRC_ROOT="src"
 DOCS_DIR="docs/reference"
 MKDOCS_FILE="mkdocs.yml"
 
+# clean existing docs
 echo "Starting Documentation Sync..."
 find "$SRC_ROOT/phytospatial" -name "*.py" | while read py_file; do    
     rel_path="${py_file#$SRC_ROOT/}"

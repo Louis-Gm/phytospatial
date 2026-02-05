@@ -24,13 +24,13 @@ def main():
     year = str(datetime.now().year)
     date_released = datetime.now().strftime("%Y-%m-%d")
 
-    # Resolve project root relative to this script
+    # resolve project root
     script_path = Path(__file__).resolve()
     project_root = script_path.parent.parent
 
     print(f"--- STARTING FILE UPDATES IN: {project_root} ---")
 
-    # pyproject.toml (Version)
+    # pyproject.toml (version)
     file_path = project_root / "pyproject.toml"
     print(f"Updating {file_path.name}...")
     
@@ -47,7 +47,7 @@ def main():
     else:
         print(f"  [!] Error: {file_path.name} not found.")
 
-    # README.md (Citation)
+    # README.md (citation)
     file_path = project_root / "README.md"
     print(f"Updating {file_path.name} Citation...")
     
@@ -58,17 +58,13 @@ def main():
         
         file_path.write_text(update_content(content, pattern, replacement, flags=re.IGNORECASE), encoding="utf-8")
 
-    # CITATION.cff (Release date and version)
+    # CITATION.cff (release date and version)
     file_path = project_root / "CITATION.cff"
     print(f"Updating {file_path.name}...")
 
     if file_path.exists():
-        content = file_path.read_text(encoding="utf-8")
-        
-        # Update Version (start of line)
+        content = file_path.read_text(encoding="utf-8")        
         content = re.sub(r"^version:.*$", f"version: {new_ver}", content, flags=re.MULTILINE)
-        
-        # Update Date Released (start of line)
         content = re.sub(r"^date-released:.*$", f"date-released: {date_released}", content, flags=re.MULTILINE)
         
         file_path.write_text(content, encoding="utf-8")

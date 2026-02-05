@@ -20,7 +20,7 @@ def main():
 
     print(f"{YELLOW}TEST RELEASE{RESET}")
 
-    # Ask for Temporary Version
+    # ask for temporary version
     content = pyproject.read_text("utf-8")
     match = re.search(r'version = "(.*)"', content)
     if not match:
@@ -29,23 +29,23 @@ def main():
     current_version = match.group(1)
     print(f"Current Version: {current_version}")
     
-    # Check if version was passed as an argument
+    # check if version was passed as an argument
     if len(sys.argv) > 1:
         new_version = sys.argv[1].strip()
         print(f"Using version from command line argument: {new_version}")
     else:
-        # Fallback to interactive mode for local use
+        # fallback to interactive mode for local use
         new_version = input("Enter temporary test version (format: 4.2.0): ").strip()
 
     if not new_version:
         sys.exit(f"{FAIL}Version required.{RESET}")
 
-    # Modify pyproject.toml
+    # modify pyproject.toml
     new_content = content.replace(f'version = "{current_version}"', f'version = "{new_version}"')
     pyproject.write_text(new_content, encoding="utf-8")
 
     try:
-        # CLEAN BUILD ARTIFACTS
+        # clean old builds
         print(f"{CYAN}CLEANING OLD BUILDS{RESET}")
         if (root / "dist").exists():
             shutil.rmtree(root / "dist")
@@ -54,11 +54,11 @@ def main():
         for path in root.rglob("*.egg-info"):
             shutil.rmtree(path)
 
-        # BUILD
+        # build package
         print(f"{CYAN}BUILDING PACKAGE{RESET}")
         subprocess.run([sys.executable, "-m", "build"], cwd=root, check=True)
 
-        # UPLOAD
+        # upload it to TestPyPI
         print(f"{CYAN}UPLOADING TO TESTPYPI{RESET}")
 
         # NOTE: In CI, TWINE_USERNAME/PASSWORD env vars must be set
@@ -71,10 +71,10 @@ def main():
         sys.exit(1)
 
     finally:
-        # REVERT CHANGES
+        # revert changes
         print(f"{YELLOW}REVERTING LOCAL CHANGES{RESET}")
 
-        # We use git checkout to ensure clean revert even if write failed
+        # use git checkout to ensure clean revert even if write failed
         subprocess.run(["git", "checkout", "pyproject.toml"], cwd=root, check=True)
         print(f"{GRAY}Reverted pyproject.toml to original state.{RESET}")
 

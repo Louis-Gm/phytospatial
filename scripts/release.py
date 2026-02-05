@@ -48,7 +48,9 @@ def run_command(command, cwd=None, capture_output=False):
         error_exit(f"Command failed: {command}\n{e.stderr if capture_output else ''}")
 
 def main():
-
+    """
+    Trigger a new release.
+    """
     parser = argparse.ArgumentParser(description="Trigger a new release.")
     parser.add_argument(
         "--skip-tests", 
@@ -62,7 +64,7 @@ def main():
     
     log("PRODUCTION RELEASE TRIGGER", Colors.HEADER)
 
-    # VERIFICATION CHECKS
+    # verification steps
     log("Checking Git Status...")
     status = run_command("git status --porcelain", cwd=project_root, capture_output=True)
     if status:
@@ -84,7 +86,7 @@ def main():
         run_command(f"{sys.executable} -m pytest", cwd=project_root)
         log("Tests passed.", Colors.OKGREEN)
 
-    # VERSION INPUT
+    # version bumping
     pyproject_path = project_root / "pyproject.toml"
     if not pyproject_path.exists():
         error_exit("pyproject.toml not found.")
@@ -101,7 +103,7 @@ def main():
     if not new_version:
         error_exit("Version required.")
 
-    # CALL FILE UPDATE SCRIPT
+    # capture the version change
     update_script = script_path.parent / "update_docs.py"
     if not update_script.exists():
         error_exit(f"Could not find update_docs.py at {update_script}")
@@ -112,28 +114,22 @@ def main():
         cwd=project_root
     )
 
-    # GIT OPERATIONS
+    # git commit and tag
     log("Committing and Tagging...")
     
-    # Stage files
     files_str = " ".join(FILES_TO_STAGE)
     run_command(f"git add {files_str}", cwd=project_root)
-    
-    # Commit
     run_command(f'git commit -m "Bump version to v{new_version}"', cwd=project_root)
-    
-    # Tag
     run_command(f'git tag -a "v{new_version}" -m "Release v{new_version}"', cwd=project_root)
-
     log("Pushing to GitHub...")
     run_command(f'git push origin "{MAIN_BRANCH}"', cwd=project_root)
     run_command(f'git push origin "v{new_version}"', cwd=project_root)
 
-    # GITHUB RELEASE
+    # GitHub release
     # NOTE: requires github CLI properly authenticated
     log("Creating GitHub Release Draft...")
 
-    # Generate release notes and create release
+    # generate release notes and create release
     # NOTE: generate notes requires proper formatting of PRs and commits (for instance "fix", "feat" or "docs" keywords)
     run_command(
         f'gh release create "v{new_version}" --generate-notes --title "Phytospatial v{new_version}"',

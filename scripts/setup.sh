@@ -12,6 +12,6 @@ source .venv/bin/activate
 pip install --upgrade pip
 pip install -e .[analysis,dev,docs]
 
-# Ensure git hooks are installed
+# ensure git hooks are installed
 pre-commit install
 echo "Setup complete."
