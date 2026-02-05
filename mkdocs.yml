@@ -49,7 +49,7 @@ nav:
       - "Installation": installation.md
       - "License": license.md
   - Tutorials:
-      - "Pipeline Introduction": examples/intro_pipeline.ipynb
+      - "Pipeline Introduction": examples/extraction_pipeline.ipynb
   # REF_START
   - API Reference:
       - Raster:

@@ -3,7 +3,7 @@
   <a href="https://github.com/Louis-Gm/phytospatial">
     <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/phytospatial-logo.png" alt="Logo" width="420" height="420">
   </a>
-  <h1 align="center"><b>phytospatial</b></h1>
+  <h1 align="center"><b>Phytospatial</b></h1>
   <p align="center">
     A python package that processes lidar and imagery data in forestry
   </p>
@@ -50,9 +50,7 @@
 To get up and running quickly with `pip`:
 
 ```sh
-git clone https://github.com/Louis-Gm/phytospatial.git
-cd phytospatial
-pip install -e .
+pip install phytospatial
 ```
 
 > **New to Python?** Check out our detailed [Installation Guide](https://phytospatial.readthedocs.io/en/latest/installation/) for Conda and Virtual Environment setup.
@@ -76,7 +74,7 @@ for stats in extractor.process_crowns(crowns):
     results.append(stats)
 ```
 
-For a complete workflow, see the [Introduction Pipeline Tutorial](https://phytospatial.readthedocs.io/en/latest/examples/intro_pipeline/).
+For a complete workflow, see the [Spectral Extraction Tutorial](https://phytospatial.readthedocs.io/en/latest/examples/extraction_pipeline/).
 
 ## Contribute
 
