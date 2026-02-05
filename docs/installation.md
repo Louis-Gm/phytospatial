@@ -19,14 +19,17 @@ This is ideal if you want a self-contained environment that manages both Python 
 NOTE: You can also download our environment.yml file and create the environment from there.
 
 1. Create and name your environment:
+
    ```sh
    sh conda create -n phytospatial_env python=3.10
    ```
 2. Activate the new environment:
+
    ```sh
    conda activate phytospatial_env
    ```
 3. Install Phytospatial from PyPI:
+
    ```sh
    sh pip install phytospatial
    ```
@@ -36,20 +39,24 @@ Use this if you prefer a lightweight, native Python setup.
 
 1. **Create the virtual environment:**
    * **Windows:**
+
      ```sh
      python -m venv venv
      ```
    * **Mac/Linux:**
+
      ```sh
      python3 -m venv venv
      ```
 
 2. **Activate the environment:**
    * **Windows:**
+
      ```sh
      .\venv\Scripts\activate
      ```
    * **Mac/Linux:**
+
      ```sh
      source venv/bin/activate
      ```
@@ -65,15 +72,15 @@ Use this if you prefer a lightweight, native Python setup.
 ## 2. Optional dependencies
 If you intend to perform advanced spatial analysis, you can install the extra feature set:
 
-     ```sh
-     pip install "phytospatial[analysis]"
-     ```
+```sh
+pip install "phytospatial[analysis]"
+```
 
 ---
 
 ## 3. Verify Installation
 Check that the package is correctly recognized by your system:
 
-     ```sh
-     python -c "import phytospatial; print('Phytospatial version ' + phytospatial.version + ' installed successfully!')"
-     ```
+```sh
+python -c "import phytospatial; print('Phytospatial version ' + phytospatial.version + ' installed successfully!')"
+```
