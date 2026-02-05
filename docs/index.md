@@ -36,7 +36,6 @@
 
 * **Memory-Safe Processing:** Process massive rasters using windowed reading (via `rasterio`) without overloading RAM.
 * **Forestry Focused:** Specialized tools for tree crown validation and species labeling.
-* **Dual-Licensed:** Available under both MIT and Apache 2.0 licenses for maximum flexibility.
 
 ## Getting Started
 
@@ -52,21 +51,23 @@ pip install phytospatial
 
 ## Usage
 
-Here is a simple example of extracting spectral data from tree crowns:
+Here is a simple example of extracting spectral data from tree crowns using the *extract_to_dataframe* API, which automatically handles memory management and tiling strategies.
 
 ```python
 from phytospatial import extract, loaders
 
-# Load tree crowns
+# Load tree crowns (returns a standardized Vector object)
 crowns = loaders.load_crowns("data/crowns.shp")
 
-# Initialize extractor
-extractor = extract.BlockExtractor("data/image.tif")
+# Extract features directly into a pandas DataFrame
+# The 'auto' mode automatically selects the best processing strategy (In-Memory vs Streaming)
+df = extract.extract_to_dataframe(
+    raster_input="data/image.tif",
+    vector_input=crowns,
+    tile_mode="auto"
+)
 
-# Process
-results = []
-for stats in extractor.process_crowns(crowns):
-    results.append(stats)
+print(df.head())
 ```
 
 For a complete workflow, see the [Spectral Extraction Tutorial](https://phytospatial.readthedocs.io/en/latest/examples/extraction_pipeline/).
@@ -107,7 +108,7 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 
 ## License
 
-`phytospatial` is distributed under the Apache License, Version 2.0.
+`Phytospatial` is distributed under the Apache License, Version 2.0.
 <br />
 See the LICENSE file for the full text. This license includes a permanent, world-wide, non-exclusive, no-charge, royalty-free, irrevocable patent license for all users.
 
