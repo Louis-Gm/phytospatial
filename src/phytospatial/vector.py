@@ -64,33 +64,45 @@ class Vector:
 
     @property
     def data(self) -> gpd.GeoDataFrame:
-        """Access the underlying GeoDataFrame."""
+        """
+        Access the underlying GeoDataFrame.
+        """
         return self._data
 
     @data.setter
     def data(self, value: gpd.GeoDataFrame):
-        """Update the underlying GeoDataFrame."""
+        """
+        Update the underlying GeoDataFrame.
+        """
         if not isinstance(value, gpd.GeoDataFrame):
             raise TypeError(f"Expected GeoDataFrame, got {type(value)}")
         self._data = value
 
     @property
     def crs(self):
-        """Coordinate Reference System."""
+        """
+        Coordinate Reference System.
+        """
         return self._data.crs
 
     @property
     def bounds(self):
-        """Total bounds (minx, miny, maxx, maxy)."""
+        """
+        Total bounds (minx, miny, maxx, maxy).
+        """
         return self._data.total_bounds
     
     @property
     def columns(self):
-        """Column names in the vector data."""
+        """
+        Column names in the vector data.
+        """
         return self._data.columns.tolist()
 
     def __len__(self) -> int:
-        """Number of features."""
+        """
+        Number of features.
+        """
         return len(self._data)
     
     def __repr__(self):

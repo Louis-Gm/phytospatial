@@ -74,7 +74,7 @@ def select_strategy(
         config: The dispatch configuration.
         
     Returns:
-        ProcessingMode: The selected strategy.
+        ProcessingMode: The selected processing strategy.
     """
     if config.mode != "auto":
         return ProcessingMode(config.mode) if isinstance(config.mode, str) else config.mode

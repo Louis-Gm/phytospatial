@@ -5,7 +5,7 @@
 # See the NOTICE file for more information
 
 """
-This subpackage provides core functionality for handling raster data,
+The raster subpackage provides core functionality for handling raster data,
 including I/O operations, partitioning strategies, resource management,
 engine dispatching and geometry utilities.
 

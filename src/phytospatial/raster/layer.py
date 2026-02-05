@@ -131,17 +131,23 @@ class Raster:
 
     @property
     def width(self) -> int:
-        """Raster width in pixels."""
+        """
+        Raster width in pixels.
+        """
         return self._data.shape[2]
 
     @property
     def height(self) -> int:
-        """Raster height in pixels."""
+        """
+        Raster height in pixels.
+        """
         return self._data.shape[1]
 
     @property
     def count(self) -> int:
-        """Number of bands."""
+        """
+        Number of bands.
+        """
         return self._data.shape[0]
 
     @property
@@ -257,8 +263,8 @@ class Raster:
 
     def __eq__(self, other: object) -> bool:
         """
-        Check equality based on metadata and pixel data.
-        
+        Check equality, first based on metadata only and, if necessary, based on pixel data.
+
         Args:
             other: Object to compare with
             

@@ -189,7 +189,7 @@ def resample(
 @auto_load(safe=True)
 def crop(raster: Raster, bounds: Tuple[float, float, float, float]) -> Raster:
     """
-    Crop raster to specific geographic bounds.
+    Crop raster to specified geographic bounds.
     
     Args:
         raster: Input raster.

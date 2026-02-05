@@ -26,7 +26,9 @@ def extract_band_indices(
     src: rasterio.DatasetReader, 
     bands: Optional[Union[int, List[int]]]
 ) -> List[int]:
-    """Normalize band selection to a list of 1-based indices."""
+    """
+    Normalize band selection to a list of 1-based indices.
+    """
     if bands is None:
         return list(src.indexes)
     elif isinstance(bands, int):
@@ -37,7 +39,9 @@ def extract_band_names(
     src: rasterio.DatasetReader, 
     indices: List[int]
 ) -> Dict[str, int]:
-    """Extract descriptions/names for specific bands."""
+    """
+    Extract descriptions/names for specific bands.
+    """
     band_names = {}
     for i, idx in enumerate(indices):
         if 0 <= (idx - 1) < len(src.descriptions):

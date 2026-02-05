@@ -153,6 +153,7 @@ def label_crowns(
     Returns:
         Vector: Updated target_vector with labels assigned from source_points.
     """
+    # load data
     crowns_gdf = target_vector.data
     points_gdf = source_points.data
 
@@ -166,6 +167,7 @@ def label_crowns(
     temp_col = "pts_label_temp"
     points_subset = points_gdf[[label_col, 'geometry']].rename(columns={label_col: temp_col})
 
+    # perform spatial join
     try:
         joined = gpd.sjoin_nearest(
             crowns_gdf,
@@ -179,6 +181,7 @@ def label_crowns(
 
     joined = joined[~joined.index.duplicated(keep='first')]
 
+    # add species
     if 'species' not in crowns_gdf.columns:
         crowns_gdf['species'] = None
     

@@ -35,8 +35,8 @@ def iter_blocks(
     """
     Stream data using the file's native internal block structure.
     
-    This function acts as a pure mechanism. It assumes the caller (engine.py)
-    has already verified that the file structure is efficient for blocking.
+    NOTE: This function assumes the caller (engine.py) has already 
+    verified that the file structure is efficient for blocking.
 
     Args:
         path: Path to the raster file. All GDAL-supported formats are accepted.
@@ -266,7 +266,9 @@ class TileStitcher:
             raise IOError(f"Failed to write tile to {window}: {e}") from e
 
     def finalize(self):
-        """Flush and close the file."""
+        """
+        Flush and close the file.
+        """
         if self._dst:
             self._dst.close()
             self._dst = None

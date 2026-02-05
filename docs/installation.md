@@ -1,18 +1,18 @@
 # Installation Guide
 
-Welcome to **Phytospatial**! This guide will help you download the code, set up a secure Python environment, and install the package on your machine.
+Welcome to **Phytospatial**! This guide will help you download the code, set up a secure Python environment, and install the package using your preferred package manager.
 
 ## Prerequisites
 
 Before starting, ensure you have the following installed:
-* **Git**: [Download Git here](https://git-scm.com/downloads)
-* **Python Distribution**: We highly recommend [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/products/distribution) for managing environments.
+* **Python 3.10+**: [Download Python here](https://www.python.org/downloads/)
+* **Conda**: We highly recommend using [Anaconda](https://www.anaconda.com/products/distribution) (or miniconda) for managing environments.
 
 ---
 
 ## 1. Get the Code (Cloning)
 
-First, you need to download the repository to your local computer using Git.
+To avoid conflicts with other software, we recommend creating a dedicated "virtual environment." Choose one of the methods below.
 
 1. Open your terminal (Command Prompt, PowerShell, or Terminal).
 2. Navigate to the folder where you want to store the project:
@@ -30,24 +30,29 @@ First, you need to download the repository to your local computer using Git.
 
 ---
 
-## 2. Set Up Your Environment
+## 1. Set Up Your Environment
 
-To avoid conflicts with other software, you should create a dedicated "virtual environment" for this project. Choose **one** of the methods below.
+To avoid conflicts with other software, we recommend creating a dedicated virtual environment for this project. Choose **one** of the methods below.
 
 ### Option A: Using Conda (Recommended)
-This is the easiest method. We provide a pre-configured file (`environment.yml`) that installs Python and necessary libraries automatically.
+This is ideal if you want a self-contained environment that manages both Python and non-Python dependencies.
+NOTE: You can also download our environment.yml file and create the environment from there.
 
-1. Create the environment from the file:
+1. Create and name your environment:
    ```sh
-   conda env create -f environment.yml
+   sh conda create -n phytospatial_env python=3.10
    ```
 2. Activate the new environment:
    ```sh
    conda activate phytospatial_env
    ```
+3. Install Phytospatial from PyPI:
+   ```sh
+   sh pip install phytospatial
+   ```
 
 ### Option B: Using Standard Python (pip)
-If you prefer not to use Conda, you can use Python's built-in tools.
+Use this if you prefer a lightweight, native Python setup.
 
 1. **Create the virtual environment:**
    * **Windows:**
@@ -70,17 +75,25 @@ If you prefer not to use Conda, you can use Python's built-in tools.
      ```
 
 3. **Install dependencies manually:**
-   ```sh
-   pip install --upgrade pip
-   pip install -e .[analysis]
-   ```
+
+     ```sh
+     pip install --upgrade pip pip install phytospatial
+     ```
+
+---
+
+## 2. Optional dependencies
+If you intend to perform advanced spatial analysis, you can install the extra feature set:
+
+     ```sh
+     pip install "phytospatial[analysis]"
+     ```
 
 ---
 
 ## 3. Verify Installation
+Check that the package is correctly recognized by your system:
 
-Once your environment is active and the package is installed, verify that everything is working correctly:
-
-```sh
-python -c "import phytospatial; print('Phytospatial installed successfully!')"
-```
+     ```sh
+     python -c "import phytospatial; print('Phytospatial version ' + phytospatial.version + ' installed successfully!')"
+     ```

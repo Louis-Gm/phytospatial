@@ -39,6 +39,7 @@ class ProcessingMode(Enum):
     """
     Strategic recommendation for how to process a raster.
     """
+
     IN_MEMORY = "in_memory"  # Fastest, requires loading full file.
     TILED = "tiled"          # Standard streaming. Reliable memory usage.
     BLOCKED = "blocked"      # Optimized streaming. Uses file's internal chunks.
@@ -80,7 +81,7 @@ class MemoryEstimate:
         total_required_bytes (int): raw + overhead.
         available_system_bytes (int): Current available system RAM.
         is_safe (bool): True if load fits in RAM with safety margin.
-        margin (float): Percentage (0.0-1.0) of RAM free after
+        margin (float): Proportion (0.0-1.0) of RAM free after
                             loading the raster.
         recommendation (ProcessingMode): Suggested processing mode.
         reason (str): Human-readable explanation of the recommendation.

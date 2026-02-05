@@ -9,7 +9,7 @@ This document outlines the steps required to release a new version of phytospati
     **IMPORTANT:** Your local github CLI must be authentificated prior to release.
 3.  **Development Dependencies**: All tools required for testing and building (pytest, build, and twine) are defined in the pyproject.toml dev group. Install them using:
     ```bash
-    pip install -e .[analysis,dev,docs]
+    pip install "phytospatial[analysis,dev,docs]"
     ```
 4.  **Clean State**: Your working directory must be clean and synchronized with the remote main branch.
 

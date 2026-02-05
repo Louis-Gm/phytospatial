@@ -166,7 +166,7 @@ def read_info(path: Union[str, Path]) -> Dict[str, Any]:
         path: Path to the raster file. All supported GDAL formats are accepted.
         
     Returns:
-        Dict containing 'crs', 'transform', 'bounds', 'shape', etc.
+        Dict containing raster metadata such as 'crs', 'transform', 'bounds', 'shape', etc.
     """
     path = resolve_envi_path(path)
     if not path.exists():

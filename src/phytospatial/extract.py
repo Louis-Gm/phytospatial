@@ -137,7 +137,9 @@ def _process_geometry_in_memory(
     return stats_out
 
 def _validate_geometry(geom):
-    """Validate and fix geometry if possible."""
+    """
+    Validate and fix geometry if possible.
+    """
     if not geom.is_valid:
         log.warning(f"Invalid geometry detected, attempting to fix...")
         geom = geom.buffer(0)
