@@ -20,7 +20,10 @@ By contributing to this repository (via Pull Requests, Issues, or otherwise), yo
 * `tests`: Pytest suite for the source code. Unit tests are for single modules whereas integration tests aim to capture interactions between modules.
 * `.github`: CI/CD workflows (Tests, Release). Also contains issue templates for bug reports or feature requests.
 * `scripts`: Maintenance scripts for the project.
-* `docs`: Documentation files for the project. Contains an `examples` subdirectory for tutorial jupyter notebooks and a `reference` subdirectory for source code documentation.
+* `docs`: Documentation files for the project. Contains three subdirectories
+  * `examples`: Tutorial jupyter notebooks 
+  * `reference`: Reference files for source code documentation.
+  * `contributing`: Specific documentation for contributors
 
 ## How to Contribute
 
