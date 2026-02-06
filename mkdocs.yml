@@ -1,5 +1,3 @@
-# mkdocs.yml
-
 site_name: Phytospatial
 site_description: A python package for hyperspectral image processing in forestry.
 site_url: https://phytospatial.readthedocs.io/
@@ -12,7 +10,7 @@ theme:
     - navigation.sections
     - content.code.copy
   palette:
-    # Light mode
+    # Light theme
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: blue
@@ -20,7 +18,7 @@ theme:
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
-    # Dark mode
+    # Dark theme
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: blue
@@ -39,7 +37,7 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.superfences
   - pymdownx.inlinehilite
-  
+
 plugins:
   - search
   - mkdocs-jupyter

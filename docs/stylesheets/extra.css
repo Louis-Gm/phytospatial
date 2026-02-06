@@ -1,68 +1,67 @@
-/* docs/stylesheets/extra.css */
-
 :root {
-  --md-code-bg-color: #b1ab8b;
-  --md-code-fg-color: #282828;
+  --custom-code-bg: #b1ab8b;
+  --md-code-bg-color: var(--custom-code-bg);
 }
 
-/* Keywords (import, from, def, return, if, else) */
-.highlight .k,    /* Keyword */
-.highlight .kn,   /* Keyword.Namespace */
-.highlight .kp,   /* Keyword.Pseudo */
-.highlight .kd {  /* Keyword.Declaration */
-    color: #8f3f71 !important;
-    font-weight: bold;
+[data-md-color-scheme="default"] {
+  --custom-code-fg: #282828;
+  --custom-kw: #8f3f71;
+  --custom-func: #076678;
+  --custom-class: #b57614;
+  --custom-str: #427b58;
+  --custom-comment: #504945;
+  --custom-num: #8f3f71;
+  --custom-decor: #af3a03;
 }
 
-/* Functions & Methods (my_func, __init__) */
-.highlight .nf,   /* Name.Function */
-.highlight .fm {  /* Name.Function.Magic */
-    color: #076678 !important;
-    font-weight: bold;
-}
-
-/* Classes (MyClass) */
-.highlight .nc {  /* Name.Class */
-    color: #b57614 !important; /* Dark Yellow/Gold */
-    font-weight: bold;
-}
-
-/* Strings ("hello", 'world') */
-.highlight .s2,   /* String.Double */
-.highlight .s1,   /* String.Single */
-.highlight .sd {  /* String.Doc */
-    color: #427b58 !important; /* Forest Green */
-}
-
-/* Comments */
-.highlight .c1,   /* Comment.Single */
-.highlight .cm {  /* Comment.Multiline */
-    color: #504945 !important;
-    font-style: italic;
-}
-
-/* Built-ins (print, len, range) */
-.highlight .nb {  /* Name.Builtin */
-    color: #076678 !important;
-}
-
-/* Decorators (@property) */
-.highlight .nd {  /* Name.Decorator */
-    color: #af3a03 !important;
-}
-
-/* Numbers */
-.highlight .mi,   /* Number.Integer */
-.highlight .mf {  /* Number.Float */
-    color: #8f3f71 !important;
-}
-
-/* Operators (+, -, =, *) */
-.highlight .o,    /* Operator */
-.highlight .ow {  /* Operator.Word */
-    color: #282828 !important;
+[data-md-color-scheme="slate"] {
+  --custom-code-fg: #282828;
+  --custom-kw: #8f3f71;
+  --custom-func: #076678;
+  --custom-class: #b57614;
+  --custom-str: #427b58;
+  --custom-comment: #504945;
+  --custom-num: #8f3f71;
+  --custom-decor: #af3a03;
 }
 
 .md-typeset pre > code {
-    background-color: var(--md-code-bg-color);
+  background-color: var(--custom-code-bg) !important;
+  color: var(--custom-code-fg) !important;
+}
+
+.highlight .k, .highlight .kn, .highlight .kp, .highlight .kd {
+  color: var(--custom-kw) !important;
+  font-weight: bold;
+}
+
+.highlight .nf, .highlight .fm {
+  color: var(--custom-func) !important;
+  font-weight: bold;
+}
+
+.highlight .nc {
+  color: var(--custom-class) !important;
+  font-weight: bold;
+}
+
+.highlight .s2, .highlight .s1, .highlight .sd {
+  color: var(--custom-str) !important;
+}
+
+.highlight .c1, .highlight .cm {
+  color: var(--custom-comment) !important;
+  font-style: italic;
+}
+
+.highlight .mi, .highlight .mf, .highlight .kc {
+  color: var(--custom-num) !important;
+}
+
+.highlight .nd {
+  color: var(--custom-decor) !important;
+}
+
+.highlight .nb {
+  color: var(--custom-func) !important;
 }
