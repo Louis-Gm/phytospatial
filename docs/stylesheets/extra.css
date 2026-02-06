@@ -5,6 +5,8 @@
   --override-bg: #f0efdf; 
   --override-fg: #302d00;
 
+  --header-color: #082644;
+
   --custom-kw: #0a8aaa;
   --custom-func: #854700;
   --custom-class: #b57614;
@@ -18,6 +20,8 @@
 [data-md-color-scheme="slate"] {
   --override-bg: #2c2c2b; 
   --override-fg: #eeeedb;
+
+  --header-color: #0f67be;
 
   --custom-kw: #06bac7;
   --custom-func: #2d9b71;
@@ -48,6 +52,12 @@
 .md-typeset code {
   background-color: var(--override-bg) !important;
   color: var(--override-fg) !important;
+}
+
+.md-typeset h1 {
+  /* You can use a Hex code like #ff5733 (Orange) */
+  /* Or use one of your existing variables like var(--custom-func) */
+  color: #010650; 
 }
 
 .highlight .k, .highlight .kn, .highlight .kp, .highlight .kd { color: var(--custom-kw) !important; font-weight: bold; }
