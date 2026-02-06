@@ -2,8 +2,8 @@
 
 /* light theme */
 [data-md-color-scheme="default"] {
-  --md-code-bg: #f0efdf; 
-  --custom-code-fg: #3b3700;
+  --override-bg: #f0efdf; 
+  --override-fg: #3b3700;
 
   --custom-kw: #04708b;
   --custom-func: #177a49;
@@ -16,8 +16,8 @@
 
 /* dark theme */
 [data-md-color-scheme="slate"] {
-  --md-code-bg: #33332f; 
-  --custom-code-fg: #eeeedb;
+  --override-bg: #33332f; 
+  --override-fg: #eeeedb;
 
   --custom-kw: #06bac7;
   --custom-func: #2d9b71;
