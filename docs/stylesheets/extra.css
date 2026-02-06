@@ -1,0 +1,68 @@
+/* docs/stylesheets/extra.css */
+
+:root {
+  --md-code-bg-color: #b1ab8b;
+  --md-code-fg-color: #282828;
+}
+
+/* Keywords (import, from, def, return, if, else) */
+.highlight .k,    /* Keyword */
+.highlight .kn,   /* Keyword.Namespace */
+.highlight .kp,   /* Keyword.Pseudo */
+.highlight .kd {  /* Keyword.Declaration */
+    color: #8f3f71 !important;
+    font-weight: bold;
+}
+
+/* Functions & Methods (my_func, __init__) */
+.highlight .nf,   /* Name.Function */
+.highlight .fm {  /* Name.Function.Magic */
+    color: #076678 !important;
+    font-weight: bold;
+}
+
+/* Classes (MyClass) */
+.highlight .nc {  /* Name.Class */
+    color: #b57614 !important; /* Dark Yellow/Gold */
+    font-weight: bold;
+}
+
+/* Strings ("hello", 'world') */
+.highlight .s2,   /* String.Double */
+.highlight .s1,   /* String.Single */
+.highlight .sd {  /* String.Doc */
+    color: #427b58 !important; /* Forest Green */
+}
+
+/* Comments */
+.highlight .c1,   /* Comment.Single */
+.highlight .cm {  /* Comment.Multiline */
+    color: #504945 !important;
+    font-style: italic;
+}
+
+/* Built-ins (print, len, range) */
+.highlight .nb {  /* Name.Builtin */
+    color: #076678 !important;
+}
+
+/* Decorators (@property) */
+.highlight .nd {  /* Name.Decorator */
+    color: #af3a03 !important;
+}
+
+/* Numbers */
+.highlight .mi,   /* Number.Integer */
+.highlight .mf {  /* Number.Float */
+    color: #8f3f71 !important;
+}
+
+/* Operators (+, -, =, *) */
+.highlight .o,    /* Operator */
+.highlight .ow {  /* Operator.Word */
+    color: #282828 !important;
+}
+
+.md-typeset pre > code {
+    background-color: var(--md-code-bg-color);
+}
