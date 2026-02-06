@@ -6,26 +6,6 @@ repo_name: Louis-Gm/phytospatial
 
 theme:
   name: alabaster
-  features:
-    - navigation.sections
-    - content.code.copy
-  palette:
-    # Light theme
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: blue
-      accent: orange
-      toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
-    # Dark theme
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: blue
-      accent: orange
-      toggle:
-        icon: material/weather-sunny
-        name: Switch to light mode
 
 extra_css:
   - stylesheets/extra.css
