@@ -1,69 +1,72 @@
 /* docs/stylesheets/extra.css */
 
-/* DEFAULT (LIGHT MODE) */
-:root {
-  --custom-kw: #8f3f71;      /* Keyword: Purple */
-  --custom-func: #076678;    /* Function: Teal */
-  --custom-class: #b57614;   /* Class: Bronze/Orange */
-  --custom-str: #427b58;     /* String: Green */
-  --custom-comment: #504945; /* Comment: Dark Grey */
-  --custom-num: #8f3f71;     /* Number: Purple */
-  --custom-decor: #af3a03;   /* Decorator: Red/Orange */
+/* light theme */
+[data-md-color-scheme="default"] {
+  --md-code-bg: #eeeeee; 
+  --custom-code-fg: #282828;
+
+  --custom-kw: #8f3f71;      /* Purple */
+  --custom-func: #076678;    /* Teal */
+  --custom-class: #b57614;   /* Bronze */
+  --custom-str: #427b58;     /* Green */
+  --custom-comment: #504945; /* Grey */
+  --custom-num: #8f3f71;     /* Purple */
+  --custom-decor: #af3a03;   /* Red */
 }
 
-/* DARK MODE */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --custom-kw: #d3869b;      /* Keyword: Light Purple */
-    --custom-func: #83a598;    /* Function: Light Teal */
-    --custom-class: #fabd2f;   /* Class: Bright Yellow/Orange */
-    --custom-str: #b8bb26;     /* String: Bright Green */
-    --custom-comment: #928374; /* Comment: Light Grey */
-    --custom-num: #d3869b;     /* Number: Light Purple */
-    --custom-decor: #fe8019;   /* Decorator: Bright Orange */
-  }
+/* dark theme */
+
+[data-md-color-scheme="slate"] {
+  --md-code-bg: #282828; 
+  --custom-code-fg: #ebdbb2;
+
+  --custom-kw: #d3869b;
+  --custom-func: #83a598;
+  --custom-class: #fabd2f;
+  --custom-str: #b8bb26;
+  --custom-comment: #928374;
+  --custom-num: #d3869b;
+  --custom-decor: #fe8019;
 }
 
-/* Keywords (def, class, import) */
+.md-typeset .highlight pre, 
+.md-typeset .highlight code {
+  background-color: var(--md-code-bg) !important;
+  color: var(--custom-code-fg) !important;
+}
+
 .highlight .k, .highlight .kn, .highlight .kp, .highlight .kd {
   color: var(--custom-kw) !important;
   font-weight: bold;
 }
 
-/* Functions */
 .highlight .nf, .highlight .fm {
   color: var(--custom-func) !important;
   font-weight: bold;
 }
 
-/* Classes */
 .highlight .nc {
   color: var(--custom-class) !important;
   font-weight: bold;
 }
 
-/* Strings */
 .highlight .s2, .highlight .s1, .highlight .sd {
   color: var(--custom-str) !important;
 }
 
-/* Comments */
 .highlight .c1, .highlight .cm {
   color: var(--custom-comment) !important;
   font-style: italic;
 }
 
-/* Numbers & Constants */
 .highlight .mi, .highlight .mf, .highlight .kc {
   color: var(--custom-num) !important;
 }
 
-/* Decorators */
 .highlight .nd {
   color: var(--custom-decor) !important;
 }
 
-/* Built-ins */
 .highlight .nb {
   color: var(--custom-func) !important;
 }

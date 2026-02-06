@@ -5,10 +5,34 @@ repo_url: https://github.com/Louis-Gm/phytospatial
 repo_name: Louis-Gm/phytospatial
 
 theme:
-  name: alabaster
+  name: material
+  features:
+    - navigation.sections
+    - content.code.copy
+    - navigation.expand
+  font:
+    text: Merriweather 
+    code: Roboto Mono
+  palette:
+    # Light theme (Default)
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: orange
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    # Dark theme
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: orange
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
 
-#extra_css:
-#  - stylesheets/extra.css
+extra_css:
+  - stylesheets/extra.css
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -39,7 +63,7 @@ nav:
       - "License": license.md
   - Tutorials:
       - "Pipeline Introduction": examples/extraction_pipeline.ipynb
-  # REF_START
+  # REF_START    
   - API Reference:
       - Raster:
           - "Engine": reference/raster/engine.md
@@ -52,7 +76,7 @@ nav:
       - "Extract": reference/extract.md
       - "Loaders": reference/loaders.md
       - "Vector": reference/vector.md
-  # REF_END
+  # REF_END    
   - Contributing:
       - "Contributing": contributing/contributing.md
       - "Code of Conduct": contributing/code_of_conduct.md
