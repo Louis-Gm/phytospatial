@@ -5,13 +5,13 @@
   --md-code-bg: #eeeeee; 
   --custom-code-fg: #333333;
 
-  --custom-kw: #8f3f71;      /* Purple */
-  --custom-func: #076678;    /* Teal */
-  --custom-class: #b57614;   /* Bronze */
-  --custom-str: #427b58;     /* Green */
-  --custom-comment: #504945; /* Grey */
-  --custom-num: #8f3f71;     /* Purple */
-  --custom-decor: #af3a03;   /* Red */
+  --custom-kw: #04708b;
+  --custom-func: #177a49;
+  --custom-class: #b57614;
+  --custom-str: #24a02e;
+  --custom-comment: #0d5004;
+  --custom-num: #8f3f71;
+  --custom-decor: #af3a03;
 }
 
 /* dark theme */
@@ -20,11 +20,11 @@
   --md-code-bg: #282828; 
   --custom-code-fg: #f8f8f2;
 
-  --custom-kw: #d3869b;
-  --custom-func: #83a598;
+  --custom-kw: #06bac7;
+  --custom-func: #2d9b71;
   --custom-class: #fabd2f;
   --custom-str: #b8bb26;
-  --custom-comment: #928374;
+  --custom-comment: #44aa0a;
   --custom-num: #d3869b;
   --custom-decor: #fe8019;
 }
