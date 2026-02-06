@@ -59,20 +59,21 @@ Use this if you prefer a lightweight, native Python setup.
 
 * **Windows:**
 
-     ```sh
-     .\venv\Scripts\activate
-     ```
+   ```sh
+   .\venv\Scripts\activate
+   ```
+
 * **Mac/Linux:**
 
-     ```sh
-     source venv/bin/activate
-     ```
+   ```sh
+   source venv/bin/activate
+   ```
 
 **Install dependencies manually:**
 
-     ```sh
-     pip install --upgrade pip pip install phytospatial
-     ```
+   ```sh
+   pip install --upgrade pip pip install phytospatial
+   ```
 
 ---
 
