@@ -23,11 +23,13 @@ NOTE: You can also download our environment.yml file and create the environment 
    ```sh
    sh conda create -n phytospatial_env python=3.10
    ```
+
 2. Activate the new environment:
 
    ```sh
    conda activate phytospatial_env
    ```
+
 3. Install Phytospatial from PyPI:
 
    ```sh
@@ -43,6 +45,7 @@ Use this if you prefer a lightweight, native Python setup.
      ```sh
      python -m venv venv
      ```
+
    * **Mac/Linux:**
 
      ```sh
@@ -69,7 +72,7 @@ Use this if you prefer a lightweight, native Python setup.
 
 ---
 
-## 2. Optional dependencies
+## 2. Install optional dependencies
 If you intend to perform advanced spatial analysis, you can install the extra feature set:
 
 ```sh
