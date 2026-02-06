@@ -29,58 +29,33 @@
   --custom-decor: #fe8019;
 }
 
-.md-typeset .highlight,
-.md-typeset .highlight pre,
-.md-typeset .highlight code {
-  background-color: var(--custom-bg-color) !important;
-  color: var(--custom-fg-color) !important;
-}
-
 .md-typeset .highlight {
-    box-shadow: none !important;
-    border-radius: 2px;
+  background-color: var(--override-bg) !important;
+  border-radius: 2px;
+  margin: 1em 0;
 }
 
-/* Keywords */
-.highlight .k, .highlight .kn, .highlight .kp, .highlight .kd {
-  color: var(--custom-kw) !important;
-  font-weight: bold;
+.md-typeset .highlight pre {
+  background-color: var(--override-bg) !important;
+  color: var(--override-fg) !important;
+  margin: 0 !important;
 }
 
-/* Functions */
-.highlight .nf, .highlight .fm {
-  color: var(--custom-func) !important;
-  font-weight: bold;
+.md-typeset .highlight pre > code {
+  background-color: transparent !important;
+  color: var(--override-fg) !important;
 }
 
-/* Classes */
-.highlight .nc {
-  color: var(--custom-class) !important;
-  font-weight: bold;
+.md-typeset code {
+  background-color: var(--override-bg) !important;
+  color: var(--override-fg) !important;
 }
 
-/* Strings */
-.highlight .s2, .highlight .s1, .highlight .sd {
-  color: var(--custom-str) !important;
-}
-
-/* Comments */
-.highlight .c1, .highlight .cm {
-  color: var(--custom-comment) !important;
-  font-style: italic;
-}
-
-/* Numbers */
-.highlight .mi, .highlight .mf, .highlight .kc {
-  color: var(--custom-num) !important;
-}
-
-/* Decorators */
-.highlight .nd {
-  color: var(--custom-decor) !important;
-}
-
-/* Built-ins */
-.highlight .nb {
-  color: var(--custom-func) !important;
-}
+.highlight .k, .highlight .kn, .highlight .kp, .highlight .kd { color: var(--custom-kw) !important; font-weight: bold; }
+.highlight .nf, .highlight .fm { color: var(--custom-func) !important; font-weight: bold; }
+.highlight .nc { color: var(--custom-class) !important; font-weight: bold; }
+.highlight .s2, .highlight .s1, .highlight .sd { color: var(--custom-str) !important; }
+.highlight .c1, .highlight .cm { color: var(--custom-comment) !important; font-style: italic; }
+.highlight .mi, .highlight .mf, .highlight .kc { color: var(--custom-num) !important; }
+.highlight .nd { color: var(--custom-decor) !important; }
+.highlight .nb { color: var(--custom-func) !important; }
