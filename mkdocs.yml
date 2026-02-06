@@ -5,7 +5,7 @@ repo_url: https://github.com/Louis-Gm/phytospatial
 repo_name: Louis-Gm/phytospatial
 
 theme:
-  name: material
+  name: alabaster
   features:
     - navigation.sections
     - content.code.copy
