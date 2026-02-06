@@ -55,9 +55,7 @@
 }
 
 .md-typeset h1 {
-  /* You can use a Hex code like #ff5733 (Orange) */
-  /* Or use one of your existing variables like var(--custom-func) */
-  color: #010650; 
+  color: var(--header-color);
 }
 
 .highlight .k, .highlight .kn, .highlight .kp, .highlight .kd { color: var(--custom-kw) !important; font-weight: bold; }
