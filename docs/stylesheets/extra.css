@@ -3,7 +3,7 @@
 /* light theme */
 [data-md-color-scheme="default"] {
   --md-code-bg: #eeeeee; 
-  --custom-code-fg: #282828;
+  --custom-code-fg: #333333;
 
   --custom-kw: #8f3f71;      /* Purple */
   --custom-func: #076678;    /* Teal */
@@ -18,7 +18,7 @@
 
 [data-md-color-scheme="slate"] {
   --md-code-bg: #282828; 
-  --custom-code-fg: #ebdbb2;
+  --custom-code-fg: #f8f8f2;
 
   --custom-kw: #d3869b;
   --custom-func: #83a598;
@@ -29,44 +29,58 @@
   --custom-decor: #fe8019;
 }
 
-.md-typeset .highlight pre, 
+.md-typeset .highlight,
+.md-typeset .highlight pre,
 .md-typeset .highlight code {
-  background-color: var(--md-code-bg) !important;
-  color: var(--custom-code-fg) !important;
+  background-color: var(--custom-bg-color) !important;
+  color: var(--custom-fg-color) !important;
 }
 
+.md-typeset .highlight {
+    box-shadow: none !important;
+    border-radius: 2px;
+}
+
+/* Keywords */
 .highlight .k, .highlight .kn, .highlight .kp, .highlight .kd {
   color: var(--custom-kw) !important;
   font-weight: bold;
 }
 
+/* Functions */
 .highlight .nf, .highlight .fm {
   color: var(--custom-func) !important;
   font-weight: bold;
 }
 
+/* Classes */
 .highlight .nc {
   color: var(--custom-class) !important;
   font-weight: bold;
 }
 
+/* Strings */
 .highlight .s2, .highlight .s1, .highlight .sd {
   color: var(--custom-str) !important;
 }
 
+/* Comments */
 .highlight .c1, .highlight .cm {
   color: var(--custom-comment) !important;
   font-style: italic;
 }
 
+/* Numbers */
 .highlight .mi, .highlight .mf, .highlight .kc {
   color: var(--custom-num) !important;
 }
 
+/* Decorators */
 .highlight .nd {
   color: var(--custom-decor) !important;
 }
 
+/* Built-ins */
 .highlight .nb {
   color: var(--custom-func) !important;
 }
