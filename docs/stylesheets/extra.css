@@ -5,25 +5,25 @@
   --override-bg: #f0efdf; 
   --override-fg: #302d00;
 
-  --custom-kw: #0482a1;
-  --custom-func: #177a49;
+  --custom-kw: #0a8aaa;
+  --custom-func: #854700;
   --custom-class: #b57614;
-  --custom-str: #009664;
-  --custom-comment: #107402;
+  --custom-str: #96131e;
+  --custom-comment: #0d6e2a;
   --custom-num: #8f3f71;
   --custom-decor: #af3a03;
 }
 
 /* dark theme */
 [data-md-color-scheme="slate"] {
-  --override-bg: #383837; 
+  --override-bg: #2c2c2b; 
   --override-fg: #eeeedb;
 
   --custom-kw: #06bac7;
   --custom-func: #2d9b71;
   --custom-class: #fabd2f;
   --custom-str: #b8bb26;
-  --custom-comment: #42881a;
+  --custom-comment: #367512;
   --custom-num: #d3869b;
   --custom-decor: #fe8019;
 }
