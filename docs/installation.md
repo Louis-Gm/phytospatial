@@ -52,7 +52,7 @@ Use this if you prefer a lightweight, native Python setup.
    * **Mac/Linux:**
 
    ```sh
-     python3 -m venv venv
+   python3 -m venv venv
    ```
 
 **Activate the environment:**
