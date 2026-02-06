@@ -42,17 +42,18 @@ NOTE: You can also download our environment.yml file and create the environment 
 Use this if you prefer a lightweight, native Python setup.
 
 **Create the virtual environment:**
+
    * **Windows:**
 
-     ```sh
-     python -m venv venv
-     ```
+   ```sh
+   python -m venv venv
+   ```
 
    * **Mac/Linux:**
 
-     ```sh
+   ```sh
      python3 -m venv venv
-     ```
+   ```
 
 **Activate the environment:**
 
@@ -61,7 +62,7 @@ Use this if you prefer a lightweight, native Python setup.
      ```sh
      .\venv\Scripts\activate
      ```
-- **Mac/Linux:**
+* **Mac/Linux:**
 
      ```sh
      source venv/bin/activate
