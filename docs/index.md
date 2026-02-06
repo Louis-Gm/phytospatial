@@ -60,7 +60,7 @@ from phytospatial import extract, loaders
 crowns = loaders.load_crowns("data/crowns.shp")
 
 # Extract features directly into a pandas DataFrame
-# The 'auto' mode automatically selects the best processing strategy (In-Memory vs Streaming)
+# The 'auto' mode automatically selects the best processing strategy
 df = extract.extract_to_dataframe(
     raster_input="data/image.tif",
     vector_input=crowns,
