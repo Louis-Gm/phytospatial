@@ -5,10 +5,10 @@
   --override-bg: #f0efdf; 
   --override-fg: #302d00;
 
-  --custom-kw: #04708b;
+  --custom-kw: #0482a1;
   --custom-func: #177a49;
   --custom-class: #b57614;
-  --custom-str: #178862;
+  --custom-str: #009664;
   --custom-comment: #107402;
   --custom-num: #8f3f71;
   --custom-decor: #af3a03;
@@ -23,7 +23,7 @@
   --custom-func: #2d9b71;
   --custom-class: #fabd2f;
   --custom-str: #b8bb26;
-  --custom-comment: #2e6e09;
+  --custom-comment: #42881a;
   --custom-num: #d3869b;
   --custom-decor: #fe8019;
 }
