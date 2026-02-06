@@ -51,6 +51,7 @@ docs = [                        # pip install .[docs]
     "mkdocstrings[python]>=0.24",
     "mkdocs-include-markdown-plugin>=4.0",
     "mkdocs-jupyter>=0.24",
+    "mkdocs-alabaster",
 ]
 
 dev = [                         # pip install .[dev]
