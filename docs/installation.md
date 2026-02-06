@@ -21,7 +21,7 @@ NOTE: You can also download our environment.yml file and create the environment 
 1. Create and name your environment:
 
    ```sh
-   sh conda create -n phytospatial_env python=3.10
+   conda create -n phytospatial_env python=3.10
    ```
 
 2. Activate the new environment:
@@ -33,7 +33,7 @@ NOTE: You can also download our environment.yml file and create the environment 
 3. Install Phytospatial from PyPI:
 
    ```sh
-   sh pip install phytospatial
+   pip install phytospatial
    ```
 
 ### Option B: Using Standard Python (pip)
