@@ -3,27 +3,27 @@
 /* light theme */
 [data-md-color-scheme="default"] {
   --override-bg: #f0efdf; 
-  --override-fg: #3b3700;
+  --override-fg: #302d00;
 
   --custom-kw: #04708b;
   --custom-func: #177a49;
   --custom-class: #b57614;
-  --custom-str: #24a02e;
-  --custom-comment: #0d5004;
+  --custom-str: #178862;
+  --custom-comment: #107402;
   --custom-num: #8f3f71;
   --custom-decor: #af3a03;
 }
 
 /* dark theme */
 [data-md-color-scheme="slate"] {
-  --override-bg: #33332f; 
+  --override-bg: #383837; 
   --override-fg: #eeeedb;
 
   --custom-kw: #06bac7;
   --custom-func: #2d9b71;
   --custom-class: #fabd2f;
   --custom-str: #b8bb26;
-  --custom-comment: #44aa0a;
+  --custom-comment: #2e6e09;
   --custom-num: #d3869b;
   --custom-decor: #fe8019;
 }
