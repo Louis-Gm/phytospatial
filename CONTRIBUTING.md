@@ -39,6 +39,7 @@ Ideally, please use the following naming convention:
 * Prefix with `feat/` for features, `fix/` for bugs or `docs/` for documentation.
 
 **Examples**
+
 * `feat/raster-calculator`
 * `fix/installation-error`
 * `docs/update-readme`
