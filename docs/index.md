@@ -29,18 +29,18 @@
   </div>
 </div>
 
-## About The Project
+## **About The Project**
 
 **Phytospatial** is a Python toolkit designed to streamline the processing of remote sensing data for forestry and vegetation analysis. It provides tools for handling large hyperspectral rasters, validating vector geometries, and extracting spectral statistics from tree crowns. It also allows for passive-active raster-level fusion via its image processing module.
 
-### Key Features
+### **Key Features**
 
 * **Memory-Safe Processing:** Process massive rasters using windowed reading (via `rasterio`) without overloading RAM.
 * **Forestry Focused:** Specialized tools for tree crown validation and species labeling.
 
-## Getting Started
+## **Getting Started**
 
-### Installation
+### **Installation**
 
 To get up and running quickly with `pip`:
 
@@ -50,7 +50,7 @@ pip install phytospatial
 
 > **New to Python?** Check out our detailed [Installation Guide](https://phytospatial.readthedocs.io/en/latest/installation/) for Conda and Virtual Environment setup.
 
-## Usage
+## **Usage**
 
 Here is a simple example of extracting spectral data from tree crowns using the *extract_to_dataframe* API, which automatically handles memory management and tiling strategies.
 
@@ -73,7 +73,7 @@ print(df.head())
 
 For a complete workflow, see the [Spectral Extraction Tutorial](https://phytospatial.readthedocs.io/en/latest/examples/extraction_pipeline/).
 
-## Contribute
+## **Contribute**
 
 As an open-source project, we encourage and welcome contributions of students, researchers, or professional developers.
 
@@ -83,13 +83,13 @@ Not sure how to implement your idea, but want to contribute?
 <br />
 Feel free to leave a feature request <a href="https://github.com/Louis-Gm/phytospatial/issues">here</a>.
 
-## Citation
+## **Citation**
 
 If you use this project in your research, please cite it as:
 
 Grand'Maison, L.-V. (2026). Phytospatial: a python package that processes lidar and imagery data in forestry (0.4.1) [software]. Zenodo. https://doi.org/10.5281/zenodo.18112045
 
-## Contact
+## **Contact**
 
 The project is currently being maintained by **Louis-Vincent Grand'Maison**.
 
@@ -99,7 +99,7 @@ Email - [lvgra@ulaval.ca](mailto:lvgra@ulaval.ca)
 <br />
 Linkedin - [grandmaison-lv](https://www.linkedin.com/in/grandmaison-lv/)
 
-## Acknowledgments & Funding
+## **Acknowledgments & Funding**
 
 This software is developed by Louis-Vincent Grand'Maison as part of a PhD project. The maintenance and development of this project is supported by several research scholarships:
 
@@ -107,7 +107,7 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 * Natural Sciences and Engineering Research Council of Canada (NSERC) (Scholarship 2025-present)
 * Université Laval (Scholarship 2024-present)
 
-## License
+## **License**
 
 `Phytospatial` is distributed under the Apache License, Version 2.0.
 <br />
