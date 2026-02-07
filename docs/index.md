@@ -7,9 +7,9 @@
     <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/phytospatial-logo.png" alt="Logo" width="420" height="420">
   </a>
   <h1 align="center"><b>Phytospatial</b></h1>
-  <p align="center">
+  <div align="center">
     A python package that processes lidar and imagery data in forestry
-  </p>
+  </div>
 
   <div align="center">
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Report Bug</a>
