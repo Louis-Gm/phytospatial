@@ -11,12 +11,13 @@
     A python package that processes lidar and imagery data in forestry
   </p>
 
-  <p>
+  <div align="center">
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Report Bug</a>
     ·
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Request Feature</a>
-  </p>
-  <p align="center">
+  </div><br /> 
+
+  <div align="center">
     <img src="https://img.shields.io/badge/python-3.10+-orange.svg" alt="Python versions">    
     <img src="https://img.shields.io/badge/Apache%202.0-blue.svg" alt="License">
     <img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.18112045-purple" alt="DOI">
@@ -25,7 +26,7 @@
     <img src="https://img.shields.io/badge/Windows-blue.svg?style=flat&logo=data:image/svg%2bxml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0Ij4KPHBhdGggZD0iTTAgMCBDMCA0LjYyIDAgOS4yNCAwIDE0IEMtNi45MyAxMy41MDUgLTYuOTMgMTMuNTA1IC0xNCAxMyBDLTE0IDkuMDQgLTE0IDUuMDggLTE0IDEgQy05LjE3MDYyNTQgMC4yMTE1MzA2OCAtNC45Njc2Mjk5MyAwIDAgMCBaICIgZmlsbD0iIzREQUU0RiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTQsMCkiLz4KPHBhdGggZD0iTTAgMCBDMi42NCAwIDUuMjggMCA4IDAgQzggMi4zMSA4IDQuNjIgOCA3IEM1LjY2NzA1MjI1IDcuMDQyNDE3MjMgMy4zMzI5NzQzMyA3LjA0MDkyOTM3IDEgNyBDMCA2IDAgNiAtMC4wNjI1IDIuOTM3NSBDLTAuMDQxODc1IDEuOTY4MTI1IC0wLjAyMTI1IDAuOTk4NzUgMCAwIFogIiBmaWxsPSIjRkNDMDA4IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg2LDcpIi8+CjxwYXRoIGQ9Ik0wIDAgQzEuOTggMCAzLjk2IDAgNiAwIEM2IDEuOTggNiAzLjk2IDYgNiBDNC4wMiA2IDIuMDQgNiAwIDYgQzAgNC4wMiAwIDIuMDQgMCAwIFogIiBmaWxsPSIjMjE5NUYyIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDcpIi8+CjxwYXRoIGQ9Ik0wIDAgQzEuOTggMCAzLjk2IDAgNiAwIEM2IDEuOTggNiAzLjk2IDYgNiBDNC4wMiA2IDIuMDQgNiAwIDYgQzAgNC4wMiAwIDIuMDQgMCAwIFogIiBmaWxsPSIjRjM0MjM2IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDEpIi8+Cjwvc3ZnPgo=" alt="Windows">
     <img src="https://img.shields.io/badge/macOS-000000?style=flat&logo=apple&logoColor=white" alt="MacOS">
     <img src="https://img.shields.io/badge/Linux-FCC624?style=flat&logo=linux&logoColor=black" alt="Linux">
-  </p>
+  </div>
 </div>
 
 ## About The Project
