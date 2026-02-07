@@ -12,11 +12,11 @@
 
   <p align="center">
     <a href="https://phytospatial.readthedocs.io/"><strong>Explore the docs »</strong></a>
-  </p><br /> 
+  </p>
  
   [end]: #
 
-  <div align="center">
+  <br /><div align="center">
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Report Bug</a>
     ·
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Request Feature</a>
