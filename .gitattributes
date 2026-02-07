@@ -7,6 +7,7 @@
 
 *.sh   linguist-detectable=true linguist-language=Shell
 *.yml  linguist-detectable=true linguist-language=YAML
+*.css  linguist-detectable=true linguist-language=CSS
 
 *.shp binary
 *.dbf binary
