@@ -11,7 +11,7 @@
     A python package that processes lidar and imagery data in forestry
   </div>
 
-  <div align="center">
+  <br /><div align="center">
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Report Bug</a>
     ·
     <a href="https://github.com/Louis-Gm/phytospatial/issues">Request Feature</a>
