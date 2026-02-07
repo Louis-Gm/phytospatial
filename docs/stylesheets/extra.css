@@ -58,6 +58,10 @@
   color: var(--header-color);
 }
 
+.md-typeset p {
+  text-align: justify;
+}
+
 .highlight .k, .highlight .kn, .highlight .kp, .highlight .kd { color: var(--custom-kw) !important; font-weight: bold; }
 .highlight .nf, .highlight .fm { color: var(--custom-func) !important; font-weight: bold; }
 .highlight .nc { color: var(--custom-class) !important; font-weight: bold; }
