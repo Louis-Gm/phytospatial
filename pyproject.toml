@@ -26,6 +26,7 @@ keywords = ["forestry", "remote sensing", "imagery", "image processing", "geospa
 # CORE DEPENDENCIES
 dependencies = [
     "geopandas",
+    "polars",
     "pandas",
     "tqdm",
     "rasterio>=1.4",
