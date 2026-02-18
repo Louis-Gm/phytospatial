@@ -36,7 +36,7 @@ class Vector:
         self._data = data
 
     @classmethod
-    def from_file(cls, path: Union[str, Path], **kwargs) -> 'Vector':
+    def from_file(cls, path: Union[str, Path], auto_repair: bool = False, **kwargs) -> 'Vector':
         """
         Load vector file into memory.
         
@@ -56,9 +56,34 @@ class Vector:
             raise FileNotFoundError(f"Vector file not found: {path}")
         
         log.debug(f"Loading Vector from: {path.name}")
+
+        # define optimization arguments for pyogrio and arrow
+        optimization_args = {}
+        if "engine" not in kwargs:
+            kwargs["engine"] = "pyogrio"
+            if "use_arrow" not in kwargs:
+                optimization_args["use_arrow"] = True  
+
         try:
-            gdf = gpd.read_file(path, **kwargs)
-            return cls(gdf)
+            # attempt fast load with pyogrio and arrow optimization
+            try:
+                # fallback to standard load if failure occurs
+                gdf = gpd.read_file(path, **kwargs, **optimization_args)
+                log.debug("Loaded vector using Pyogrio with Arrow optimization")
+            except (ImportError, TypeError, ValueError):
+                if kwargs.get("engine") == "pyogrio":
+                    del kwargs["engine"]                
+                gdf = gpd.read_file(path, **kwargs)
+
+            vector_obj = cls(gdf)    
+
+            # validate geometries and optionally fix/drop invalid ones
+            if auto_repair:
+                log.info("Auto-repair enabled: validating geometries and fixing/dropping invalid ones")
+                vector_obj = vector_obj.validate(fix_invalid=True, drop_invalid=True)
+
+            return vector_obj
+        
         except Exception as e:
             raise IOError(f"Failed to load vector {path}: {e}") from e
 
