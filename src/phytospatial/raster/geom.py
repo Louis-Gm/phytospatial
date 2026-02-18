@@ -21,7 +21,7 @@ from rasterio.transform import Affine
 
 from .layer import Raster
 from .io import load
-from .resources import estimate_memory_safety
+from .resources import determine_strategy, ProcessingMode
 
 log = logging.getLogger(__name__)
 
@@ -63,12 +63,12 @@ def auto_load(safe: bool = True):
                     except OSError:
                         continue                    
                     if safe:
-                        est = estimate_memory_safety(value)
-                        if not est.is_safe:
+                        report = determine_strategy(value, user_mode="auto")
+                        if report.mode == ProcessingMode.IN_MEMORY:
                             raise MemoryError(
                                 f"Unsafe to auto-load '{name}' ({value}).\n"
-                                f"Reason: {est.reason}\n"
-                                f"Tip: Use @scalable decorator for large files."
+                                f"Reason: {report.reason}\n"
+                                f"This function requires full in-memory loading. Use a streaming alternative."
                             )
                     
                     log.debug(f"Auto-loading argument '{name}' from {value}")

@@ -15,7 +15,7 @@ from rasterio.windows import Window
 
 from .layer import Raster
 from .io import load
-from .resources import ProcessingMode, estimate_memory_safety, analyze_structure
+from .resources import ProcessingMode, determine_strategy
 from .partition import iter_tiles, iter_blocks, iter_windows, TileStitcher
 
 log = logging.getLogger(__name__)
@@ -23,17 +23,22 @@ log = logging.getLogger(__name__)
 __all__ = [
     "AggregationType",
     "DispatchConfig",
-    "select_strategy",
     "dispatch"
 ]
 
 class AggregationType(Enum):
-    """Strategies for combining results from chunked processing."""
-    STITCH = "stitch"        # Reassemble tiles into a raster file
-    COLLECT = "collect"      # Return a list of results [val1, val2]
-    REDUCE = "reduce"        # Accumulate results using a reducer function
-    NONE = "none"            # Discard results
-
+    """Strategies for combining results from chunked processing.
+    
+    Options:
+        STITCH: Reassemble processed tiles into a single raster file.
+        COLLECT: Return a list of results for each tile (no stitching).
+        REDUCE: Accumulate results using a reducer function (e.g. sum, max).
+        NONE: Discard individual results (useful for side-effect functions).
+    """
+    STITCH = "stitch"
+    COLLECT = "collect"
+    REDUCE = "reduce"
+    NONE = "none"
 
 class DispatchConfig:
     """Configuration object for the execution engine.
@@ -61,38 +66,6 @@ class DispatchConfig:
         self.output_path = Path(output_path) if output_path else None
         self.aggregation = aggregation
         self.reducer = reducer
-
-def select_strategy(
-    primary_input: Union[str, Path, Raster],
-    config: DispatchConfig
-) -> ProcessingMode:
-    """
-    Determine the optimal processing mode based on resources and config.
-    
-    Args:
-        primary_input: The main raster defining the spatial grid.
-        config: The dispatch configuration.
-        
-    Returns:
-        ProcessingMode: The selected processing strategy.
-    """
-    if config.mode != "auto":
-        return ProcessingMode(config.mode) if isinstance(config.mode, str) else config.mode
-
-    if isinstance(primary_input, Raster):
-        return ProcessingMode.IN_MEMORY
-
-    estimate = estimate_memory_safety(primary_input)
-    log.debug(f"Resource Analysis: {estimate.reason}")
-    
-    if estimate.recommendation == ProcessingMode.BLOCKED:
-        struct = analyze_structure(primary_input)
-        if not struct.is_efficient:
-            log.warning("Memory estimate suggested BLOCKED, but structure is inefficient. Fallback to TILED.")
-            return ProcessingMode.TILED
-            
-    return estimate.recommendation
-
 
 def _create_iterator(
     source: Union[str, Path, Raster], 
@@ -122,7 +95,6 @@ def _create_iterator(
             overlap=config.overlap
         )
 
-
 def _synchronize_inputs(
     input_map: Dict[str, Union[str, Path, Raster]],
     mode: ProcessingMode,
@@ -146,6 +118,7 @@ def _synchronize_inputs(
         iterators[name] = _create_iterator(source, mode, config)
 
     primary_iter = iterators[primary_key]
+
     for window, primary_tile in primary_iter:
         current_tiles = {primary_key: primary_tile}
         
@@ -168,7 +141,6 @@ def _synchronize_inputs(
                 raise RuntimeError(f"Input '{name}' ended prematurely during synchronization.")
         
         yield window, current_tiles
-
 
 def _aggregate_stitch(
     results_gen: Iterable[Tuple[Window, Raster]],
@@ -199,7 +171,6 @@ def _aggregate_stitch(
             
     return output_path
 
-
 def dispatch(
     func: Callable,
     input_map: Dict[str, Union[str, Path, Raster]],
@@ -228,17 +199,23 @@ def dispatch(
     config = config or DispatchConfig()
     
     primary_input = next(iter(input_map.values()))
-    mode = select_strategy(primary_input, config)
-    
-    log.info(f"Engine dispatching {func.__name__} in {mode.value} mode")
+
+    if isinstance(primary_input, Raster):
+        mode = ProcessingMode.IN_MEMORY
+        log.info(f"Engine dispatching {func.__name__} in IN_MEMORY mode (Object Input)")
+    else:
+        user_mode = config.mode if config.mode != "auto" else "auto"
+        report = determine_strategy(Path(primary_input), user_mode=user_mode)
+        mode = report.mode
+
+        log.info(f"Engine dispatching {func.__name__} in {mode.value} mode")
+        log.debug(f"Strategy Report: {report.reason}")
 
     if mode == ProcessingMode.IN_MEMORY:
         loaded_inputs = {}
         for name, source in input_map.items():
             loaded_inputs[name] = source if isinstance(source, Raster) else load(source)
-            
-        full_kwargs = {**static_kwargs, **loaded_inputs}
-        return func(*static_args, **full_kwargs)
+        return func(*static_args, **{**static_kwargs, **loaded_inputs})
 
     else:
         if config.aggregation == AggregationType.STITCH and not config.output_path:
@@ -247,34 +224,18 @@ def dispatch(
         def execution_stream():
             # Process tiles/blocks and yield results
             for window, tiles in _synchronize_inputs(input_map, mode, config):
-                full_kwargs = {**static_kwargs, **tiles}
-                result = func(*static_args, **full_kwargs)
-                yield window, result
+                yield window, func(*static_args, **{**static_kwargs, **tiles})
 
         if config.aggregation == AggregationType.STITCH:
-            return _aggregate_stitch(
-                execution_stream(), 
-                primary_input, 
-                config.output_path
-            )
-            
+            return _aggregate_stitch(execution_stream(), primary_input, config.output_path)
         elif config.aggregation == AggregationType.COLLECT:
             return [res for _, res in execution_stream()]
-            
         elif config.aggregation == AggregationType.REDUCE:
-            if not config.reducer:
-                raise ValueError("AggregationType.REDUCE requires a 'reducer' function.")
-            
-            accumulator = None
-            for _, result in execution_stream():
-                if accumulator is None:
-                    accumulator = result
-                else:
-                    accumulator = config.reducer(accumulator, result)
-            return accumulator
-            
+            if not config.reducer: raise ValueError("REDUCE requires 'reducer' function.")
+            acc = None
+            for _, res in execution_stream():
+                acc = res if acc is None else config.reducer(acc, res)
+            return acc
         else:
-            # Discard results
-            for _ in execution_stream(): 
-                pass
+            for _ in execution_stream(): pass
             return None

@@ -12,9 +12,8 @@ import logging
 import psutil
 from pathlib import Path
 from typing import Union, Optional, Tuple
-from dataclasses import dataclass
 from enum import Enum
-import math
+from dataclasses import dataclass
 
 import numpy as np
 import rasterio
@@ -25,246 +24,218 @@ log = logging.getLogger(__name__)
 
 __all__ = [
     "ProcessingMode",
-    "BlockStructure",
     "MemoryEstimate",
-    "analyze_structure",
-    "estimate_memory_safety"
+    "StrategyReport",
+    "determine_strategy"
 ]
 
 DEFAULT_SAFETY_FACTOR = 3.0 
 MIN_FREE_GB = 2.0
-MAX_BLOCK_ASPECT_RATIO = 4.0
 
 class ProcessingMode(Enum):
     """
     Strategic recommendation for how to process a raster.
+
+    Modes:
+        IN_MEMORY: Load entire raster into RAM. Fastest but requires sufficient memory.
+        BLOCKED: Use raster's internal blocks/tiles for optimized streaming. Best for tiled files.
+        TILED: Use standard windowed reading. Safe fallback for large or scanline
     """
+    IN_MEMORY = "in_memory"
+    BLOCKED = "blocked"
+    TILED = "tiled"
 
-    IN_MEMORY = "in_memory"  # Fastest, requires loading full file.
-    TILED = "tiled"          # Standard streaming. Reliable memory usage.
-    BLOCKED = "blocked"      # Optimized streaming. Uses file's internal chunks.
-
-@dataclass
+@dataclass(frozen=True)
 class BlockStructure:
     """
     Analysis of a raster's internal storage layout.
-    
-    Attributes:
-        is_tiled (bool): True if stored in rectangular tiles.
-        is_striped (bool): True if stored in rows/strips.
-        block_shape (Tuple[int, int]): The dimensions (height, width) of a single block.
-        total_blocks (int): Total number of blocks in the file.
-        efficiency_score (float): 0.0 to 1.0. A score of how suitable this structure 
-                                  is for spatial processing.
-                                  - 1.0 = Perfect square tiles.
-                                  - 0.0 = Scanlines (1px height).
+
+    Args:
+        is_tiled: True if raster has native tiles (not full-width strips)
+        is_striped: True if raster is structured as strips (full-width blocks)
+        block_shape: Tuple of (block_height, block_width) in pixels
     """
     is_tiled: bool
     is_striped: bool
     block_shape: Tuple[int, int]
-    total_blocks: int
-    efficiency_score: float
 
     @property
-    def is_efficient(self) -> bool:
+    def _recommend_blocked(self) -> bool:
         """Helper to determine if BLOCKED mode is recommended."""
-        return self.efficiency_score >= 0.7
+        return self.is_tiled and not self.is_striped
 
-@dataclass
+@dataclass(frozen=True)
 class MemoryEstimate:
+    """"Estimation of memory requirements and safety for loading a raster.
+    
+    Args:
+        total_required_bytes: Total bytes required to load raster (with overhead)
+        available_system_bytes: Currently available system memory in bytes
+        is_safe: Boolean indicating if loading is considered safe
+        reason: Explanation for the safety assessment (e.g. "Req: 10GB,
     """
-    Detailed breakdown of memory requirements and safety status.
-
-    Attributes:
-        raw_bytes (int): The pure C-buffer size of the pixel data.
-        overhead_bytes (int): Estimated Python overhead.
-        total_required_bytes (int): raw + overhead.
-        available_system_bytes (int): Current available system RAM.
-        is_safe (bool): True if load fits in RAM with safety margin.
-        margin (float): Proportion (0.0-1.0) of RAM free after
-                            loading the raster.
-        recommendation (ProcessingMode): Suggested processing mode.
-        reason (str): Human-readable explanation of the recommendation.
-    """
-    raw_bytes: int
-    overhead_bytes: int
     total_required_bytes: int
     available_system_bytes: int
     is_safe: bool
-    margin: float
-    recommendation: ProcessingMode
     reason: str
 
-
-def _calculate_efficiency(block_h: int, block_w: int, raster_w: int) -> float:
+@dataclass(frozen=True)
+class StrategyReport:
     """
-    Helper to score block efficiency for spatial processing.
-    """
-    ratio = max(block_h, block_w) / min(block_h, block_w)
-    aspect_score = max(0.0, 1.0 - (math.log(ratio) / math.log(20)))
-    is_scanline = (block_h == 1)
-    is_full_width_strip = (block_w >= raster_w and block_h < 128)
-    
-    if is_scanline:
-        return 0.0
-    if is_full_width_strip:
-        return 0.2
-    
-    pixels = block_h * block_w
-    ideal_pixels = 512 * 512
-    
-    if pixels < (64 * 64):
-        size_score = 0.5
-    elif pixels > (4096 * 4096):
-        size_score = 0.4
-    else:
-        size_score = 1.0
+    Contains the decision (mode) and the full context (reason, stats).
 
-    return (aspect_score * 0.6) + (size_score * 0.4)
-
-def analyze_structure(path: Union[str, Path]) -> BlockStructure:
+    Args:
+        mode: Recommended processing mode (ProcessingMode)
+        reason: Explanation for the recommendation
+        memory_stats: MemoryEstimate object with details on memory safety
+        structure_stats: BlockStructure object with details on raster structure
     """
-    Inspect a raster's internal block/tile layout.
-    
-    This function opens the file in a lightweight mode to read metadata tags
-    regarding TIFF structuring (TILED vs STRIPED).
+    mode: ProcessingMode
+    reason: str
+    memory_stats: MemoryEstimate
+    structure_stats: BlockStructure
+
+def _analyze_structure(path: Union[str, Path]) -> BlockStructure:
+    """Helper that determines if the raster is physically tiled or striped.
     
     Args:
         path: Path to the raster file.
         
     Returns:
-        BlockStructure: Detailed analysis of the file's layout.
-        
-    Raises:
-        FileNotFoundError: If path does not exist.
-        IOError: If rasterio cannot inspect the file.
+        BlockStructure: Contains flags for tiled/striped and block shape.
     """
     path = Path(path)
-    if not path.exists():
-        raise FileNotFoundError(f"Cannot analyze structure: file not found {path}")
-
     path = resolve_envi_path(path)
 
     try:
         with rasterio.open(path) as src:
             if not src.block_shapes:
-                log.warning(f"Driver {src.driver} does not report block shapes. Assuming inefficient.")
-                return BlockStructure(
-                    is_tiled=False, is_striped=False, 
-                    block_shape=(0,0), total_blocks=0, efficiency_score=0.0
-                )
+                # Fail safe: If block_shapes is empty, assume unsuitable for BLOCKED mode
+                return BlockStructure(False, True, (0,0))
 
             block_h, block_w = src.block_shapes[0]
+            w, h = src.width, src.height
             
-            try:
-                n_rows = math.ceil(src.height / block_h)
-                n_cols = math.ceil(src.width / block_w)
-                total_blocks = n_rows * n_cols
-            except Exception:
-                total_blocks = 0
-            
-            is_striped = (block_w == src.width) or (block_h == 1)
-            is_explicitly_tiled = src.profile.get('tiled', False)
-            ratio = max(block_h, block_w) / min(block_h, block_w)
-            is_geometrically_tiled = (ratio < 2.0) and (not is_striped)
-            
-            is_tiled = is_explicitly_tiled or is_geometrically_tiled
-
-            score = _calculate_efficiency(block_h, block_w, src.width)
+            # A file is considered "striped" if it:
+            #   1) has block shapes that are full width
+            #   2) is structured as a single row of pixels
+            is_striped = (block_w == w) or (block_h == 1)
+            is_tiled = not is_striped
 
             return BlockStructure(
                 is_tiled=is_tiled,
                 is_striped=is_striped,
-                block_shape=(block_h, block_w),
-                total_blocks=total_blocks,
-                efficiency_score=score
+                block_shape=(block_h, block_w)
             )
 
     except Exception as e:
-        log.error(f"Failed to analyze block structure for {path}: {e}")
-        raise IOError(f"Structure analysis failed: {e}") from e
+        # Fail safe: If structure analysis fails, assume unsuitable for BLOCKED mode
+        log.warning(f"Structure analysis failed: {e}")
+        return BlockStructure(False, True, (0,0))
 
 
-def estimate_memory_safety(
+def _estimate_memory_safety(
     path: Union[str, Path],
     bands: Optional[int] = None,
     safety_factor: float = DEFAULT_SAFETY_FACTOR,
     min_free_gb: float = MIN_FREE_GB
 ) -> MemoryEstimate:
-    """
-    Determine if a raster is safe to load into system RAM.
+    """Helper that checks if raster fits in RAM.
     
     Args:
-        path: File path.
-        bands: Number of bands to load. If None, uses all bands in file.
-        safety_factor: Multiplier for overhead (3.0 = 3x raw size).
-        min_free_gb: Absolute floor for free RAM to preserve OS stability.
-        
+        path: Path to the raster file.
+        bands: Optional number of bands to consider (default: all).
+        safety_factor: Multiplier for memory safety (default: 3.0).
+        min_free_gb: Minimum free GB required (default: 2.0).
+
     Returns:
-        MemoryEstimate: Data class with bytes and recommendation.
+        MemoryEstimate: Contains total required bytes, available bytes, safety boolean, and reason.
     """
     path = Path(path)
-    if not path.exists():
-        raise FileNotFoundError(f"File not found: {path}")
-
     path = resolve_envi_path(path)
 
     try:
         with rasterio.open(path) as src:
-            width = src.width
-            height = src.height
             count = bands if bands is not None else src.count
             dtype_size = np.dtype(src.dtypes[0]).itemsize
-            struct_info = analyze_structure(path)
-
-        total_pixels = width * height * count
+            total_pixels = src.width * src.height * count
+            
         raw_bytes = total_pixels * dtype_size
         overhead_bytes = int(raw_bytes * (safety_factor - 1.0))
         total_required = raw_bytes + overhead_bytes
 
         mem = psutil.virtual_memory()
-        available = mem.available
         min_free_bytes = int(min_free_gb * (1024**3))
-        is_safe = (total_required + min_free_bytes) <= available
+        is_safe = (total_required + min_free_bytes) <= mem.available
         
-        if available > 0:
-            margin = (available - total_required) / available
-        else:
-            margin = 0.0
-
-        if is_safe:
-            rec = ProcessingMode.IN_MEMORY
-            reason = (
-                f"Safe to load. Req: {total_required / 1024**3:.2f}GB, "
-                f"Avail: {available / 1024**3:.2f}GB"
-            )
-        else:
-            if struct_info.is_efficient:
-                rec = ProcessingMode.BLOCKED
-                reason = (
-                    f"Too large for RAM (Req: {total_required / 1024**3:.2f}GB). "
-                    f"File is tiled efficienty (score {struct_info.efficiency_score:.2f}), "
-                    f"recommending BLOCKED mode."
-                )
-            else:
-                rec = ProcessingMode.TILED
-                reason = (
-                    f"Too large for RAM (Req: {total_required / 1024**3:.2f}GB). "
-                    f"File structure is inefficient (score {struct_info.efficiency_score:.2f}), "
-                    f"recommending TILED mode."
-                )
-
-        return MemoryEstimate(
-            raw_bytes=raw_bytes,
-            overhead_bytes=overhead_bytes,
-            total_required_bytes=total_required,
-            available_system_bytes=available,
-            is_safe=is_safe,
-            margin=margin,
-            recommendation=rec,
-            reason=reason
-        )
+        reason = f"Req: {total_required/1e9:.2f}GB, Avail: {mem.available/1e9:.2f}GB"
+            
+        return MemoryEstimate(total_required, mem.available, is_safe, reason)
 
     except Exception as e:
-        log.error(f"Memory estimation failed for {path}: {e}")
-        raise IOError(f"Could not estimate memory: {e}") from e
+        return MemoryEstimate(0, 0, False, str(e))
+
+def determine_strategy(
+    raster_path: Path, 
+    user_mode: str = "auto"
+) -> StrategyReport:
+    """
+    Determines the optimal processing strategy for a raster based on memory and internal structure.
+
+    Args:
+        raster_path: Path to the raster file to analyze.
+        user_mode: Defines available processing modes ('auto', 'in_memory', 'blocked', 'tiled')
+            auto: Automatically determine best mode based on analysis
+            in_memory: Force loading entire raster into RAM (only if safe)
+            blocked: Force using BLOCKED mode (only if structure is suitable)
+            tiled: Force using TILED mode (safe fallback)
+
+    Returns:
+        StrategyReport: Contains the recommended mode and the context for that decision.
+    """
+    estimate = _estimate_memory_safety(raster_path)
+    struct = _analyze_structure(raster_path)
+    
+    # Allow manual override of auto mode for testing or specific use cases
+    if user_mode != "auto":
+        try:
+            mode = ProcessingMode(user_mode)
+            reason = f"User forced mode: {user_mode}"
+            
+            # Safety Trap
+            if mode == ProcessingMode.BLOCKED and not struct._recommend_blocked:
+                mode = ProcessingMode.TILED
+                reason = "Override: Forced TILED because file is STRIPED (User requested BLOCKED)"
+                
+            return StrategyReport(mode, reason, estimate, struct)
+            
+        except ValueError:
+            valid_modes = [m.value for m in ProcessingMode] + ["auto"]
+            raise ValueError(f"Invalid mode '{user_mode}'. Must be one of: {valid_modes}")
+
+    # Auto Logic
+    # Priority 1: Process in Memory if Safe
+    if estimate.is_safe:
+        return StrategyReport(
+            mode=ProcessingMode.IN_MEMORY,
+            reason=f"Safe for RAM. {estimate.reason}",
+            memory_stats=estimate,
+            structure_stats=struct
+        )
+    
+    # Priority 2: Process with BLOCKED if structure is suitable
+    if struct._recommend_blocked:
+        return StrategyReport(
+            mode=ProcessingMode.BLOCKED,
+            reason="RAM full, but detected NATIVE TILES. Using BLOCKED mode.",
+            memory_stats=estimate,
+            structure_stats=struct
+        )
+    # Priority 3: Fallback to TILED for large scanline files
+    else:
+        return StrategyReport(
+            mode=ProcessingMode.TILED,
+            reason="RAM full and detected STRIPS. Using TILED mode.",
+            memory_stats=estimate,
+            structure_stats=struct
+        )

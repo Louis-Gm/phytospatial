@@ -39,10 +39,9 @@ from .io import (
 # Resource management
 from .resources import (
     ProcessingMode,
-    BlockStructure,
     MemoryEstimate,
-    analyze_structure,
-    estimate_memory_safety
+    StrategyReport,
+    determine_strategy
 )
 
 # Partition operations
@@ -57,7 +56,6 @@ from .partition import (
 from .engine import (
     AggregationType,
     DispatchConfig,
-    select_strategy,
     dispatch
 )
 
@@ -95,15 +93,13 @@ __all__ = [
 
     # Resources
     "ProcessingMode",
-    "BlockStructure",
     "MemoryEstimate",
-    "analyze_structure",
-    "estimate_memory_safety",
-
+    "StrategyReport",
+    "determine_strategy",
+    
     # Engine
     "AggregationType",
     "DispatchConfig",
-    "select_strategy",
     "dispatch",
 
     # Geom utilities
