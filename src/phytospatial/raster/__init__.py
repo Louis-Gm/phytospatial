@@ -8,12 +8,6 @@
 The raster subpackage provides core functionality for handling raster data,
 including I/O operations, partitioning strategies, resource management,
 engine dispatching and geometry utilities.
-
-Architecture Tiers:
-- Tier 1: Core data structures and I/O operations
-- Tier 2: Partitioning strategies and resource management
-- Tier 3: Engine dispatching and resolution utilities
-- Tier 4: Geometry utilities for raster manipulation
 """
 
 # Shared utilities
