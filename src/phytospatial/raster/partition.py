@@ -29,49 +29,51 @@ __all__ = [
 ]
 
 def iter_blocks(
-    path: Union[str, Path],
+    source: Union[str, Path, rasterio.DatasetReader],
     bands: Optional[Union[int, List[int]]] = None
 ) -> Iterator[Tuple[Window, Raster]]:
     """
     Stream data using the file's native internal block structure.
-    
-    NOTE: This function assumes the caller (engine.py) has already 
-    verified that the file structure is efficient for blocking.
 
     Args:
-        path: Path to the raster file. All GDAL-supported formats are accepted.
+        source: An open rasterio.DatasetReader, or a path to the raster file.
         bands: Specific band(s) to load (None=all, int=single, list=subset).
 
     Yields:
         Tuple[Window, Raster]: A window and corresponding Raster object.
     """
-    path = resolve_envi_path(path)
-    if not path.exists():
-        raise FileNotFoundError(f"Source file not found: {path}")
+    def _generator(src: rasterio.DatasetReader) -> Iterator[Tuple[Window, Raster]]:
+        indices = extract_band_indices(src, bands)
+        for _, window in src.block_windows(1):
+            data = src.read(indexes=indices, window=window)
+            tile_transform = src.window_transform(window)
+            band_names = extract_band_names(src, indices)
+            
+            yield window, Raster(
+                data=data,
+                transform=tile_transform,
+                crs=src.crs,
+                nodata=src.nodata,
+                band_names=band_names
+            )
 
-    try:
-        with rasterio.open(path) as src:
-            indices = extract_band_indices(src, bands)
-            for _, window in src.block_windows(1):
-                data = src.read(indexes=indices, window=window)
-                tile_transform = src.window_transform(window)
-
-                band_names = extract_band_names(src, indices)
-                
-                yield window, Raster(
-                    data=data,
-                    transform=tile_transform,
-                    crs=src.crs,
-                    nodata=src.nodata,
-                    band_names=band_names
-                )
-                
-    except rasterio.RasterioIOError as e:
-        raise IOError(f"Block iteration failed for {path}: {e}") from e
+    if isinstance(source, (str, Path)):
+        path = resolve_envi_path(Path(source))
+        if not path.exists():
+            raise FileNotFoundError(f"Source file not found: {path}")
+        
+        try:
+            with rasterio.open(path) as src:
+                yield from _generator(src)
+        except rasterio.RasterioIOError as e:
+            raise IOError(f"Block iteration failed for {path}: {e}") from e
+    else:
+        # If an open dataset is passed directly, bypass the context manager
+        yield from _generator(source)
 
 
 def iter_tiles(
-    path: Union[str, Path],
+    source: Union[str, Path, rasterio.DatasetReader],
     tile_size: Union[int, Tuple[int, int]] = 512,
     overlap: int = 0,
     bands: Optional[Union[int, List[int]]] = None
@@ -80,7 +82,7 @@ def iter_tiles(
     Stream data using a virtual grid of fixed-size tiles.
 
     Args:
-        path: Path to the raster file. All GDAL-supported formats are accepted.
+        source: An open rasterio.DatasetReader, or a path to the raster file.
         tile_size: Dimensions (width, height) or single int for square tiles.
         overlap: Pixels of overlap between tiles.
         bands: Specific band(s) to load (None=all, int=single, list=subset).
@@ -88,10 +90,6 @@ def iter_tiles(
     Yields:
         Tuple[Window, Raster]: A window and corresponding Raster object.
     """
-    path = resolve_envi_path(path)
-    if not path.exists():
-        raise FileNotFoundError(f"Source file not found: {path}")
-        
     if isinstance(tile_size, int):
         t_width, t_height = tile_size, tile_size
     else:
@@ -103,32 +101,42 @@ def iter_tiles(
     step_w = t_width - overlap
     step_h = t_height - overlap
 
-    try:
-        with rasterio.open(path) as src:
-            indices = extract_band_indices(src, bands)
+    def _generator(src: rasterio.DatasetReader) -> Iterator[Tuple[Window, Raster]]:
+        indices = extract_band_indices(src, bands)
+        
+        for row_off in range(0, src.height, step_h):
+            for col_off in range(0, src.width, step_w):
+                width = min(t_width, src.width - col_off)
+                height = min(t_height, src.height - row_off)
+                
+                window = Window(col_off, row_off, width, height)
+                
+                data = src.read(indexes=indices, window=window)
+                tile_transform = src.window_transform(window)
+                band_names = extract_band_names(src, indices)
+                
+                yield window, Raster(
+                    data=data,
+                    transform=tile_transform,
+                    crs=src.crs,
+                    nodata=src.nodata,
+                    band_names=band_names
+                )
+
+    if isinstance(source, (str, Path)):
+        path = resolve_envi_path(Path(source))
+        if not path.exists():
+            raise FileNotFoundError(f"Source file not found: {path}")
             
-            for row_off in range(0, src.height, step_h):
-                for col_off in range(0, src.width, step_w):
-                    
-                    width = min(t_width, src.width - col_off)
-                    height = min(t_height, src.height - row_off)
-                    
-                    window = Window(col_off, row_off, width, height)
-                    
-                    data = src.read(indexes=indices, window=window)
-                    tile_transform = src.window_transform(window)
-                    band_names = extract_band_names(src, indices)
-                    
-                    yield window, Raster(
-                        data=data,
-                        transform=tile_transform,
-                        crs=src.crs,
-                        nodata=src.nodata,
-                        band_names=band_names
-                    )
-                    
-    except rasterio.RasterioIOError as e:
-        raise IOError(f"Tile iteration failed for {path}: {e}") from e
+        try:
+            with rasterio.open(path) as src:
+                yield from _generator(src)
+        except rasterio.RasterioIOError as e:
+            raise IOError(f"Tile iteration failed for {path}: {e}") from e
+    else:
+        # If an open dataset is passed directly, bypass the context manager
+        yield from _generator(source)
+
 
 def iter_windows(
     raster: Raster,
@@ -176,7 +184,7 @@ def iter_windows(
                 :, 
                 row_off : row_off + height, 
                 col_off : col_off + width
-            ].copy() # Deep copy to ensure independence
+            ].copy() 
             
             tile_transform = compute_window_transform(window, raster.transform)
             
@@ -220,14 +228,12 @@ class TileStitcher:
         self.profile = profile.copy()
         self.profile.update(profile_overrides)
         
-        # Ensure directory exists
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
         
         self._dst = None
         self._tiles_written = 0
         
         try:
-            # We open in 'w' mode to create/overwrite, but we need to keep it open
             self._dst = rasterio.open(self.output_path, 'w', **self.profile)
         except Exception as e:
             raise IOError(f"Failed to initialize stitcher at {self.output_path}: {e}") from e
