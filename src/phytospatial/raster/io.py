@@ -12,6 +12,7 @@ import rasterio
 from rasterio.windows import Window
 from .utils import resolve_envi_path, extract_band_indices, extract_band_names, extract_wavelength
 from .layer import Raster
+from .resources import determine_strategy
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +20,8 @@ __all__ = [
     "load",
     "save",
     "write_window",
-    "read_info"
+    "read_info",
+    "ensure_tiled_raster"
 ]
 
 def load(
@@ -196,3 +198,54 @@ def read_info(path: Union[str, Path]) -> Dict[str, Any]:
             }
     except Exception as e:
         raise IOError(f"Failed to read metadata from {path}: {e}") from e
+    
+def ensure_tiled_raster(
+    path: Union[str, Path], 
+    output_dir: Optional[Union[str, Path]] = None,
+    block_size: int = 512
+) -> Path:
+    """
+    Analyzes raster structure and translates striped or untiled files 
+    into optimized, tiled GeoTIFFs to prevent I/O thrashing.
+
+    Args:
+        path (Union[str, Path]): Path to the input raster.
+        output_dir (Optional[Union[str, Path]]): Destination directory for the optimized file.
+        block_size (int): Dimensions for the internal X and Y blocks.
+
+    Returns:
+        Path: Path to the optimally tiled raster (original path if no conversion was needed).
+    """
+    path = resolve_envi_path(Path(path))
+    report = determine_strategy(path)
+    
+    if report.structure_stats.is_tiled and not report.structure_stats.is_striped:
+        log.info(f"Raster {path.name} is natively tiled. No conversion needed.")
+        return path
+        
+    log.warning(f"Raster {path.name} is STRIPED/UNTILED. Translating to tiled GeoTIFF...")
+    
+    out_dir = Path(output_dir) if output_dir else path.parent
+    out_path = out_dir / f"{path.stem}_tiled.tif"
+    
+    with rasterio.open(path) as src:
+        profile = src.profile.copy()
+        
+        profile.update(
+            driver='GTiff',
+            tiled=True,
+            blockxsize=block_size,
+            blockysize=block_size,
+            interleave='pixel' 
+        )
+        
+        with rasterio.open(out_path, 'w', **profile) as dst:
+            for row_off in range(0, src.height, block_size):
+                height = min(block_size, src.height - row_off)
+                window = Window(0, row_off, src.width, height)
+                
+                data = src.read(window=window)
+                dst.write(data, window=window)
+                
+    log.info(f"Successfully optimized raster into {out_path.name}")
+    return out_path
