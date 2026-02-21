@@ -12,9 +12,11 @@ import logging
 from typing import Union, List, Optional, Generator, Dict, Any, Literal
 from pathlib import Path
 from collections import defaultdict
+import json
 
 import numpy as np
 import polars as pl
+import psycopg
 import rasterio
 from rasterio.features import geometry_mask
 from rasterio.windows import from_bounds, Window, transform as window_transform
@@ -321,3 +323,64 @@ def extract_to_dataframe(
         results = list(results_gen)
         df = pl.DataFrame(results)
     return df
+
+def extract_to_database(
+    raster_input: Union[str, Path, Raster],
+    vector_input: Union[str, Path, Vector],
+    dsn: str,
+    table_name: str,
+    tile_mode: Literal["auto", "tiled", "blocked", "in_memory"] = "auto",
+    tile_size: int = 512,
+    **kwargs
+) -> int:
+    """
+    Consumes the feature generator to stream results directly into a PostgreSQL database.
+    
+    This function uses the high-speed COPY protocol to insert records without 
+    building an in-memory DataFrame. It maps fixed keys to relational columns 
+    and packs dynamic spectral statistics into a JSONB column.
+
+    Args:
+        raster_input (Union[str, Path, Raster]): Target raster dataset.
+        vector_input (Union[str, Path, Vector]): Target vector boundaries.
+        dsn (str): PostgreSQL connection string (e.g., "dbname=trees user=postgres...").
+        table_name (str): The target table in the database.
+        tile_mode (Literal["auto", "tiled", "blocked", "in_memory"]): Evaluation strategy.
+        tile_size (int): Tile block dimension.
+        **kwargs: Extraneous arguments passed directly to extract_features.
+
+    Returns:
+        int: The total number of records successfully streamed and inserted.
+    """
+
+    results_gen = extract_features(
+        raster_input=raster_input, 
+        vector_input=vector_input, 
+        tile_mode=tile_mode,
+        tile_size=tile_size,
+        **kwargs
+    )
+
+    total_inserted = 0
+
+    with psycopg.connect(dsn) as conn:
+        with conn.cursor() as cur:
+            
+            copy_query = f"COPY {table_name} (crown_id, species, raster_source, spectral_data) FROM STDIN"
+            
+            with cur.copy(copy_query) as copy:
+                for feature in results_gen:
+                    
+                    crown_id = feature.pop('crown_id', None)
+                    species = feature.pop('species', None)
+                    raster_source = feature.pop('raster_source', None)
+                    
+                    spectral_data = json.dumps(feature)
+                    
+                    copy.write_row((crown_id, species, raster_source, spectral_data))
+                    total_inserted += 1
+
+            conn.commit()
+            
+    log.info(f"Successfully streamed {total_inserted} records into {table_name}.")
+    return total_inserted
