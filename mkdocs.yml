@@ -69,8 +69,10 @@ nav:
   # REF_START    
   - API Reference:
       - Raster:
+          - "Compute Index": reference/raster/compute_index.md
           - "Engine": reference/raster/engine.md
           - "Geom": reference/raster/geom.md
+          - "Indices": reference/raster/indices.md
           - "Io": reference/raster/io.md
           - "Layer": reference/raster/layer.md
           - "Partition": reference/raster/partition.md
