@@ -6,6 +6,7 @@ This module provides shared utility functions for raster operations.
 Functions include path resolution for ENVI files,
 band extraction, and other common tasks.
 """
+
 import logging
 import re
 from pathlib import Path
