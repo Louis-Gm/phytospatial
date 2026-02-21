@@ -2,11 +2,6 @@
 
 """
 This module handles all disk-based operations for raster data.
-
-Functionality includes:
-- Loading rasters from files
-- Saving rasters to disk
-- Writing to specific windows in existing files
 """
 
 import logging
@@ -15,14 +10,14 @@ from typing import Union, Optional, List, Dict, Any
 
 import rasterio
 from rasterio.windows import Window
-from .utils import resolve_envi_path, extract_band_indices, extract_band_names
+from .utils import resolve_envi_path, extract_band_indices, extract_band_names, extract_wavelength
 from .layer import Raster
 
 log = logging.getLogger(__name__)
 
 __all__ = [
-    "load", 
-    "save", 
+    "load",
+    "save",
     "write_window",
     "read_info"
 ]
@@ -157,16 +152,8 @@ def write_window(
 
 def read_info(path: Union[str, Path]) -> Dict[str, Any]:
     """
-    Lightweight inspection of a raster file without loading pixel data.
-
-    Used by orchestrators to check CRS compatibility before committing 
-    to a processing strategy.
-    
-    Args:
-        path: Path to the raster file. All supported GDAL formats are accepted.
-        
-    Returns:
-        Dict containing raster metadata such as 'crs', 'transform', 'bounds', 'shape', etc.
+    Intelligently inspects a raster file, extracting spatial metadata, 
+    band descriptions, and spectral wavelengths in a single pass.
     """
     path = resolve_envi_path(path)
     if not path.exists():
@@ -174,6 +161,27 @@ def read_info(path: Union[str, Path]) -> Dict[str, Any]:
         
     try:
         with rasterio.open(path) as src:
+            band_names = {}
+            wavelengths_nm = {}
+            
+            for i in src.indexes:
+                desc = src.descriptions[i - 1]
+                band_names[desc or f"Band_{i}"] = i
+                
+                tags = src.tags(i)
+                wvl = tags.get('WAVELENGTH') or tags.get('CENTRAL_WAVELENGTH')
+                
+                if wvl is None and desc:
+                    wvl = extract_wavelength(desc)
+                    if wvl < 0: 
+                        wvl = None
+                
+                if wvl is not None:
+                    try:
+                        wavelengths_nm[float(wvl)] = i
+                    except ValueError:
+                        pass
+                        
             return {
                 'crs': src.crs,
                 'transform': src.transform,
@@ -182,7 +190,9 @@ def read_info(path: Union[str, Path]) -> Dict[str, Any]:
                 'height': src.height,
                 'count': src.count,
                 'driver': src.driver,
-                'nodata': src.nodata
+                'nodata': src.nodata,
+                'band_names': band_names,
+                'wavelengths_nm': wavelengths_nm
             }
     except Exception as e:
         raise IOError(f"Failed to read metadata from {path}: {e}") from e
