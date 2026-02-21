@@ -9,14 +9,6 @@ The raster subpackage provides core functionality for handling raster data,
 including I/O operations, partitioning strategies, resource management,
 engine dispatching and geometry utilities.
 """
-
-# Shared utilities
-from .utils import (
-    resolve_envi_path,
-    extract_band_names,
-    extract_band_indices
-)
-
 # Core data structure
 from .layer import (
     Raster
@@ -27,7 +19,8 @@ from .io import (
     load,
     save,
     write_window,
-    read_info
+    read_info,
+    ensure_tiled_raster
 )
 
 # Resource management
@@ -64,11 +57,42 @@ from .geom import (
     align_rasters
 )
 
+# Shared utilities
+from .utils import (
+    resolve_envi_path,
+    extract_band_names,
+    extract_band_indices,
+    extract_wavelength,
+    map_wavelengths
+)
+
+# Spectral index registry
+from .indices import (
+    SpectralIndex,
+    IndexCatalog
+)
+
+# Compute functions
+from .compute_index import (
+    calculate_index_block,
+    generate_index
+)
+
 __all__ = [
+    # Index generation
+    "calculate_index_block",
+    "generate_index",
+
+    # Spectral registry
+    "SpectralIndex",
+    "IndexCatalog",
+
     # Utils
     "resolve_envi_path",
     "extract_band_names",
     "extract_band_indices",
+    "extract_wavelength",
+    "map_wavelengths",
 
     # Layer
     "Raster",
@@ -78,6 +102,7 @@ __all__ = [
     "save",
     "write_window",
     "read_info",
+    "ensure_tiled_raster",
 
     # Partition
     "iter_blocks",
