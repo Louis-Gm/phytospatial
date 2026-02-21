@@ -1,4 +1,5 @@
 # src/phytospatial/raster/spectral_map.py
+
 """
 This module provides functionality to generate spectral indices from raster data.
 """
