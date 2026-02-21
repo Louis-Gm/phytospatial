@@ -95,38 +95,34 @@ class StrategyReport:
     memory_stats: MemoryEstimate
     structure_stats: BlockStructure
 
-def _analyze_structure(path: Union[str, Path]) -> BlockStructure:
+def _analyze_structure(src: rasterio.DatasetReader) -> BlockStructure:
     """Helper that determines if the raster is physically tiled or striped.
     
     Args:
-        path: Path to the raster file.
+        src: Opened rasterio DatasetReader object.
         
     Returns:
         BlockStructure: Contains flags for tiled/striped and block shape.
     """
-    path = Path(path)
-    path = resolve_envi_path(path)
-
     try:
-        with rasterio.open(path) as src:
-            if not src.block_shapes:
-                # Fail safe: If block_shapes is empty, assume unsuitable for BLOCKED mode
-                return BlockStructure(False, True, (0,0))
+        if not src.block_shapes:
+            # Fail safe: If block_shapes is empty, assume unsuitable for BLOCKED mode
+            return BlockStructure(False, True, (0,0))
 
-            block_h, block_w = src.block_shapes[0]
-            w, h = src.width, src.height
-            
-            # A file is considered "striped" if it:
-            #   1) has block shapes that are full width
-            #   2) is structured as a single row of pixels
-            is_striped = (block_w == w) or (block_h == 1)
-            is_tiled = not is_striped
+        block_h, block_w = src.block_shapes[0]
+        w, h = src.width, src.height
+                
+        # A file is considered "striped" if it:
+        #   1) has block shapes that are full width
+        #   2) is structured as a single row of pixels
+        is_striped = (block_w == w) or (block_h == 1)
+        is_tiled = not is_striped
 
-            return BlockStructure(
-                is_tiled=is_tiled,
-                is_striped=is_striped,
-                block_shape=(block_h, block_w)
-            )
+        return BlockStructure(
+            is_tiled=is_tiled,
+            is_striped=is_striped,
+            block_shape=(block_h, block_w)
+        )
 
     except Exception as e:
         # Fail safe: If structure analysis fails, assume unsuitable for BLOCKED mode
@@ -135,48 +131,41 @@ def _analyze_structure(path: Union[str, Path]) -> BlockStructure:
 
 
 def _estimate_memory_safety(
-    path: Union[str, Path],
+    src: rasterio.DatasetReader,
     bands: Optional[int] = None,
     safety_factor: float = DEFAULT_SAFETY_FACTOR,
     min_free_gb: float = MIN_FREE_GB
 ) -> MemoryEstimate:
-    """Helper that checks if raster fits in RAM.
-    
-    Args:
-        path: Path to the raster file.
-        bands: Optional number of bands to consider (default: all).
-        safety_factor: Multiplier for memory safety (default: 3.0).
-        min_free_gb: Minimum free GB required (default: 2.0).
+    """
+    Helper that checks if raster fits in RAM safely checking all band dtypes.
+
+    args:
+        src: Opened rasterio DatasetReader object.
+        bands: Optional number of bands to consider (default all)
+        safety_factor: Multiplier to account for overhead (default 3.0)
+        min_free_gb: Minimum free GB to leave available after loading (default 2.0)
 
     Returns:
         MemoryEstimate: Contains total required bytes, available bytes, safety boolean, and reason.
     """
-    path = Path(path)
-    path = resolve_envi_path(path)
+    # Sum exact byte size per pixel for all required bands
+    num_bands = bands if bands is not None else src.count
+    bytes_per_pixel = sum(np.dtype(src.dtypes[i]).itemsize for i in range(num_bands))
+    
+    raw_bytes = src.width * src.height * bytes_per_pixel
+    overhead_bytes = int(raw_bytes * (safety_factor - 1.0))
+    total_required = raw_bytes + overhead_bytes
 
-    try:
-        with rasterio.open(path) as src:
-            count = bands if bands is not None else src.count
-            dtype_size = np.dtype(src.dtypes[0]).itemsize
-            total_pixels = src.width * src.height * count
-            
-        raw_bytes = total_pixels * dtype_size
-        overhead_bytes = int(raw_bytes * (safety_factor - 1.0))
-        total_required = raw_bytes + overhead_bytes
-
-        mem = psutil.virtual_memory()
-        min_free_bytes = int(min_free_gb * (1024**3))
-        is_safe = (total_required + min_free_bytes) <= mem.available
+    mem = psutil.virtual_memory()
+    min_free_bytes = int(min_free_gb * (1024**3))
+    is_safe = (total_required + min_free_bytes) <= mem.available
+    
+    reason = f"Req: {total_required/1e9:.2f}GB, Avail: {mem.available/1e9:.2f}GB"
         
-        reason = f"Req: {total_required/1e9:.2f}GB, Avail: {mem.available/1e9:.2f}GB"
-            
-        return MemoryEstimate(total_required, mem.available, is_safe, reason)
-
-    except Exception as e:
-        return MemoryEstimate(0, 0, False, str(e))
+    return MemoryEstimate(total_required, mem.available, is_safe, reason)
 
 def determine_strategy(
-    raster_path: Path, 
+    raster_path: Union[str, Path],
     user_mode: str = "auto"
 ) -> StrategyReport:
     """
@@ -193,16 +182,25 @@ def determine_strategy(
     Returns:
         StrategyReport: Contains the recommended mode and the context for that decision.
     """
-    estimate = _estimate_memory_safety(raster_path)
-    struct = _analyze_structure(raster_path)
+    path = resolve_envi_path(Path(raster_path))
     
-    # Allow manual override of auto mode for testing or specific use cases
+    # SINGLE PASS I/O
+    try:
+        with rasterio.open(path) as src:
+            estimate = _estimate_memory_safety(src)
+            struct = _analyze_structure(src)
+    except Exception as e:
+        log.error(f"Failed to analyze resources for {path}: {e}")
+        # Fail safe fallback if file cannot be read properly
+        estimate = MemoryEstimate(0, 0, False, f"Read Error: {e}")
+        struct = BlockStructure(False, True, (0,0))
+
+    # User Override Logic
     if user_mode != "auto":
         try:
             mode = ProcessingMode(user_mode)
             reason = f"User forced mode: {user_mode}"
             
-            # Safety Trap
             if mode == ProcessingMode.BLOCKED and not struct._recommend_blocked:
                 mode = ProcessingMode.TILED
                 reason = "Override: Forced TILED because file is STRIPED (User requested BLOCKED)"
@@ -214,7 +212,6 @@ def determine_strategy(
             raise ValueError(f"Invalid mode '{user_mode}'. Must be one of: {valid_modes}")
 
     # Auto Logic
-    # Priority 1: Process in Memory if Safe
     if estimate.is_safe:
         return StrategyReport(
             mode=ProcessingMode.IN_MEMORY,
@@ -223,7 +220,6 @@ def determine_strategy(
             structure_stats=struct
         )
     
-    # Priority 2: Process with BLOCKED if structure is suitable
     if struct._recommend_blocked:
         return StrategyReport(
             mode=ProcessingMode.BLOCKED,
@@ -231,7 +227,6 @@ def determine_strategy(
             memory_stats=estimate,
             structure_stats=struct
         )
-    # Priority 3: Fallback to TILED for large scanline files
     else:
         return StrategyReport(
             mode=ProcessingMode.TILED,
