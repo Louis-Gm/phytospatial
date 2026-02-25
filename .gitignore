@@ -16,3 +16,4 @@ PyPI.txt
 site/
 *pipelines.py
 .env
+*docx
