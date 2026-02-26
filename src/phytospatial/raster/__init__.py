@@ -36,7 +36,8 @@ from .partition import (
     iter_blocks,
     iter_tiles,
     iter_windows,
-    TileStitcher
+    TileStitcher,
+    iter_core_halo
 )
 
 # Engine operations
@@ -109,6 +110,7 @@ __all__ = [
     "iter_tiles",
     "iter_windows",
     "TileStitcher",
+    "iter_core_halo",
 
     # Resources
     "ProcessingMode",

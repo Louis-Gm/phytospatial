@@ -12,12 +12,16 @@ import logging
 from pathlib import Path
 from typing import Union, Optional, List, Iterator, Tuple, Dict, Any
 
+import numpy as np
 import rasterio
 from rasterio.windows import Window
 from rasterio.windows import transform as compute_window_transform
+from shapely.geometry import box
 
 from .layer import Raster
+from .io import load, ensure_tiled_raster
 from .utils import resolve_envi_path, extract_band_indices, extract_band_names
+from .resources import ProcessingMode, determine_strategy
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +29,8 @@ __all__ = [
     "iter_blocks",
     "iter_tiles", 
     "iter_windows",
-    "TileStitcher"
+    "TileStitcher",
+    "iter_core_halo"
 ]
 
 def iter_blocks(
@@ -198,6 +203,52 @@ def iter_windows(
             
             yield window, tile_raster
 
+def iter_core_halo(
+    source: Union[str, Path, Raster],
+    tile_mode: str = "auto",
+    tile_size: int = 1024,
+    overlap: int = 64
+) -> Iterator[Tuple[np.ndarray, rasterio.Affine, Optional[box], Optional[box]]]:
+    """
+    Streams spatial data using a Core-Halo architecture.
+    Provides overlapping read buffers to prevent boundary truncation, while supplying 
+    a strict core bounding box for geometry deduplication.
+    """
+    if isinstance(source, Raster):
+        mode = ProcessingMode.IN_MEMORY
+    else:
+        path = ensure_tiled_raster(source, block_size=tile_size)
+        report = determine_strategy(path, user_mode=tile_mode)
+        mode = report.mode
+
+    if mode == ProcessingMode.IN_MEMORY:
+        if isinstance(source, Raster):
+            yield source.data[0], source.transform, None, None
+        else:
+            full_raster = load(path)
+            yield full_raster.data[0], full_raster.transform, None, None
+    else:
+        with rasterio.open(path) as src:
+            for row_off in range(0, src.height, tile_size):
+                for col_off in range(0, src.width, tile_size):
+                    core_window = Window(col_off, row_off, min(tile_size, src.width - col_off), min(tile_size, src.height - row_off))
+                    
+                    read_col_off = max(0, col_off - overlap)
+                    read_row_off = max(0, row_off - overlap)
+                    read_width = min(src.width - read_col_off, core_window.width + overlap + (col_off - read_col_off))
+                    read_height = min(src.height - read_row_off, core_window.height + overlap + (row_off - read_row_off))
+                    
+                    read_window = Window(read_col_off, read_row_off, read_width, read_height)
+                    
+                    data = src.read(1, window=read_window)
+                    transform = src.window_transform(read_window)
+                    
+                    core_min_x, core_max_y = src.window_transform(core_window) * (0, 0)
+                    core_max_x, core_min_y = src.window_transform(core_window) * (core_window.width, core_window.height)
+                    core_box = box(min(core_min_x, core_max_x), min(core_min_y, core_max_y), max(core_min_x, core_max_x), max(core_min_y, core_max_y))
+                    read_box = box(*src.window_bounds(read_window))
+                    
+                    yield data, transform, core_box, read_box
 
 class TileStitcher:
     """
