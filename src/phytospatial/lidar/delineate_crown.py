@@ -47,10 +47,12 @@ class DelineationParams:
     delineation_method: str = "watershed"
     pixel_size: float = 0.25
     min_height: float = 3.0
-    watershed_sigma: float = 0.5       
+    watershed_sigma: float = 0.5
     max_crown_radius: float = 10.0
-    apex_inclusion: float = 0.45   
-    crown_threshold: float = 0.55  
+    apex_inclusion: float = 0.45
+    crown_threshold: float = 0.55
+    smoothing_sigma: float = 0.5
+    max_canopy_spread: float = 10.0
 
 def _run_watershed(
     chm: np.ndarray, 

@@ -49,6 +49,7 @@ class DetectionParams:
     vws_detection_sigma: float = 2.0   
     vws_distance_scale: float = 0.12   
     vws_power: float = 1.0
+    lmf_window_size: int = 5
 
 def _detect_peaks_prominence(
     chm: np.ndarray, 
