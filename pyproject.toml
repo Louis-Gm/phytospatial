@@ -32,6 +32,12 @@ dependencies = [
     "rasterio>=1.4",
     "numpy>=1.24",
     "psutil",
+    "python-dotenv",
+    "cloth-simulation-filter",
+    "scipy",
+    "laspy",
+    "numba",
+    "scikit-image",
 ]
 
 [project.urls]
@@ -43,7 +49,6 @@ dependencies = [
 analysis = [                    # pip install .[analysis]
     "pyarrow>=10.0",
     "scikit-learn",
-    "scipy",
 ]
 
 docs = [                        # pip install .[docs]
