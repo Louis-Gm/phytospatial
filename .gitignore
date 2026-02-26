@@ -14,7 +14,7 @@ PyPI.txt
 .pytest_cache/
 *.ipynb_checkpoints
 site/
-*pipelines.py
+*pipeline.py
 .env
 *docx
 import_treetops.py
