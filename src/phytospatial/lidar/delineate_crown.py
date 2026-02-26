@@ -130,7 +130,7 @@ def _expand_canopy(
     step_x: np.ndarray, 
     expansion_rings: np.ndarray, 
     apex_inclusion: float, 
-    core_inclusion: float, 
+    crown_threshold: float, 
     min_height: float
     ):
     """
@@ -147,8 +147,7 @@ def _expand_canopy(
         step_x: Array of relative column offsets for neighboring pixels in concentric rings around the apex.
         expansion_rings: Array of indices that define the boundaries of each ring of neighbors in step_y and step_x.
         apex_inclusion: Minimum relative height of pixels to be included in the crown compared to the apex height.
-        core_inclusion: Minimum relative height of pixels to be included in the crown compared to the average height of the crown during region growing.
-        min_height: Minimum height threshold for including pixels in crowns.
+        crown_threshold: Minimum height threshold for including pixels in crowns.
 
     Returns:
         None: The function modifies the ownership_grid in place to assign pixels to tree crowns.        
@@ -222,7 +221,7 @@ def _expand_canopy(
                 if h_test <= min_apex_h:
                     continue
                     
-                if (h_test * pixel_count) <= (cumulative_height * core_inclusion):
+                if (h_test * pixel_count) <= (cumulative_height * crown_threshold):
                     continue
 
                 # If the pixel meets the criteria, we assign it to the current tree in the ownership grid 
@@ -294,7 +293,7 @@ def _run_region_growing(
         step_x=step_x, 
         expansion_rings=boundaries, 
         apex_inclusion=params.apex_inclusion, 
-        core_inclusion=params.core_inclusion, 
+        crown_threshold=params.crown_threshold, 
         min_height=params.min_height
     )
 
