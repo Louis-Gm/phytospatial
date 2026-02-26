@@ -78,9 +78,12 @@ nav:
           - "Partition": reference/raster/partition.md
           - "Resources": reference/raster/resources.md
           - "Utils": reference/raster/utils.md
+      - Vector:
+          - "Geom": reference/vector/geom.md
+          - "Io": reference/vector/io.md
+          - "Layer": reference/vector/layer.md
+          - "Spatial Operations": reference/vector/spatial_operations.md
       - "Extract": reference/extract.md
-      - "Loaders": reference/loaders.md
-      - "Vector": reference/vector.md
   # REF_END    
   - Contributing:
       - "Contributing": contributing/contributing.md
