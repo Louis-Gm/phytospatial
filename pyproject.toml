@@ -23,9 +23,10 @@ classifiers = [
 
 keywords = ["forestry", "remote sensing", "imagery", "image processing", "geospatial", "GIS"]
 
-# CORE DEPENDENCIES
+# CORE DEPENDENCIES (Lidar, Vector, Raster)
 dependencies = [
     "geopandas",
+    "pyogrio",
     "polars",
     "pandas",
     "tqdm",
@@ -38,6 +39,8 @@ dependencies = [
     "laspy",
     "numba",
     "scikit-image",
+    "numexpr",
+    "shapely",
 ]
 
 [project.urls]
@@ -46,6 +49,12 @@ dependencies = [
 
 # OPTIONAL DEPENDENCIES
 [project.optional-dependencies]
+db = [                          # pip install .[db]
+    "sqlalchemy>=2.0",
+    "geoalchemy2",
+    "psycopg[binary]",
+]
+
 analysis = [                    # pip install .[analysis]
     "pyarrow>=10.0",
     "scikit-learn",
@@ -75,7 +84,7 @@ include = ["phytospatial*"]
 namespaces = false
 
 [tool.setuptools]
-license-files = ["LICENSE-MIT", "LICENSE-APACHE", "NOTICE"]
+license-files = ["LICENSE", "NOTICE"]
 
 [tool.setuptools.package-data]
-"*" = ["LICENSE-MIT", "LICENSE-APACHE", "NOTICE"]
+"*" = ["LICENSE", "NOTICE"]
