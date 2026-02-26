@@ -12,11 +12,9 @@ import logging
 from typing import Union, List, Optional, Generator, Dict, Any, Literal
 from pathlib import Path
 from collections import defaultdict
-import json
 
 import numpy as np
 import polars as pl
-import psycopg
 import rasterio
 from rasterio.features import geometry_mask
 from rasterio.windows import from_bounds, Window, transform as window_transform
