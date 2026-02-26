@@ -68,6 +68,16 @@ nav:
       - "Pipeline Introduction": examples/extraction_pipeline.ipynb
   # REF_START    
   - API Reference:
+      - Db:
+          - "Cli": reference/db/cli.md
+          - "Client": reference/db/client.md
+          - "Models": reference/db/models.md
+      - Lidar:
+          - "Delineate Crown": reference/lidar/delineate_crown.md
+          - "Detect Treetop": reference/lidar/detect_treetop.md
+          - "Generate Model": reference/lidar/generate_model.md
+          - "Layer": reference/lidar/layer.md
+          - "Rasterize": reference/lidar/rasterize.md
       - Raster:
           - "Compute Index": reference/raster/compute_index.md
           - "Engine": reference/raster/engine.md
