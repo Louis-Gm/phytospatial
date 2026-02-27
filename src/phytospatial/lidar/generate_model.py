@@ -188,7 +188,7 @@ def generate_dsm(
     max_search_px = max(10, int(20.0 / resolution))
     
     # We define a data footprint based on where we have valid DSM values, and we expand this footprint slightly to allow for filling small gaps
-    #  while preventing excessive extrapolation in areas with no data.
+    # while preventing excessive extrapolation in areas with no data.
     data_footprint = valid_mask.copy()
     data_footprint = ndimage.binary_closing(data_footprint, structure=np.ones((5,5)))
     data_footprint = ndimage.binary_fill_holes(data_footprint)
@@ -347,12 +347,14 @@ def calculate_chm(
         output_path=output_path,
         aggregation=AggregationType.STITCH if output_path else AggregationType.COLLECT
     )
+
     result = dispatch(
         func=_chm_block,
         input_map={'dsm': dsm, 'dtm': dtm},
         static_kwargs={'filter_size': filter_size},
         config=config
     )
+    
     if output_path:
         # We allow polymorphic return types here:
         # if an output path is provided, we return the path to the saved CHM raster.
