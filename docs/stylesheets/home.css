@@ -13,9 +13,7 @@
   padding: 4rem 1rem;
 }
 
-/* ==================================
-   Single Image Hero Section
-   ================================== */
+/* Single Image Hero Section */
 .tx-hero-container {
   position: relative;
   width: 100%;
@@ -30,7 +28,6 @@
   background-repeat: no-repeat;
 }
 
-/* Dark overlay to ensure text contrast */
 .tx-hero-container::before {
   content: "";
   position: absolute;
@@ -38,7 +35,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Adjust 0.5 to make it darker/lighter */
+  background: rgba(0, 0, 0, 0.5);
   z-index: 1;
 }
 
@@ -64,7 +61,7 @@
 }
 
 .tx-hero__actions .md-button {
-  margin: 0.5rem;
+  margin: 1rem;
   font-weight: bold;
 }
 
@@ -74,9 +71,7 @@
   border-color: var(--md-accent-fg-color);
 }
 
-/* ==================================
-   About Section
-   ================================== */
+/* About Section */
 .tx-about {
   background-color: var(--md-default-bg-color);
 }
@@ -103,9 +98,7 @@
   margin-top: 0;
 }
 
-/* ==================================
-   Feature Grid Section
-   ================================== */
+/* Feature Grid Section */
 .tx-features .md-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -141,9 +134,7 @@
   border-bottom: none !important;
 }
 
-/* ==================================
-   Collaborators Section
-   ================================== */
+/* Collaborators Section */
 .tx-collaborators {
   background-color: var(--md-default-bg-color);
   text-align: center;
@@ -205,9 +196,7 @@
   margin-bottom: 1.5rem;
 }
 
-/* ==================================
-   Contact Footer Section
-   ================================== */
+/* Contact Footer Section */
 .tx-contact h1 {
   border-bottom: none;
 }
