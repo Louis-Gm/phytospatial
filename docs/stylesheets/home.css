@@ -1,16 +1,13 @@
-.md-content {
-  max-width: 100% !important;
-}
-
-.md-content__inner {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
 .tx-hero {
   background-color: var(--md-primary-fg-color);
   color: var(--md-primary-bg-color);
-  padding: 6rem 1rem;
+  padding: 4rem 1rem;
+}
+
+.tx-hero__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
 }
 
@@ -26,29 +23,32 @@
   max-width: 600px;
   margin: 0 auto 2rem auto;
   opacity: 0.9;
+  color: var(--md-primary-bg-color);
 }
 
 .tx-hero .md-button {
   margin: 0.5rem;
   font-weight: bold;
-}
-
-.tx-hero .md-button--primary {
   background-color: var(--md-accent-fg-color);
   color: var(--md-primary-bg-color);
   border-color: var(--md-accent-fg-color);
+  transition: filter 0.2s ease;
+}
+
+.tx-hero .md-button:hover {
+  background-color: var(--md-accent-fg-color);
+  color: var(--md-primary-bg-color);
+  filter: brightness(110%);
 }
 
 .tx-features {
-  padding: 4rem 1rem;
-  background-color: var(--md-default-bg-color);
+  padding: 2rem 0;
 }
 
 .tx-features .md-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
-  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -66,15 +66,11 @@
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
-.tx-feature .twemoji {
-  display: block;
-  margin-bottom: 1rem;
-}
-
 .tx-feature .twemoji svg {
   width: 48px;
   height: 48px;
   fill: var(--md-accent-fg-color);
+  margin-bottom: 1rem;
 }
 
 .tx-feature h2 {
@@ -86,4 +82,5 @@
 .tx-feature p {
   color: var(--md-typeset-color);
   font-size: 0.95rem;
+  margin: 0;
 }

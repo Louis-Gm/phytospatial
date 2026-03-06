@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block hero %}
+  {% if page.is_homepage %}
+    <div class="tx-hero">
+      <div class="md-grid tx-hero__content">
+        <h1>Phytospatial</h1>
+        <p>{{ config.site_description }}</p>
+        <div>
+          <a href="installation/" class="md-button">Get Started</a>
+          <a href="examples/extraction_pipeline/" class="md-button">View Tutorials</a>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

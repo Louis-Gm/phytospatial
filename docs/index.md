@@ -4,15 +4,6 @@ hide:
   - toc
 ---
 
-<div class="tx-hero">
-  <div class="tx-hero__content">
-    <h1>Phytospatial</h1>
-    <p>A python package that processes lidar and imagery data in forestry.</p>
-    <a href="installation/" class="md-button md-button--primary">Get Started</a>
-    <a href="examples/extraction_pipeline/" class="md-button">View Tutorials</a>
-  </div>
-</div>
-
 <div class="tx-features">
   <div class="md-grid">
     <div class="tx-feature">
