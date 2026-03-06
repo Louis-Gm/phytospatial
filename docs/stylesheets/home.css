@@ -192,7 +192,7 @@
   font-weight: bold;
   font-size: 0.9rem;
   margin-bottom: 0.5rem !important;
-  text-align: center;
+  text-align: center !important;
 }
 
 .tx-profile__bio {
