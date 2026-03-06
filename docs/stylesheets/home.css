@@ -210,7 +210,7 @@
 .mdx-connect__link {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   color: var(--md-typeset-color) !important;
   font-size: 0.8rem;
   text-decoration: none;

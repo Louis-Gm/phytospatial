@@ -64,7 +64,7 @@ hide:
   <div class="md-grid md-content__inner mdx-content__inner">
     <div class="mdx-content__column">
       <header class="md-typeset">
-        <h3 id="keep-in-touch">Let's keep in touch</h3>
+        <h2 id="keep-in-touch">Let's keep in touch</h2>
       </header>
       <div class="mdx-connect md-typeset">
         <div class="mdx-connect__inner">
