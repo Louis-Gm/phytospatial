@@ -17,7 +17,7 @@ theme:
     - navigation.top
 
   font:
-    text: Montserrat
+    text: Ovo
     code: Roboto Mono
 
   palette:
