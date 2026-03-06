@@ -47,7 +47,7 @@ hide:
     <h2>The Team</h2>
     <div class="tx-collaborators__grid">
       <div class="tx-profile">
-        <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/louis.png" alt="Louis-Vincent Grand'Maison">
+        <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/louis.jpg" alt="Louis-Vincent Grand'Maison">
         <h3>Louis-Vincent Grand'Maison</h3>
         <p class="tx-profile__title">Lead Developer & PhD Candidate</p>
         <p class="tx-profile__bio">Maintains and develops Phytospatial. Specializes in remote sensing and machine learning.</p>
@@ -64,7 +64,7 @@ hide:
   <div class="md-grid md-content__inner mdx-content__inner">
     <div class="mdx-content__column">
       <header class="md-typeset">
-        <h1 id="keep-in-touch">Let's keep in touch</h1>
+        <h3 id="keep-in-touch">Let's keep in touch</h3>
       </header>
       <div class="mdx-connect md-typeset">
         <div class="mdx-connect__inner">

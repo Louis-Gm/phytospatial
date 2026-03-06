@@ -212,7 +212,7 @@
   align-items: center;
   gap: 0.5rem;
   color: var(--md-typeset-color) !important;
-  font-size: 1.1rem;
+  font-size: 0.8rem;
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -223,8 +223,8 @@
 
 .mdx-connect__link .twemoji svg {
   fill: var(--md-typeset-color);
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   transition: fill 0.2s ease;
 }
 
