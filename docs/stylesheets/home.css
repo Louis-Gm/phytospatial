@@ -184,18 +184,19 @@
 
 .tx-profile h3 {
   margin: 0 0 0.25rem 0;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 .tx-profile__title {
   color: var(--md-accent-fg-color);
   font-weight: bold;
   font-size: 0.9rem;
-  margin-bottom: 1rem !important;
+  margin-bottom: 0.5rem !important;
+  text-align: center;
 }
 
 .tx-profile__bio {
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   color: var(--md-typeset-color);
 }
 
