@@ -24,8 +24,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Make sure you save your chosen image in docs/assets/ */
-  background-image: url('../assets/hero-background.jpg');
+  background-image: url('https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/louis.avif');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
