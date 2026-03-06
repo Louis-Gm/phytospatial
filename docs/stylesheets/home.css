@@ -1,0 +1,89 @@
+.md-content {
+  max-width: 100% !important;
+}
+
+.md-content__inner {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.tx-hero {
+  background-color: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+  padding: 6rem 1rem;
+  text-align: center;
+}
+
+.tx-hero h1 {
+  color: var(--md-primary-bg-color) !important;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.tx-hero p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+  opacity: 0.9;
+}
+
+.tx-hero .md-button {
+  margin: 0.5rem;
+  font-weight: bold;
+}
+
+.tx-hero .md-button--primary {
+  background-color: var(--md-accent-fg-color);
+  color: var(--md-primary-bg-color);
+  border-color: var(--md-accent-fg-color);
+}
+
+.tx-features {
+  padding: 4rem 1rem;
+  background-color: var(--md-default-bg-color);
+}
+
+.tx-features .md-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tx-feature {
+  padding: 2rem;
+  border-radius: 0.5rem;
+  background-color: var(--md-default-bg-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+  text-align: center;
+}
+
+.tx-feature:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.tx-feature .twemoji {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.tx-feature .twemoji svg {
+  width: 48px;
+  height: 48px;
+  fill: var(--md-accent-fg-color);
+}
+
+.tx-feature h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  border-bottom: none !important;
+}
+
+.tx-feature p {
+  color: var(--md-typeset-color);
+  font-size: 0.95rem;
+}

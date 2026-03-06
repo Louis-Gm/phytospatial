@@ -1,17 +1,23 @@
 site_name: Phytospatial
-site_description: A python package for hyperspectral image processing in forestry.
+site_description: A python package that processes lidar and imagery data in forestry.
 site_url: https://phytospatial.readthedocs.io/
 repo_url: https://github.com/Louis-Gm/phytospatial
 repo_name: Louis-Gm/phytospatial
 
 theme:
   name: material
+  custom_dir: docs/overrides
+
   features:
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
     - content.code.copy
     - navigation.expand
+    - navigation.top
+
   font:
-    text: Merriweather 
+    text: Montserrat
     code: Roboto Mono
 
   palette:
@@ -34,14 +40,20 @@ theme:
 
 extra_css:
   - stylesheets/extra.css
+  - stylesheets/home.css
 
 markdown_extensions:
+  - admonition
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
-  - pymdownx.superfences
-  - pymdownx.inlinehilite
 
 plugins:
   - search
@@ -61,9 +73,9 @@ plugins:
 # THEY ARE USED TO AUTOMATICALLY UPDATE THE API REFERENCE USING create_docs.sh
 nav:
   - Home: index.md
-  - Project Info:
+  - Getting Started:
       - "Installation": installation.md
-      - "License": license.md
+      - "Basic Usage": usage.md
   - Tutorials:
       - "Pipeline Introduction": examples/extraction_pipeline.ipynb
   # REF_START    
@@ -95,6 +107,12 @@ nav:
           - "Spatial Operations": reference/vector/spatial_operations.md
       - "Extract": reference/extract.md
   # REF_END    
+  - Articles:
+      - "Phytospatial Blog": articles/blog.md
+  - About:
+      - "About Phytospatial": about.md
+      - "Acknowledgements": acknowledgements.md
+      - "License": license.md
   - Contributing:
       - "Contributing": contributing/contributing.md
       - "Code of Conduct": contributing/code_of_conduct.md
