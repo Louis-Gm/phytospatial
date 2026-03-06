@@ -1,69 +1,132 @@
-.tx-hero {
-  background-color: var(--md-primary-fg-color);
-  color: var(--md-primary-bg-color);
+/* docs/stylesheets/home.css */
+
+.md-content {
+  max-width: 100% !important;
+}
+
+.md-content__inner {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.tx-section {
   padding: 4rem 1rem;
 }
 
-.tx-hero__content {
+/* ==================================
+   Single Image Hero Section
+   ================================== */
+.tx-hero-container {
+  position: relative;
+  width: 100%;
+  height: 70vh;
+  min-height: 500px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
+  justify-content: center;
+  /* Make sure you save your chosen image in docs/assets/ */
+  background-image: url('../assets/hero-background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-.tx-hero h1 {
-  color: var(--md-primary-bg-color) !important;
-  font-size: 3rem;
-  font-weight: 700;
+/* Dark overlay to ensure text contrast */
+.tx-hero-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adjust 0.5 to make it darker/lighter */
+  z-index: 1;
+}
+
+.tx-hero__content {
+  position: relative;
+  z-index: 2; /* Keeps text above the dark overlay */
+  text-align: center;
+  color: #ffffff;
+  padding: 3rem;
+}
+
+.tx-hero__content h1 {
+  color: #ffffff !important;
+  font-size: 3.5rem;
+  font-weight: 800;
   margin-bottom: 1rem;
 }
 
-.tx-hero p {
-  font-size: 1.2rem;
+.tx-hero__content p {
+  font-size: 1.25rem;
   max-width: 600px;
   margin: 0 auto 2rem auto;
-  opacity: 0.9;
-  color: var(--md-primary-bg-color);
 }
 
-.tx-hero .md-button {
+.tx-hero__actions .md-button {
   margin: 0.5rem;
   font-weight: bold;
+}
+
+.tx-hero__actions .md-button--primary {
   background-color: var(--md-accent-fg-color);
   color: var(--md-primary-bg-color);
   border-color: var(--md-accent-fg-color);
-  transition: filter 0.2s ease;
 }
 
-.tx-hero .md-button:hover {
-  background-color: var(--md-accent-fg-color);
-  color: var(--md-primary-bg-color);
-  filter: brightness(110%);
+/* ==================================
+   About Section
+   ================================== */
+.tx-about {
+  background-color: var(--md-default-bg-color);
 }
 
-.tx-features {
-  padding: 2rem 0;
+.tx-about__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
 }
 
+@media screen and (min-width: 768px) {
+  .tx-about__inner {
+    flex-direction: row;
+    text-align: left;
+  }
+}
+
+.tx-about h2 {
+  border-bottom: none;
+  margin-top: 0;
+}
+
+/* ==================================
+   Feature Grid Section
+   ================================== */
 .tx-features .md-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .tx-feature {
-  padding: 2rem;
+  padding: 2.5rem;
   border-radius: 0.5rem;
   background-color: var(--md-default-bg-color);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   text-align: center;
 }
 
 .tx-feature:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .tx-feature .twemoji svg {
@@ -79,8 +142,92 @@
   border-bottom: none !important;
 }
 
-.tx-feature p {
-  color: var(--md-typeset-color);
+/* ==================================
+   Collaborators Section
+   ================================== */
+.tx-collaborators {
+  background-color: var(--md-default-bg-color);
+  text-align: center;
+}
+
+.tx-collaborators h2 {
+  border-bottom: none;
+  font-size: 2rem;
+  margin-bottom: 3rem;
+}
+
+.tx-collaborators__grid {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.tx-profile {
+  max-width: 300px;
+  padding: 1.5rem;
+}
+
+.tx-profile img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.tx-profile h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.2rem;
+}
+
+.tx-profile__title {
+  color: var(--md-accent-fg-color);
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 1rem !important;
+}
+
+.tx-profile__bio {
   font-size: 0.95rem;
-  margin: 0;
+  color: var(--md-typeset-color);
+}
+
+.tx-collaborators__action p {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ==================================
+   Contact Footer Section
+   ================================== */
+.tx-contact h1 {
+  border-bottom: none;
+}
+
+.mdx-connect__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--md-typeset-color) !important;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.mdx-connect__link:hover {
+  color: var(--md-accent-fg-color) !important;
+}
+
+.mdx-connect__link .twemoji svg {
+  fill: var(--md-typeset-color);
+  width: 24px;
+  height: 24px;
+  transition: fill 0.2s ease;
+}
+
+.mdx-connect__link:hover .twemoji svg {
+  fill: var(--md-accent-fg-color);
 }
