@@ -1,5 +1,11 @@
 /* docs/stylesheets/home.css */
 
+.md-header {
+      background-color: transparent !important;
+      box-shadow: none !important;
+      position: absolute; 
+}
+
 .md-content {
   max-width: 100% !important;
 }
@@ -13,7 +19,7 @@
   padding: 4rem 1rem;
 }
 
-/* Single Image Hero Section */
+/* Hero Section */
 .tx-hero-container {
   position: relative;
   width: 100%;
@@ -22,7 +28,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/forest.avif');
+  background-image: url('https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/forest.avif');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -41,7 +47,7 @@
 
 .tx-hero__content {
   position: relative;
-  z-index: 2; /* Keeps text above the dark overlay */
+  z-index: 2;
   text-align: center;
   color: #ffffff;
   padding: 3rem;

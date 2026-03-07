@@ -6,6 +6,8 @@ repo_name: Louis-Gm/phytospatial
 
 theme:
   name: material
+  logo: assets/phytospatial-logo.png
+  favicon: assets/phytospatial-logo.png
   custom_dir: docs/overrides
 
   features:

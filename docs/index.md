@@ -2,12 +2,15 @@
 hide:
   - navigation
   - toc
+
+css:
+  - stylesheets/transparent-nav.css
 ---
 
 <section class="tx-section tx-about">
   <div class="md-grid">
     <div class="tx-about__inner">
-      <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/phytospatial-logo.png" alt="Phytospatial Logo" width="200">
+      <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/phytospatial-logo.png" alt="Phytospatial Logo" width="200">
       <div class="tx-about__text">
         <h2>About Phytospatial</h2>
         <p>Phytospatial is a Python package designed to process remote sensing data for forestry and vegetation analysis. It allows for the integration of multimodal data (vectors, LiDAR, rasters) for end-to-end forest inventory pipelines.</p>
@@ -47,7 +50,7 @@ hide:
     <h2>Our Team</h2>
     <div class="tx-collaborators__grid">
       <div class="tx-profile">
-        <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/assets/louis.avif" alt="Louis-Vincent Grand'Maison">
+        <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/louis.avif" alt="Louis-Vincent Grand'Maison">
         <h3>Louis-Vincent Grand'Maison</h3>
         <p class="tx-profile__title">Lead Developer</p>
         <p class="tx-profile__bio">PhD candidate at Université Laval</p>
