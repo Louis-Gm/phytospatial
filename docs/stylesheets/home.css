@@ -63,13 +63,25 @@
 .tx-hero__actions .md-button {
   margin: 1rem;
   font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
+  color: #ffffe3;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.tx-hero__actions .md-button:hover {
+  color: #ffeb7c !important;
 }
 
 .tx-hero__actions .md-button--primary {
   background-color: var(--md-accent-fg-color);
   color: var(--md-primary-bg-color);
   border-color: var(--md-accent-fg-color);
+}
+
+.tx-hero__actions .md-button--primary:hover {
+  color: #fff;
+  background-color: #ffeb7c !important;
+  border-color: #ffeb7c !important;
 }
 
 /* About Section */
