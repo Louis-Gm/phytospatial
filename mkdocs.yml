@@ -7,7 +7,7 @@ repo_name: Louis-Gm/phytospatial
 theme:
   name: material
   logo: assets/logo-transparent-small.png
-  favicon: assets/logo-black-small.png
+  favicon: assets/logo-transparent-small.png
   custom_dir: docs/overrides
 
   features:
@@ -118,4 +118,5 @@ nav:
   - Contributing:
       - "Contributing": contributing/contributing.md
       - "Code of Conduct": contributing/code_of_conduct.md
+
       - "Releasing": contributing/releasing.md
