@@ -13,6 +13,10 @@ hide:
   .md-tabs {
     background-color: rgba(0, 0, 0, 0.1) !important;
   }
+
+  .md-content h1 {
+    display: none !important;
+  }
 </style>
 
 <section class="tx-section tx-about">
