@@ -5,13 +5,13 @@ hide:
 ---
 <style>
   .md-header {
-    background-color: transparent !important;
+    background-color: rgba(0, 0, 0, 0.85) !important;
     box-shadow: none !important;
     position: absolute; 
   }
 
   .md-tabs {
-    background-color: transparent !important;
+    background-color: rgba(0, 0, 0, 0.85) !important;
   }
 </style>
 
