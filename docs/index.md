@@ -10,7 +10,7 @@ css:
 <section class="tx-section tx-about">
   <div class="md-grid">
     <div class="tx-about__inner">
-      <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/phytospatial-logo.png" alt="Phytospatial Logo" width="200">
+      <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/logo-transparent-large.png" alt="Phytospatial Logo" width="250">
       <div class="tx-about__text">
         <h2>About Phytospatial</h2>
         <p>Phytospatial is a Python package designed to process remote sensing data for forestry and vegetation analysis. It allows for the integration of multimodal data (vectors, LiDAR, rasters) for end-to-end forest inventory pipelines.</p>
