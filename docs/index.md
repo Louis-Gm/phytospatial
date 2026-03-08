@@ -4,7 +4,7 @@ hide:
   - toc
 
 css:
-  - stylesheets/transparent-nav.css
+  - stylesheets/home.css
 ---
 
 <section class="tx-section tx-about">

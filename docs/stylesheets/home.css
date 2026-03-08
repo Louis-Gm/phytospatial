@@ -1,9 +1,13 @@
 /* docs/stylesheets/home.css */
 
 .md-header {
-      background-color: transparent !important;
-      box-shadow: none !important;
-      position: absolute; 
+  background-color: transparent !important;
+  box-shadow: none !important;
+  position: absolute; 
+}
+
+.md-tabs {
+  background-color: rgba(0, 0, 0, 0.1) !important;
 }
 
 .md-content {
