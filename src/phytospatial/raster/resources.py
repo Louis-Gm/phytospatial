@@ -38,7 +38,9 @@ class ProcessingMode(Enum):
 
     Modes:
         IN_MEMORY: Load entire raster into RAM. Fastest but requires sufficient memory.
+
         BLOCKED: Use raster's internal blocks/tiles for optimized streaming. Best for tiled files.
+
         TILED: Use standard windowed reading. Safe fallback for large or scanline
     """
     IN_MEMORY = "in_memory"
@@ -164,7 +166,7 @@ def determine_strategy(
     Determines the optimal processing strategy for a raster based on memory and internal structure.
 
     Args:
-        raster_path: Path to the raster file to analyze.
+        raster_input: Polymorphic input for the raster file to analyze (Path or rasterio DatasetReader)
         user_mode: Defines available processing modes ('auto', 'in_memory', 'blocked', 'tiled')
             auto: Automatically determine best mode based on analysis
             in_memory: Force loading entire raster into RAM (only if safe)

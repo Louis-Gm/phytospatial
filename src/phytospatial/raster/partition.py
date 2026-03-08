@@ -270,7 +270,7 @@ class TileStitcher:
         Args:
             output_path: Destination path.
             profile: Rasterio profile (metadata).
-            **profile_overrides: Changes to the profile (e.g., dtype, compression).
+            **profile_overrides: Changes to the profile (dtype, compression, etc.).
 
         Raises:
             IOError: If the file cannot be created/opened.
