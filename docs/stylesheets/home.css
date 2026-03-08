@@ -64,12 +64,12 @@
   margin: 1rem;
   font-weight: bold;
   font-size: 1.25rem;
-  color: #ffec83 !important;
+  color: #f1dc62 !important;
   transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .tx-hero__actions .md-button:hover {
-  color: #f1dc62 !important;
+  color: #ebcc1d !important;
 }
 
 .tx-hero__actions .md-button--primary {
@@ -80,7 +80,7 @@
 
 .tx-hero__actions .md-button--primary:hover {
   color: #fff;
-  background-color: #f1dc62 !important;
+  background-color: #ebcc1d !important;
   border-color: #ffec83 !important;
 }
 
