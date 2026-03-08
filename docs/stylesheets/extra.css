@@ -38,11 +38,17 @@
 }
 
 .md-tabs__link {
-  color: #811818 !important;
+  color: #fff !important;
+  opacity: 1 !important;
   transition: color 0.2s ease;
 }
 
-.md-tabs__link--active,
+.md-tabs__item--active .md-tabs__link,
+.md-tabs__link--active {
+  color: #0091eb !important;
+}
+
+.md-tabs__item--active .md-tabs__link:hover,
 .md-tabs__link--active:hover {
   color: #0091eb !important;
 }
