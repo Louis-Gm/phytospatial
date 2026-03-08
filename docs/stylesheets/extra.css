@@ -45,16 +45,16 @@
 
 .md-tabs__item--active .md-tabs__link,
 .md-tabs__link--active {
-  color: #50bcff !important;
+  color: #77cbff !important;
 }
 
 .md-tabs__item--active .md-tabs__link:hover,
 .md-tabs__link--active:hover {
-  color: #50bcff !important;
+  color: #77cbff !important;
 }
 
 .md-tabs__link:hover {
-  color: #ff9100 !important;
+  color: #ffeb7c !important;
 }
 
 .md-typeset .highlight {
