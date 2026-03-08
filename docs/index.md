@@ -22,7 +22,7 @@ hide:
 <section class="tx-section tx-about">
   <div class="md-grid">
     <div class="tx-about__inner">
-      <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/logo-transparent-large.png" alt="Phytospatial Logo" width="250">
+      <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/images/logo/logo-transparent-large.png" alt="Phytospatial Logo" width="250">
       <div class="tx-about__text">
         <h2>About Phytospatial</h2>
         <p>Phytospatial is a Python package designed to process remote sensing data for forestry and vegetation analysis. It allows for the integration of multimodal data (vectors, LiDAR, rasters) for end-to-end forest inventory pipelines.</p>
@@ -62,15 +62,21 @@ hide:
     <h2>Our Team</h2>
     <div class="tx-collaborators__grid">
       <div class="tx-profile">
-        <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/louis.avif" alt="Louis-Vincent Grand'Maison">
+        <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/images/team/grandmaison.avif" alt="Louis-Vincent Grand'Maison">
         <h3>Louis-Vincent Grand'Maison</h3>
         <p class="tx-profile__title">Lead Developer</p>
         <p class="tx-profile__bio">PhD candidate at Université Laval</p>
       </div>
+      <div class="tx-profile">
+        <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/images/team/larouche.avif" alt="Christian Larouche">
+        <h3>Christian Larouche, PhD</h3>
+        <p class="tx-profile__title">Code reviewer</p>
+        <p class="tx-profile__bio">Professor in geomatics at Université Laval</p>
       </div>
+    </div>
     <div class="tx-collaborators__action">
-      <p>We encourage and welcome contributions from students, researchers, and professional developers.</p>
-      <a href="contributing/contributing/" class="md-button md-button--primary">Join the Project</a>
+      <p>Join the fun! Whether you are a student or an expert, we welcome your contributions.</p>
+      <a href="contributing/contributing/" class="md-button md-button--primary">Become a collaborator</a>
     </div>
   </div>
 </section>
@@ -79,7 +85,7 @@ hide:
   <div class="md-grid md-content__inner mdx-content__inner">
     <div class="mdx-content__column">
       <header class="md-typeset">
-        <h2 id="keep-in-touch">Let's keep in touch</h2>
+        <h2 id="keep-in-touch">Keep in touch with us</h2>
       </header>
       <div class="mdx-connect md-typeset">
         <div class="mdx-connect__inner">

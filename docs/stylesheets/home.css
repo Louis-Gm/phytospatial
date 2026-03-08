@@ -22,7 +22,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/forest.avif');
+  background-image: url('https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/images/forest.avif');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -205,8 +205,8 @@
 
 .tx-collaborators__action p {
   text-align: center;
-  font-size: 1.1rem;
-  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  margin-bottom: 1rem;
 }
 
 /* Contact Footer Section */
