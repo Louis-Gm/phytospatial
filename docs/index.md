@@ -2,9 +2,6 @@
 hide:
   - navigation
   - toc
-
-css:
-  - stylesheets/home.css
 ---
 
 <section class="tx-section tx-about">
