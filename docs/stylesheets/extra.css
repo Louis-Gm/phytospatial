@@ -4,9 +4,7 @@
 [data-md-color-scheme="default"] {
   --override-bg: #f0efdf; 
   --override-fg: #302d00;
-
   --header-color: #05368f;
-
   --custom-kw: #0a8aaa;
   --custom-func: #0c3ab8;
   --custom-class: #b57614;
@@ -20,9 +18,7 @@
 [data-md-color-scheme="slate"] {
   --override-bg: #2c2c2b; 
   --override-fg: #eeeedb;
-
   --header-color: #2686e6;
-
   --custom-kw: #06bac7;
   --custom-func: #2d9b71;
   --custom-class: #fabd2f;
@@ -30,6 +26,29 @@
   --custom-comment: #367512;
   --custom-num: #d3869b;
   --custom-decor: #fe8019;
+}
+
+.md-header {
+  background-color: #0f0f0e !important;
+  color: #fcfcfc !important;
+}
+
+.md-tabs {
+  background-color: #0f0f0e !important;
+}
+
+.md-tabs__link {
+  color: #fcfcfc !important;
+  transition: color 0.2s ease;
+}
+
+.md-tabs__link--active,
+.md-tabs__link--active:hover {
+  color: #0091eb !important;
+}
+
+.md-tabs__link:hover {
+  color: #ff9100 !important;
 }
 
 .md-typeset .highlight {
@@ -62,11 +81,38 @@
   text-align: justify;
 }
 
-.highlight .k, .highlight .kn, .highlight .kp, .highlight .kd { color: var(--custom-kw) !important; font-weight: bold; }
-.highlight .nf, .highlight .fm { color: var(--custom-func) !important; font-weight: bold; }
-.highlight .nc { color: var(--custom-class) !important; font-weight: bold; }
-.highlight .s2, .highlight .s1, .highlight .sd { color: var(--custom-str) !important; }
-.highlight .c1, .highlight .cm { color: var(--custom-comment) !important; font-style: italic; }
-.highlight .mi, .highlight .mf, .highlight .kc { color: var(--custom-num) !important; }
-.highlight .nd { color: var(--custom-decor) !important; }
-.highlight .nb { color: var(--custom-func) !important; }
+.highlight .k, .highlight .kn, .highlight .kp, .highlight .kd { 
+  color: var(--custom-kw) !important; 
+  font-weight: bold; 
+}
+
+.highlight .nf, .highlight .fm { 
+  color: var(--custom-func) !important; 
+  font-weight: bold; 
+}
+
+.highlight .nc { 
+  color: var(--custom-class) !important; 
+  font-weight: bold; 
+}
+
+.highlight .s2, .highlight .s1, .highlight .sd { 
+  color: var(--custom-str) !important; 
+}
+
+.highlight .c1, .highlight .cm { 
+  color: var(--custom-comment) !important; 
+  font-style: italic; 
+}
+
+.highlight .mi, .highlight .mf, .highlight .kc { 
+  color: var(--custom-num) !important; 
+}
+
+.highlight .nd { 
+  color: var(--custom-decor) !important; 
+}
+
+.highlight .nb { 
+  color: var(--custom-func) !important; 
+}
