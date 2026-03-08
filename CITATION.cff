@@ -3,7 +3,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please use the citation format listed below."
 title: "Phytospatial"
-abstract: "A python package that processes lidar and imagery data in forestry."
+abstract: "The open-source standard for enhanced forest inventories."
 authors:
   - family-names: "Grand'Maison"
     given-names: "Louis-Vincent"

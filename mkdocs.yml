@@ -1,5 +1,5 @@
 site_name: Phytospatial
-site_description: A python package that processes lidar and imagery data in forestry
+site_description: The open-source standard for enhanced forest inventories
 site_url: https://phytospatial.readthedocs.io/
 repo_url: https://github.com/Louis-Gm/phytospatial
 repo_name: Louis-Gm/phytospatial

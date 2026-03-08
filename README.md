@@ -5,7 +5,7 @@
   </a>
   <h1 align="center"><b>Phytospatial</b></h1>
   <div align="center">
-    A python package that processes lidar and imagery data in forestry
+    The open-source standard for enhanced forest inventories
   </div>
 
   [start]: #
@@ -36,7 +36,7 @@
 
 ## **About The Project**
 
-**Phytospatial** is a Python toolkit designed to streamline the processing of remote sensing data for forestry and vegetation analysis. It provides tools for handling large hyperspectral rasters, validating vector geometries, and extracting spectral statistics from tree crowns. It also allows for passive-active raster-level fusion via its image processing module.
+**Phytospatial** is a Python package designed for end-to-end processing of remote sensing data in forest inventories. It provides tools for handling large hyperspectral rasters, validating vector geometries, and extracting spectral statistics from tree crowns. It also allows for passive-active raster-level fusion via its image processing module.
 
 ### **Key Features**
 
@@ -92,7 +92,7 @@ Feel free to leave a feature request <a href="https://github.com/Louis-Gm/phytos
 
 If you use this project in your research, please cite it as:
 
-Grand'Maison, L.-V. (2026). Phytospatial: a python package that processes lidar and imagery data in forestry (0.5.1) [software]. Zenodo. https://doi.org/10.5281/zenodo.18112045
+Grand'Maison, L.-V. (2026). Phytospatial: The open-source standard for enhanced forest inventories (0.5.1) [software]. Zenodo. https://doi.org/10.5281/zenodo.18112045
 
 ## **Contact**
 
