@@ -1,5 +1,11 @@
 /* docs/stylesheets/extra.css */
 
+:root {
+  --phyto-gold: #F5CD2A;
+  --phyto-yellow: #ebcc1d;
+  --phyto-light-yellow: #ffec83;
+}
+
 /* light theme */
 [data-md-color-scheme="default"] {
   --override-bg: #f0efdf; 
@@ -45,17 +51,11 @@
 }
 
 .md-tabs__item--active .md-tabs__link,
-.md-tabs__link--active {
-  color: #ffec83 !important;
-}
-
+.md-tabs__link--active,
 .md-tabs__item--active .md-tabs__link:hover,
-.md-tabs__link--active:hover {
-  color: #ffec83 !important;
-}
-
+.md-tabs__link--active:hover,
 .md-tabs__link:hover {
-  color: #ffec83 !important;
+  color: var(--phyto-light-yellow) !important;
 }
 
 .md-typeset .highlight {
@@ -88,38 +88,38 @@
   text-align: justify;
 }
 
-.highlight .k, .highlight .kn, .highlight .kp, .highlight .kd { 
-  color: var(--custom-kw) !important; 
-  font-weight: bold; 
+.highlight .k, .highlight .kn, .highlight .kp, .highlight .kd {
+  color: var(--custom-kw) !important;
+  font-weight: bold;
 }
 
-.highlight .nf, .highlight .fm { 
-  color: var(--custom-func) !important; 
-  font-weight: bold; 
+.highlight .nf, .highlight .fm {
+  color: var(--custom-func) !important;
+  font-weight: bold;
 }
 
-.highlight .nc { 
-  color: var(--custom-class) !important; 
-  font-weight: bold; 
+.highlight .nc {
+  color: var(--custom-class) !important;
+  font-weight: bold;
 }
 
-.highlight .s2, .highlight .s1, .highlight .sd { 
-  color: var(--custom-str) !important; 
+.highlight .s2, .highlight .s1, .highlight .sd {
+  color: var(--custom-str) !important;
 }
 
-.highlight .c1, .highlight .cm { 
-  color: var(--custom-comment) !important; 
-  font-style: italic; 
+.highlight .c1, .highlight .cm {
+  color: var(--custom-comment) !important;
+  font-style: italic;
 }
 
-.highlight .mi, .highlight .mf, .highlight .kc { 
-  color: var(--custom-num) !important; 
+.highlight .mi, .highlight .mf, .highlight .kc {
+  color: var(--custom-num) !important;
 }
 
-.highlight .nd { 
-  color: var(--custom-decor) !important; 
+.highlight .nd {
+  color: var(--custom-decor) !important;
 }
 
-.highlight .nb { 
-  color: var(--custom-func) !important; 
+.highlight .nb {
+  color: var(--custom-func) !important;
 }
