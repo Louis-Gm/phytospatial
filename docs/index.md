@@ -3,6 +3,17 @@ hide:
   - navigation
   - toc
 ---
+<style>
+  .md-header {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    position: absolute; 
+  }
+
+  .md-tabs {
+    background-color: transparent !important;
+  }
+</style>
 
 <section class="tx-section tx-about">
   <div class="md-grid">

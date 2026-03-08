@@ -1,15 +1,5 @@
 /* docs/stylesheets/home.css */
 
-.md-header {
-  background-color: transparent !important;
-  box-shadow: none !important;
-  position: absolute; 
-}
-
-.md-tabs {
-  background-color: rgba(0, 0, 0, 0.1) !important;
-}
-
 .md-content {
   max-width: 100% !important;
 }
@@ -28,7 +18,7 @@
   position: relative;
   width: 100%;
   height: 70vh;
-  min-height: 500px;
+  min-height: 700px;
   display: flex;
   align-items: center;
   justify-content: center;
