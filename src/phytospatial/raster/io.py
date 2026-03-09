@@ -79,7 +79,7 @@ def load(
 def save(
     raster: Raster,
     path: Union[str, Path],
-    **profile_kwargs
+    **profile_kwargs: Any
 ):
     """
     Write a Raster object to disk.
@@ -88,7 +88,7 @@ def save(
     Args:
         raster: Raster object to save
         path: Output file path. All supported GDAL formats are accepted.
-        **profile_kwargs: Override default rasterio profile settings.
+        **profile_kwargs (Any): Override default rasterio profile settings.
     """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)

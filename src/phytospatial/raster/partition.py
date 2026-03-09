@@ -41,8 +41,8 @@ def iter_blocks(
     Stream data using the file's native internal block structure.
 
     Args:
-        source: An open rasterio.DatasetReader, or a path to the raster file.
-        bands: Specific band(s) to load (None=all, int=single, list=subset).
+        source (Union[str, Path, rasterio.DatasetReader]): An open rasterio.DatasetReader, or a path to the raster file.
+        bands (Optional[Union[int, List[int]]]): Specific band(s) to load (None=all, int=single, list=subset).
 
     Yields:
         Tuple[Window, Raster]: A window and corresponding Raster object.
@@ -87,10 +87,10 @@ def iter_tiles(
     Stream data using a virtual grid of fixed-size tiles.
 
     Args:
-        source: An open rasterio.DatasetReader, or a path to the raster file.
-        tile_size: Dimensions (width, height) or single int for square tiles.
-        overlap: Pixels of overlap between tiles.
-        bands: Specific band(s) to load (None=all, int=single, list=subset).
+        source (Union[str, Path, rasterio.DatasetReader]): An open rasterio.DatasetReader, or a path to the raster file.
+        tile_size (Union[int, Tuple[int, int]]): Dimensions (width, height) or single int for square tiles.
+        overlap (int): Pixels of overlap between tiles.
+        bands (Optional[Union[int, List[int]]]): Specific band(s) to load (None=all, int=single, list=subset).
 
     Yields:
         Tuple[Window, Raster]: A window and corresponding Raster object.
@@ -154,9 +154,9 @@ def iter_windows(
     Useful for batch processing a loaded raster, notably for neural networks.
     
     Args:
-        raster: The source Raster object (already in memory).
-        tile_size: Dimensions (width, height) or single int for square tiles.
-        overlap: Pixels of overlap.
+        raster (Raster): The source Raster object (already in memory).
+        tile_size (Union[int, Tuple[int, int]]): Dimensions (width, height) or single int for square tiles.
+        overlap (int): Pixels of overlap.
         
     Yields:
         Tuple[Window, Raster]: A deep copy of the sliced data as a new Raster.
@@ -262,15 +262,15 @@ class TileStitcher:
         self,
         output_path: Union[str, Path],
         profile: Dict[str, Any],
-        **profile_overrides
+        **profile_overrides: Any
     ):
         """
         Open a new raster file for writing.
         
         Args:
-            output_path: Destination path.
-            profile: Rasterio profile (metadata).
-            **profile_overrides: Changes to the profile (dtype, compression, etc.).
+            output_path (Union[str, Path]): Destination path.
+            profile (Dict[str, Any]): Rasterio profile (metadata).
+            **profile_overrides (Any): Changes to the profile (dtype, compression, etc.).
 
         Raises:
             IOError: If the file cannot be created/opened.
@@ -299,10 +299,10 @@ class TileStitcher:
         Write a tile to the output file.
         
         Args:
-            window: The specific window in the output file where this data goes.
-            tile: The Raster object containing the data.
-            indexes: Specific bands to write to.
-            
+            window (Window): The specific window in the output file where this data goes.
+            tile (Raster): The Raster object containing the data.
+            indexes (Optional[List[int]]): Specific bands to write to.
+
         Raises:
             ValueError: If the tile shape does not match the window shape.
             RuntimeError: If the stitcher is closed.

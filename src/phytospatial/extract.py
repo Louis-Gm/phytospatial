@@ -292,7 +292,7 @@ def extract_to_dataframe(
     vector_input: Union[str, Path, Vector],
     tile_mode: Literal["auto", "tiled", "blocked", "in_memory"] = "auto",
     tile_size: int = 512,
-    **kwargs
+    **kwargs: Any
 ) -> pl.DataFrame:
     """
     Consumes the feature generator to immediately build an optimized Polars DataFrame.
@@ -302,7 +302,7 @@ def extract_to_dataframe(
         vector_input (Union[str, Path, Vector]): Target vector boundaries.
         tile_mode (Literal["auto", "tiled", "blocked", "in_memory"]): Evaluation strategy. Defaults to auto.
         tile_size (int): Tile block dimension.
-        **kwargs: Extraneous arguments passed directly to extract_features.
+        **kwargs (Any): Extraneous arguments passed directly to extract_features.
 
     Returns:
         pl.DataFrame: A Polars DataFrame populated with the extracted multi-band properties for each vector unit.

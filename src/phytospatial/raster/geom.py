@@ -35,7 +35,7 @@ __all__ = [
     "align_rasters"
 ]
 
-def auto_load(safe: bool = True):
+def auto_load(safe: bool = True) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """
     Decorator which automatically loads file path arguments into Raster objects.
     
@@ -44,11 +44,11 @@ def auto_load(safe: bool = True):
                      Raises MemoryError if the file is too large.
     
     Returns:
-        Callable: Decorated function with auto-loaded Raster arguments.
+        Callable[[Callable[..., Any]], Callable[..., Any]]: Decorated function with auto-loaded Raster arguments.
     """
-    def decorator(func: Callable) -> Callable:
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             sig = inspect.signature(func)
             bound = sig.bind(*args, **kwargs)
             bound.apply_defaults()
