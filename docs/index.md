@@ -7,7 +7,7 @@ hide:
   .md-header {
     background-color: rgba(0, 0, 0, 0.3) !important;
     box-shadow: none !important;
-    position: absolute; 
+    position: absolute;
   }
 
   .md-tabs {
@@ -22,7 +22,7 @@ hide:
 <section class="tx-section tx-about">
   <div class="md-grid">
     <div class="tx-about__inner">
-      <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/images/logo/logo-transparent-large.png" alt="Phytospatial Logo" width="240">
+      <img src="assets/images/logo/logo-transparent-large.png" alt="Phytospatial Logo" width="240">
       <div class="tx-about__text">
         <h2>About Phytospatial</h2>
         <p>Phytospatial is a Python package designed to process remote sensing data for enhanced forest inventories or vegetation analyses.</p>
@@ -63,13 +63,13 @@ hide:
     <h2>Our Team</h2>
     <div class="tx-collaborators__grid">
       <div class="tx-profile">
-        <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/images/team/grandmaison.avif" alt="Louis-Vincent Grand'Maison">
+        <img src="assets/images/team/grandmaison.avif" alt="Louis-Vincent Grand'Maison">
         <h3>Louis-Vincent Grand'Maison</h3>
         <p class="tx-profile__title">Lead Developer</p>
         <p class="tx-profile__bio">PhD candidate at Université Laval</p>
       </div>
       <div class="tx-profile">
-        <img src="https://raw.githubusercontent.com/Louis-Gm/phytospatial/main/docs/assets/images/team/larouche.avif" alt="Christian Larouche">
+        <img src="assets/images/team/larouche.avif" alt="Christian Larouche">
         <h3>Christian Larouche, PhD</h3>
         <p class="tx-profile__title">Code reviewer</p>
         <p class="tx-profile__bio">Professor in geomatics at Université Laval</p>
