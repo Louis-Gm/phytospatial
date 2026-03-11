@@ -1,43 +1,9 @@
-/* docs/stylesheets/extra.css */
+/* docs/stylesheets/theme.css */
 
 :root {
   --phyto-gold: #F5CD2A;
   --phyto-yellow: #ebcc1d;
   --phyto-light-yellow: #ffec83;
-
-  --phyto-bg-primary: #ffffff;
-  --phyto-bg-secondary: #f4f5f7;
-  --phyto-bg-card: #ffffff;
-  
-  --phyto-text-white: #ffffff;
-  --phyto-text-main: var(--md-typeset-color);
-  --phyto-text-muted: #555555;
-  --phyto-text-heading: var(--md-typeset-color);
-  --phyto-text-gold-accent: #c49000;
-  --phyto-text-yellow-accent: #a37500;
-  
-  --phyto-btn-primary-bg: var(--phyto-yellow);
-  --phyto-btn-primary-text: #000;
-  
-  --phyto-link-base: #333333;
-  --phyto-link-hover: #c49000;
-  --phyto-icon-fill: #333333;
-
-  --phyto-shadow-base: 0 4px 6px rgba(0, 0, 0, 0.05);
-  --phyto-shadow-hover: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-[data-md-color-scheme="default"] {
-  --override-bg: #f0efdf; 
-  --override-fg: #302d00;
-  --header-color: #05368f;
-  --custom-kw: #0a8aaa;
-  --custom-func: #0c3ab8;
-  --custom-class: #b57614;
-  --custom-str: #96131e;
-  --custom-comment: #0d6e2a;
-  --custom-num: #8f3f71;
-  --custom-decor: #af3a03;
 }
 
 [data-md-color-scheme="slate"] {
@@ -45,6 +11,7 @@
   --phyto-bg-secondary: var(--md-code-bg-color, #242631);
   --phyto-bg-card: var(--md-default-bg-color);
   
+  --phyto-text-white: #ffffff;
   --phyto-text-main: var(--md-typeset-color);
   --phyto-text-muted: #a0a0a0;
   --phyto-text-heading: #ffffff;
@@ -73,30 +40,6 @@
   --custom-decor: #fe8019;
 }
 
-.md-header {
-  background-color: #131314 !important;
-  color: #fcfcfc !important;
-}
-
-.md-tabs {
-  background-color: #131314 !important;
-  font-size: 0.75rem !important;
-}
-
-.md-tabs__link {
-  color: #fff !important;
-  opacity: 1 !important;
-  transition: color 0.2s ease;
-}
-
-.md-tabs__item--active .md-tabs__link,
-.md-tabs__link--active,
-.md-tabs__item--active .md-tabs__link:hover,
-.md-tabs__link--active:hover,
-.md-tabs__link:hover {
-  color: var(--phyto-light-yellow) !important;
-}
-
 .md-typeset .highlight {
   background-color: var(--override-bg) !important;
   border-radius: 2px;
@@ -117,14 +60,6 @@
 .md-typeset code {
   background-color: var(--override-bg) !important;
   color: var(--override-fg) !important;
-}
-
-.md-typeset h1 {
-  color: var(--header-color);
-}
-
-.md-typeset p {
-  text-align: justify;
 }
 
 .highlight .k, .highlight .kn, .highlight .kp, .highlight .kd {

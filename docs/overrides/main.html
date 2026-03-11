@@ -3,13 +3,18 @@
 {% block hero %}
   {% if page.is_homepage %}
     <section class="tx-hero-container">
-      <div class="tx-hero__content">
+      <div class="tx-hero__content md-typeset">
         <h1>Phytospatial</h1>
         <p>{{ config.site_description }}</p>
         <div class="tx-hero__actions">
           <a href="installation/" class="md-button">Get Started</a>
           <a href="examples/extraction_pipeline/" class="md-button">View Tutorials</a>
         </div>
+      </div>
+      <div class="tx-scroll-indicator">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+        </svg>
       </div>
     </section>
   {% endif %}

@@ -18,4 +18,3 @@ site/
 .env
 *docx
 import_treetops.py
-*/overrides/partials

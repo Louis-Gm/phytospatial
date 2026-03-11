@@ -1,3 +1,5 @@
+# mkdocs.yml
+
 site_name: Phytospatial
 site_description: The open-source standard for enhanced forest inventories
 site_url: https://phytospatial.readthedocs.io/
@@ -23,26 +25,12 @@ theme:
     code: Roboto Mono
 
   palette:
-    # Light theme
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: blue
-      accent: orange
-      toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
-    # Dark theme
-    - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: blue
-      accent: orange
-      toggle:
-        icon: material/weather-sunny
-        name: Switch to light mode
 
 extra_css:
-  - stylesheets/extra.css
+  - stylesheets/theme.css
   - stylesheets/home.css
+  - stylesheets/global.css
 
 markdown_extensions:
   - admonition
