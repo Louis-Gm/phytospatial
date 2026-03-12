@@ -3,6 +3,7 @@ import sys
 import logging
 import os
 from pathlib import Path
+from typing import Optional
 from sqlalchemy import text
 
 def setup_logging(level: int = logging.INFO) -> None:
@@ -17,7 +18,7 @@ def setup_logging(level: int = logging.INFO) -> None:
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
 
-def initialize_database(db_type: str, path: str, reset: bool = False) -> None:
+def initialize_database(db_type: str, path: Optional[str] = None, reset: bool = False) -> None:
     """
     Orchestrates the provisioning of the spatial database schema based on the user's dialect preference.
 
@@ -26,7 +27,8 @@ def initialize_database(db_type: str, path: str, reset: bool = False) -> None:
 
     Args:
         db_type (str): The requested database dialect ('sqlite' or 'postgres').
-        path (str): The designated file path for local SQLite deployments.
+        path (Optional[str]): Optional file path for local SQLite deployments.
+            If omitted, defaults to 'phytospatial_local.gpkg'. Ignored for PostgreSQL.
         reset (bool): Instructs the engine to delete an existing local database file or drop all tables.
     """
     try:
@@ -37,6 +39,7 @@ def initialize_database(db_type: str, path: str, reset: bool = False) -> None:
         sys.exit(1)
 
     if db_type == "sqlite":
+        path = path or "phytospatial_local.gpkg"
         if reset and Path(path).exists():
             logging.warning(f"Reset flag detected. Removing existing GeoPackage at {path}.")
             os.remove(path)
