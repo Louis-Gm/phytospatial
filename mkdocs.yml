@@ -73,6 +73,7 @@ nav:
       - Db:
           - "Cli": reference/db/cli.md
           - "Client": reference/db/client.md
+          - "Import Treetops": reference/db/import_treetops.md
           - "Models": reference/db/models.md
       - Lidar:
           - "Delineate Crown": reference/lidar/delineate_crown.md
