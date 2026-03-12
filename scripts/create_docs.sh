@@ -1,13 +1,18 @@
 #!/bin/bash
-# scripts/create_docs.sh
+
+: <<'DOC'
+Synchronizes Python modules with MkDocs documentation files and updates the navigation.
+Generates markdown files with mkdocstrings directives and injects the updated
+navigation structure into the mkdocs.yml file.
+DOC
 
 SRC_ROOT="src"
 DOCS_DIR="docs/reference"
 MKDOCS_FILE="mkdocs.yml"
 
-# clean existing docs
 echo "Starting Documentation Sync..."
-find "$SRC_ROOT/phytospatial" -name "*.py" | while read py_file; do    
+
+find "$SRC_ROOT/phytospatial" -name "*.py" | while read -r py_file; do    
     rel_path="${py_file#$SRC_ROOT/}"
     import_path="${rel_path%.py}"
     import_path="${import_path//\//.}"
@@ -22,23 +27,25 @@ find "$SRC_ROOT/phytospatial" -name "*.py" | while read py_file; do
     target_md="$target_dir/$module_name.md"
 
     cat <<EOF > "$target_md"
+# $module_name
+
 ::: $import_path
     options:
-      show_root_heading: true
+      show_root_heading: false
       show_source: true
+      members: true
 EOF
-    echo "Generated: $target_md"
 done
 
 TMP_YAML="temp_nav.yml"
-echo "  - API Reference:" > "$TMP_YAML"
+echo "" > "$TMP_YAML"
 
 last_dir=""
 
 (
     find "$SRC_ROOT/phytospatial" -mindepth 2 -name "*.py" | sort
     find "$SRC_ROOT/phytospatial" -maxdepth 1 -name "*.py" | sort
-) | while read py_file; do
+) | while read -r py_file; do
     
     rel_path="${py_file#$SRC_ROOT/}"
     module_name=$(basename "$rel_path" .py)
@@ -53,7 +60,6 @@ last_dir=""
 
     if [ "$clean_dir" == "Phytospatial" ]; then
         echo "      - \"$clean_mod\": $md_rel_path" >> "$TMP_YAML"
-        last_dir="Phytospatial"
     else
         if [ "$clean_dir" != "$last_dir" ]; then
             echo "      - $clean_dir:" >> "$TMP_YAML"
@@ -63,12 +69,12 @@ last_dir=""
     fi
 done
 
-# inject into mkdocs.yml
-sed -i -e "/# REF_START/,/# REF_END/{ 
-    /# REF_START/!{ 
-        /# REF_END/!d 
-    } 
-    /# REF_START/r $TMP_YAML
+sed -i -e "/# REF_START/,/# REF_END/ {
+    /# REF_START/ n
+    /# REF_END/ !d
+    /# REF_END/ i\\
+  - API Reference:
+    r $TMP_YAML
 }" "$MKDOCS_FILE"
 
 rm "$TMP_YAML"
