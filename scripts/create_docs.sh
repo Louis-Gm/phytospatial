@@ -33,7 +33,6 @@ find "$SRC_ROOT/phytospatial" -name "*.py" | while read -r py_file; do
     options:
       show_root_heading: false
       show_source: true
-      members: true
 EOF
 done
 
