@@ -53,8 +53,8 @@ def main():
     
     if file_path.exists():
         content = file_path.read_text(encoding="utf-8")
-        pattern = r"Grand'Maison, L\.-V\. \(\d{4}\)\. Phytospatial: The open-source standard for enhanced forest inventories \(.*?\)\ \[software\]\. Zenodo"
-        replacement = f"Grand'Maison, L.-V. ({year}). Phytospatial: The open-source standard for enhanced forest inventories ({new_ver}) [software]. Zenodo"
+        pattern = r"Grand'Maison, L\.-V\. \(\d{4}\)\. Phytospatial \(.*?\)\ \[software\]\. Zenodo"
+        replacement = f"Grand'Maison, L.-V. ({year}). Phytospatial ({new_ver}) [software]. Zenodo"
         
         file_path.write_text(update_content(content, pattern, replacement, flags=re.IGNORECASE), encoding="utf-8")
 
