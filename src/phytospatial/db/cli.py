@@ -3,6 +3,7 @@ import sys
 import logging
 import os
 from pathlib import Path
+from sqlalchemy import text
 
 def setup_logging(level: int = logging.INFO) -> None:
     """
@@ -26,10 +27,11 @@ def initialize_database(db_type: str, path: str, reset: bool = False) -> None:
     Args:
         db_type (str): The requested database dialect ('sqlite' or 'postgres').
         path (str): The designated file path for local SQLite deployments.
-        reset (bool): Instructs the engine to delete an existing local database file before initialization.
+        reset (bool): Instructs the engine to delete an existing local database file or drop all tables.
     """
     try:
         from phytospatial.db import DB_Client
+        from phytospatial.db.models import Base
     except ImportError as e:
         logging.error(f"Database dependencies are missing. Run `pip install phytospatial[db]`. Details: {e}")
         sys.exit(1)
@@ -38,38 +40,46 @@ def initialize_database(db_type: str, path: str, reset: bool = False) -> None:
         if reset and Path(path).exists():
             logging.warning(f"Reset flag detected. Removing existing GeoPackage at {path}.")
             os.remove(path)
-            
+
         db_url = f"sqlite:///{path}"
-        
+
     elif db_type == "postgres":
         try:
             from dotenv import load_dotenv, find_dotenv
             env_path = find_dotenv()
             if env_path:
                 load_dotenv(env_path)
+
         except ImportError:
             logging.warning("python-dotenv not installed. Relying strictly on system environment variables.")
-            
+
         db_user = os.getenv("DB_USER")
         db_pass = os.getenv("DB_PASSWORD")
         db_host = os.getenv("DB_HOST", "localhost")
         db_port = os.getenv("DB_PORT", "5432")
         db_name = os.getenv("DB_NAME", "phytospatial")
-        
+
         if not all([db_user, db_pass]):
             logging.error("Missing DB_USER or DB_PASSWORD in environment variables. Cannot connect to PostgreSQL.")
             sys.exit(1)
-            
+
         db_url = f"postgresql+psycopg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
-        
+
     else:
         logging.error(f"Unsupported database type: {db_type}")
         sys.exit(1)
 
     logging.info(f"Targeting database connection: {db_type.upper()}")
-    
+
     try:
         client = DB_Client(connection_string=db_url)
+        
+        if reset and db_type == "postgres":
+            logging.warning("Reset flag detected for PostgreSQL. Dropping all existing tables with CASCADE.")
+            with client.engine.begin() as conn:
+                for table in reversed(Base.metadata.sorted_tables):
+                    conn.execute(text(f"DROP TABLE IF EXISTS {table.name} CASCADE"))
+            
         success = client.initialize_database()
         
         if success:
