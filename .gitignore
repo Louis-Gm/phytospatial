@@ -17,4 +17,3 @@ site/
 *pipeline.py
 .env
 *docx
-import_treetops.py
