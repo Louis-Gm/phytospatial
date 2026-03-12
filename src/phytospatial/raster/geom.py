@@ -9,7 +9,7 @@ and safety (memory-awareness).
 
 import logging
 from pathlib import Path
-from typing import Union, List, Optional, Tuple, Callable
+from typing import Union, List, Optional, Tuple, Callable, Any
 from functools import wraps
 import inspect
 
