@@ -236,7 +236,14 @@ class DB_Client:
             return 0
             
         date_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H%M")
-        df = crowns_vector.data
+        
+        # A deep copy prevents geometric mutations from bleeding back into the active memory space of the calling script.
+        df = crowns_vector.data.copy()
+        
+        # Dimensionality must be forcefully flattened to prevent Z errors with PostGIS
+        if df.geometry.has_z.any():
+            df.geometry = gpd.GeoSeries.from_wkb(df.geometry.to_wkb(output_dimension=2))
+            
         total_inserted = 0
         records = []
         
