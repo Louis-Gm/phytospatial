@@ -76,7 +76,7 @@ class Tree(Base):
     tree_id = Column(String(255), unique=True, nullable=False)
     species = Column(String(255))
     status = Column(String(50))
-    geom = Column(Geometry('POINT', spatial_index=True, management=True))
+    geom = Column(Geometry('POINT', spatial_index=True))
     created_at = Column(DateTime(timezone=True), default=datetime.datetime.utcnow)
 
     crowns = relationship("Crown", back_populates="tree", cascade="all, delete-orphan")
@@ -138,7 +138,7 @@ class Crown(Base):
     generation_method = Column(String(255))
     source_lidar_id = Column(Integer, ForeignKey('lidar_acquisitions.id', ondelete='SET NULL'))
     source_image_id = Column(Integer, ForeignKey('image_acquisitions.id', ondelete='SET NULL'))
-    geom = Column(Geometry('POLYGON', spatial_index=True, management=True))
+    geom = Column(Geometry('POLYGON', spatial_index=True))
     created_at = Column(DateTime(timezone=True), default=datetime.datetime.utcnow)
 
     __table_args__ = (
