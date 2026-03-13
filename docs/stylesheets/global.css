@@ -144,6 +144,14 @@
   font-size: 1.5rem !important;
   margin-bottom: 0.5rem !important;
 }
+
+.md-typeset h3 {
+  color: var(--phyto-yellow) !important;
+  border-bottom: none;
+  font-size: 1.1rem !important;
+  margin-bottom: 0.4rem !important;
+}
+
 .md-header__topic {
   font-size: 1.1rem !important;
   justify-content: center;
