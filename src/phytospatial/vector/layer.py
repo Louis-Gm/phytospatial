@@ -15,6 +15,21 @@ __all__ = [
 ]
 
 class Vector:
+    """
+    A wrapper class around a GeoPandas GeoDataFrame to represent vector spatial data with additional properties and methods.
+    
+    Attributes:
+        data (gpd.GeoDataFrame): The underlying GeoDataFrame containing the spatial data.
+
+    Properties:
+        crs: The Coordinate Reference System of the geometries in the GeoDataFrame.
+        bounds: The bounding box of all geometries in the GeoDataFrame as (minx, miny, maxx, maxy).
+        columns: The list of column names in the GeoDataFrame.
+
+    Methods:
+        __len__: Returns the number of features in the GeoDataFrame.
+        __repr__: Returns a string representation of the Vector object.
+    """
     def __init__(self, data: gpd.GeoDataFrame):
         if not isinstance(data, gpd.GeoDataFrame):
             raise TypeError(f"Expected GeoDataFrame, got {type(data)}")

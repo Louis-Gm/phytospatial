@@ -43,7 +43,20 @@ def _process_geometry_in_memory(
     threshold: Optional[float] = None,
     return_raw: bool = False,
     idx_to_name: Optional[Dict[int, str]] = None
-) -> Dict[str, Any]:
+    ) -> Dict[str, Any]:
+    """
+    Extracts pixel values for a single geometry from an in-memory raster tile, applying masking and thresholding as needed.
+
+    Args:
+        raster (Raster): The in-memory raster tile to extract from.
+        geometry (Any): The geometry defining the area of interest for extraction.
+        threshold (Optional[float]): Minimum pixel value to consider valid during extraction.
+        return_raw (bool): If True, returns raw pixel values instead of statistics.
+        idx_to_name (Optional[Dict[int, str]]): Mapping from band indices to human-readable names for output keys.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing either raw pixel values or computed statistics for the geometry.
+    """
     
     try:
         raster_window = Window(0, 0, raster.width, raster.height)
@@ -157,7 +170,8 @@ def extract_features(
         tile_size (int): Size of the processing window if tiled mode is selected.
 
     Yields:
-        Generator[Dict[str, Any], None, None]: Successive dictionaries containing spatial identifiers and the extracted band statistics or raw values for each vector feature.
+        Generator[Dict[str, Any], None, None]: Successive dictionaries containing spatial identifiers and the extracted 
+                                               band statistics or raw values for each vector feature.
     """
     if isinstance(vector_input, (str, Path)):
         vector_obj = load_vector(vector_input)

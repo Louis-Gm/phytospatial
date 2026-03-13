@@ -26,8 +26,20 @@ def _transfer_attributes(
     transfer_col: str, 
     max_dist: float,
     target_col_name: str
-) -> gpd.GeoDataFrame:
+    ) -> gpd.GeoDataFrame:
+    """
+    Transfers attributes from source_gdf to target_gdf based on spatial proximity.
     
+    Args:
+        target_gdf (gpd.GeoDataFrame): The GeoDataFrame to which attributes will be transferred.
+        source_gdf (gpd.GeoDataFrame): The GeoDataFrame from which attributes will be transferred.
+        transfer_col (str): The column name in the source GeoDataFrame containing the attributes to transfer.
+        max_dist (float): The maximum distance for spatial proximity matching.
+        target_col_name (str): The column name in the target GeoDataFrame where the transferred attributes will be stored.
+
+    Returns:
+        gpd.GeoDataFrame: The updated target GeoDataFrame with transferred attributes.
+    """
     if transfer_col not in source_gdf.columns:
         raise ValueError(f"Column '{transfer_col}' not found in source vector.")
 
@@ -61,7 +73,21 @@ def prepare_itcd_vectors(
     species_col: Optional[str] = None,
     do_validate: bool = True,
     fix_invalid: bool = True
-) -> Vector:
+    ) -> Vector:
+    """
+    Prepares a Vector for ITCD processing by ensuring required columns, validating geometries, and standardizing formats.
+
+    Args:
+        vector (Vector): The input Vector to prepare.
+        id_col (Optional[str]): The name of the column to use as the unique identifier for tree crowns. 
+            If None, a new 'crown_id' column will be created using the index. Defaults to None.
+        species_col (Optional[str]): The name of the column containing species information. 
+            If None, a new 'species' column will be created with null values. Defaults to None.
+        do_validate (bool): Whether to validate geometries and optionally fix or drop invalid ones. Defaults to True.
+        fix_invalid (bool): If do_validate is True, whether to attempt fixing invalid geometries before dropping them. Defaults to True.
+
+    Returns: A prepared Vector with standardized columns and validated geometries, ready for ITCD processing.
+    """
     
     if do_validate:
         vector = validate(vector, fix_invalid=fix_invalid, drop_invalid=True, inplace=False)
@@ -103,7 +129,18 @@ def label_tree_crowns(
     label_col: str, 
     max_dist: float = 2.0
 ) -> Vector:
+    """
+    Labels tree crowns in the target vector by transferring species information from nearby source points.
     
+    Args:
+        target_vector (Vector): The Vector containing tree crown geometries to be labeled.
+        source_points (Vector): The Vector containing point geometries with species information to transfer.
+        label_col (str): The name of the column in the source points that contains the species labels to transfer.
+        max_dist (float): The maximum distance for spatial proximity when transferring labels. Defaults to 2.0 units.
+
+    Returns:
+        Vector: A new Vector with tree crowns labeled with species information from nearby source points.
+    """
     target_gdf = target_vector.data.copy()
     source_gdf = source_points.data
 

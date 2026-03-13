@@ -16,7 +16,10 @@ class JSONVariant(TypeDecorator):
     impl = VARCHAR
     cache_ok = True
 
-    def load_dialect_impl(self, dialect: Any) -> Any:
+    def load_dialect_impl(
+            self, 
+            dialect: Any
+            ) -> Any:
         """
         Provisions the appropriate SQL type descriptor based on the active database engine dialect.
 
@@ -30,7 +33,11 @@ class JSONVariant(TypeDecorator):
             return dialect.type_descriptor(JSONB())
         return dialect.type_descriptor(VARCHAR())
 
-    def process_bind_param(self, value: Dict[str, Any], dialect: Any) -> Any:
+    def process_bind_param(
+            self, 
+            value: Dict[str, Any], 
+            dialect: Any
+            ) -> Any:
         """
         Serializes dictionary payloads into dialect-compatible formats during database insertion.
 
@@ -48,7 +55,11 @@ class JSONVariant(TypeDecorator):
         import json
         return json.dumps(value)
 
-    def process_result_value(self, value: Any, dialect: Any) -> Dict[str, Any]:
+    def process_result_value(
+            self, 
+            value: Any, 
+            dialect: Any
+            ) -> Any:
         """
         Deserializes dialect-specific strings or binaries back into Python dictionaries during retrieval.
 
@@ -75,7 +86,7 @@ class Tree(Base):
     objectid = Column(Integer, primary_key=True, autoincrement=True)
     tree_id = Column(String(255), unique=True, nullable=False)
     species = Column(String(255))
-    status = Column(String(50))
+    status = Column(String(20))
     geom = Column(Geometry('POINT', spatial_index=True))
     created_at = Column(DateTime(timezone=True), default=datetime.datetime.utcnow)
 
