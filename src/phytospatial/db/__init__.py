@@ -1,3 +1,9 @@
+# src/phytospatial/db/__init__.py
+#
+# Copyright (c) The phytospatial project contributors
+# This software is distributed under the Apache-2.0 license.
+# See the NOTICE file for more information
+
 """
 Initializes the database sub-package and validates the presence of optional ORM dependencies.
 """
