@@ -1,5 +1,39 @@
 /* docs/stylesheets/global.css */
 
+.md-sidebar--primary .md-nav--primary > .md-nav__list {
+  padding-left: 38px !important;
+}
+
+.md-sidebar .md-nav__link,
+.md-sidebar .md-nav__source {
+  font-size: 0.7rem !important;
+  transition: color 0.2s ease !important;
+}
+
+.md-sidebar .md-nav__title,
+.md-sidebar .md-nav__title * {
+  color: var(--phyto-text-white) !important;
+  font-size: 0.85rem !important;
+  font-weight: bold !important;
+}
+
+.md-sidebar .md-nav__item--section > .md-nav__link {
+  color: var(--phyto-text-white) !important;
+  font-size: 0.85rem !important;
+  font-weight: bold !important;
+}
+
+.md-sidebar .md-nav__link:hover,
+.md-sidebar .md-nav__link:hover * {
+  color: var(--phyto-gold) !important;
+}
+
+.md-sidebar .md-nav__link--active,
+.md-sidebar .md-nav__link--active * {
+  color: var(--phyto-light-yellow) !important;
+  font-weight: bold !important;
+}
+
 @media screen and (min-width: 76.25em) {
   .md-header__inner,
   .md-tabs .md-grid {
@@ -97,6 +131,19 @@
   color: #fcfcfc !important;
 }
 
+.md-typeset h1 {
+  color: var(--phyto-text-gold-accent) !important;
+  border-bottom: none;
+  font-size: 1.85rem !important;
+  margin-bottom: 1.25rem !important;
+}
+
+.md-typeset h2 {
+  color: var(--phyto-yellow) !important;
+  border-bottom: none;
+  font-size: 1.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
 .md-header__topic {
   font-size: 1.1rem !important;
   justify-content: center;
