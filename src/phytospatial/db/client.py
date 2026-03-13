@@ -1,8 +1,11 @@
 import logging
 import datetime
+import os
 from typing import Optional, List, Dict, Any, Union
 from pathlib import Path
+
 import geopandas as gpd
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, insert, select
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.event import listen
@@ -17,7 +20,10 @@ from .models import (
 
 log = logging.getLogger(__name__)
 
-def _load_spatialite(dbapi_conn: Any, connection_record: Any) -> None:
+def _load_spatialite(
+        dbapi_conn: Any, 
+        connection_record: Any
+        ) -> None:
     """
     Hooks into the SQLite connection lifecycle to enable and load the mod_spatialite extension.
     
@@ -39,7 +45,10 @@ class DB_Client:
     A dialect-agnostic Data Access Layer bridging Phytospatial algorithms with persistent relational storage.
     """
 
-    def __init__(self, connection_string: str = "sqlite:///phytospatial_local.gpkg"):
+    def __init__(
+            self, 
+            connection_string: str = "sqlite:///phytospatial_local.gpkg"
+            ):
         """
         Initializes the database client, deploying dialect-specific hooks when interacting with SQLite engines.
         
@@ -51,7 +60,46 @@ class DB_Client:
             listen(self.engine, 'connect', _load_spatialite)
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
-    def initialize_database(self) -> bool:
+    @classmethod
+    def from_env(
+        cls, 
+        db_type: str = "postgres", 
+        env_path: Optional[Union[str, Path]] = None, 
+        sqlite_path: str = "phytospatial_local.gpkg"
+        ) -> "DB_Client":
+        """
+        Instantiates a DB_Client by dynamically resolving connection credentials from the system environment.
+
+        Args:
+            db_type (str): The requested database dialect ('sqlite' or 'postgres'). Defaults to 'postgres'.
+            env_path (Optional[Union[str, Path]]): Filepath to a .env configuration file.
+            sqlite_path (str): Fallback filepath for local SQLite deployments. Defaults to 'phytospatial_local.gpkg'.
+
+        Returns:
+            DB_Client: A fully configured and instantiated database client.
+
+        Raises:
+            ValueError: If the required PostgreSQL credentials are missing from the environment.
+        """
+        if env_path:
+            load_dotenv(env_path)
+
+        if db_type == "sqlite":
+            return cls(connection_string=f"sqlite:///{sqlite_path}")
+
+        db_user = os.getenv("DB_USER")
+        db_pass = os.getenv("DB_PASSWORD")
+        db_host = os.getenv("DB_HOST", "localhost")
+        db_port = os.getenv("DB_PORT", "5432")
+        db_name = os.getenv("DB_NAME", "phytospatial")
+
+        if not all([db_user, db_pass]):
+            raise ValueError("Missing DB_USER or DB_PASSWORD in environment variables. Cannot connect to PostgreSQL.")
+
+        db_url = f"postgresql+psycopg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+        return cls(connection_string=db_url)
+
+    def deploy_schema(self) -> bool:
         """
         Deploys the complete Phytospatial relational schema to the connected database target.
         
@@ -69,7 +117,10 @@ class DB_Client:
             log.error(f"Failed to initialize database schema: {e}")
             return False
 
-    def fetch_trees(self, crs: str = "EPSG:32619") -> Vector:
+    def fetch_trees(
+            self, 
+            crs: str = "EPSG:32619"
+            ) -> Vector:
         """
         Retrieves all master anchor trees from the database into a unified Vector object.
         
@@ -103,9 +154,9 @@ class DB_Client:
         acquisition_time: datetime.datetime,
         point_density: Optional[float] = None,
         returns: Optional[int] = None
-    ) -> int:
+        ) -> int:
         """
-        Persists a new LiDAR acquisition record into the telemetry registry.
+        Persists a new LiDAR acquisition record into the acquisition registry.
         
         Args:
             sensor_type (str): The nomenclature identifier of the sensor.
@@ -133,7 +184,7 @@ class DB_Client:
         acquisition_time: datetime.datetime,
         gsd_cm: Optional[float] = None,
         bands: Optional[List[Dict[str, Any]]] = None
-    ) -> int:
+        ) -> int:
         """
         Persists a new Image acquisition record, including sequential spectral band specifications.
         
@@ -168,7 +219,12 @@ class DB_Client:
             session.commit()
             return acquisition.id
 
-    def upload_trees(self, trees_vector: Vector, srid: int = 32619, batch_size: int = 5000) -> int:
+    def upload_trees(
+            self, 
+            trees_vector: Vector, 
+            srid: int = 32619, 
+            batch_size: int = 5000
+            ) -> int:
         """
         Performs a memory-safe bulk insertion of point geometries representing tree anchor locations.
         
@@ -217,7 +273,7 @@ class DB_Client:
         image_id: Optional[int] = None,
         srid: int = 32619,
         batch_size: int = 5000
-    ) -> int:
+        ) -> int:
         """
         Uploads synthetically generated polygon arrays via memory-safe chunking linked to existing tree anchors.
         
@@ -274,7 +330,10 @@ class DB_Client:
                 
         return total_inserted
 
-    def _batch_insert_spectral(self, records: List[Dict[str, Any]]) -> None:
+    def _batch_insert_spectral(
+            self, 
+            records: List[Dict[str, Any]]
+            ) -> None:
         """
         Commits an explicit payload of parsed spectral JSON dicts into the relation persistence layer.
         
@@ -294,7 +353,7 @@ class DB_Client:
         image_id: int,
         batch_size: int = 5000,
         **kwargs: Any
-    ) -> int:
+        ) -> int:
         """
         Orchestrates an extraction pipeline, routing generated scalar JSON payloads directly into SQL storage.
         
