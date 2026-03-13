@@ -13,13 +13,13 @@
 .md-sidebar .md-nav__title,
 .md-sidebar .md-nav__title * {
   color: var(--phyto-text-white) !important;
-  font-size: 0.85rem !important;
+  font-size: 0.8rem !important;
   font-weight: bold !important;
 }
 
 .md-sidebar .md-nav__item--section > .md-nav__link {
   color: var(--phyto-text-white) !important;
-  font-size: 0.85rem !important;
+  font-size: 0.8rem !important;
   font-weight: bold !important;
 }
 
