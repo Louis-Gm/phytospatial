@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from sqlalchemy import text
 
