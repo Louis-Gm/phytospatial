@@ -1,3 +1,5 @@
+# src/phytospatial/db/client.py
+
 import logging
 import datetime
 import os
@@ -368,11 +370,16 @@ class DB_Client:
             ValueError: If `return_raw` flags are enabled, blocking heavy data arrays from violating JSON bounds.
             
         Returns:
-            int: Comprehensive integer representing total rows effectively inserted into the relational schema.
+            total_inserted (int): Comprehensive integer representing total rows effectively inserted into the relational schema.
         """
         if kwargs.get("return_raw") is True:
             raise ValueError("Cannot extract raw pixel arrays directly to a relational database JSON payload. Use extract_to_dataframe for raw ML matrices.")
-            
+
+        # The overall logic is that a generator function that yields parsed dictionaries one at a time to maintain a memory-safe footprint
+        # while the client batches these dictionaries into transactions of a specified size before committing to the database.
+        # This allows the streaming of large extraction results without overwhelming memory resources.
+        # 
+        # Each resulting record is linked back to the source image acquisition via the provided image_id foreign key reference.
         from phytospatial.extract import extract_features
         results_gen = extract_features(
             raster_input=raster_input,
@@ -383,7 +390,7 @@ class DB_Client:
         
         total_inserted = 0
         batch_records = []
-        
+
         for feature in results_gen:
             f_copy = feature.copy()
             crown_id = str(f_copy.pop('crown_id'))
