@@ -66,6 +66,8 @@ docs = [                        # pip install .[docs]
     "mkdocstrings[python]>=0.24",
     "mkdocs-include-markdown-plugin>=4.0",
     "mkdocs-jupyter>=0.24",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
 ]
 
 dev = [                         # pip install .[dev]

@@ -11,15 +11,42 @@
 }
 
 .md-sidebar .md-nav__title,
-.md-sidebar .md-nav__title * {
+.md-sidebar .md-nav__title *,
+.md-sidebar .md-nav__item--section > .md-nav__link {
   color: var(--phyto-text-white) !important;
   font-size: 0.8rem !important;
   font-weight: bold !important;
 }
 
-.md-sidebar .md-nav__item--section > .md-nav__link {
+.md-sidebar .md-nav[data-md-level="1"] > .md-nav__list > .md-nav__item--section > .md-nav__link {
+  font-size: 0.75rem !important;
+}
+
+.md-sidebar .md-nav[data-md-level="2"] > .md-nav__list > .md-nav__item--nested > .md-nav__link {
+  font-size: 0.75rem !important;
+  font-weight: normal !important;
   color: var(--phyto-text-white) !important;
-  font-size: 0.8rem !important;
+}
+
+.md-sidebar .md-nav[data-md-level="2"] > .md-nav__list > .md-nav__item--active.md-nav__item--nested > .md-nav__link {
+  color: var(--phyto-light-yellow) !important;
+  font-weight: bold !important;
+}
+
+.md-sidebar .md-nav[data-md-level="2"] > .md-nav__list > .md-nav__item:not(.md-nav__item--nested) > .md-nav__link,
+.md-sidebar .md-nav[data-md-level="3"] > .md-nav__list > .md-nav__item:not(.md-nav__item--nested) > .md-nav__link {
+  color: var(--phyto-text-white) !important;
+}
+
+.md-sidebar .md-nav[data-md-level="2"] > .md-nav__list > .md-nav__item:not(.md-nav__item--nested) > .md-nav__link.md-nav__link--active,
+.md-sidebar .md-nav[data-md-level="3"] > .md-nav__list > .md-nav__item:not(.md-nav__item--nested) > .md-nav__link.md-nav__link--active {
+  color: var(--phyto-light-yellow) !important;
+  font-weight: bold !important;
+}
+
+.md-sidebar .md-nav__link--active,
+.md-sidebar .md-nav__link--active * {
+  color: var(--phyto-light-yellow) !important;
   font-weight: bold !important;
 }
 
@@ -28,9 +55,39 @@
   color: var(--phyto-gold) !important;
 }
 
-.md-sidebar .md-nav__link--active,
-.md-sidebar .md-nav__link--active * {
+.md-sidebar .md-nav[data-md-level="2"] > .md-nav__list > .md-nav__item--nested > .md-nav__link:hover {
+  color: var(--phyto-gold) !important;
+}
+
+.md-sidebar .md-nav[data-md-level="2"] > .md-nav__list > .md-nav__item:not(.md-nav__item--nested) > .md-nav__link:hover,
+.md-sidebar .md-nav[data-md-level="3"] > .md-nav__list > .md-nav__item:not(.md-nav__item--nested) > .md-nav__link:hover {
+  color: var(--phyto-gold) !important;
+}
+
+.md-sidebar--secondary .md-nav__list[data-md-component="toc"] > .md-nav__item:first-child {
+  display: none !important;
+}
+
+.md-sidebar--secondary .md-nav__link,
+.md-sidebar--secondary .md-nav__link * {
+  color: var(--phyto-text-white) !important;
+}
+
+.md-sidebar--secondary .md-nav__link--active,
+.md-sidebar--secondary .md-nav__link--active * {
   color: var(--phyto-light-yellow) !important;
+  font-weight: bold !important;
+}
+
+.md-sidebar--secondary .md-nav__link:hover,
+.md-sidebar--secondary .md-nav__link:hover * {
+  color: var(--phyto-gold) !important;
+}
+
+.md-sidebar--secondary .md-nav__title,
+.md-sidebar--secondary .md-nav__title * {
+  color: var(--phyto-text-white) !important;
+  font-size: 0.8rem !important;
   font-weight: bold !important;
 }
 

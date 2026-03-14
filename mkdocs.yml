@@ -17,7 +17,6 @@ theme:
     - navigation.tabs.sticky
     - navigation.sections
     - content.code.copy
-    - navigation.expand
     - navigation.top
 
   font:
@@ -48,6 +47,11 @@ markdown_extensions:
 plugins:
   - search
   - mkdocs-jupyter
+  - gen-files:
+      scripts:
+        - scripts/create_reference_docs.py
+  - literate-nav:
+      nav_file: SUMMARY.md
   - mkdocstrings:
       default_handler: python
       handlers:
@@ -59,8 +63,6 @@ plugins:
             heading_level: 2
   - include-markdown
 
-# NOTE: DO NOT REMOVE THE COMMENTS AROUND THE API REFERENCE SECTION. 
-# THEY ARE USED TO AUTOMATICALLY UPDATE THE API REFERENCE USING create_docs.sh
 nav:
   - Home: index.md
   - Getting Started:
@@ -68,65 +70,7 @@ nav:
       - "Basic Usage": usage.md
   - Tutorials:
       - "Pipeline Introduction": examples/extraction_pipeline.ipynb
-  # REF_START    
-  - API Reference:
-  # REF_END
-
-      - Db:
-          - "Client": reference/db/client.md
-          - "Import Treetops": reference/db/import_treetops.md
-          - "Models": reference/db/models.md
-          - "Setup Db": reference/db/setup_db.md
-      - Lidar:
-          - "Delineate Crown": reference/lidar/delineate_crown.md
-          - "Detect Treetop": reference/lidar/detect_treetop.md
-          - "Generate Model": reference/lidar/generate_model.md
-          - "Layer": reference/lidar/layer.md
-          - "Rasterize": reference/lidar/rasterize.md
-      - Raster:
-          - "Compute Index": reference/raster/compute_index.md
-          - "Engine": reference/raster/engine.md
-          - "Geom": reference/raster/geom.md
-          - "Indices": reference/raster/indices.md
-          - "Io": reference/raster/io.md
-          - "Layer": reference/raster/layer.md
-          - "Partition": reference/raster/partition.md
-          - "Resources": reference/raster/resources.md
-          - "Utils": reference/raster/utils.md
-      - Vector:
-          - "Geom": reference/vector/geom.md
-          - "Io": reference/vector/io.md
-          - "Layer": reference/vector/layer.md
-          - "Spatial Operations": reference/vector/spatial_operations.md
-      - "Extract": reference/extract.md
-
-      - Db:
-          - "Client": reference/db/client.md
-          - "Import Treetops": reference/db/import_treetops.md
-          - "Models": reference/db/models.md
-          - "Setup Db": reference/db/setup_db.md
-      - Lidar:
-          - "Delineate Crown": reference/lidar/delineate_crown.md
-          - "Detect Treetop": reference/lidar/detect_treetop.md
-          - "Generate Model": reference/lidar/generate_model.md
-          - "Layer": reference/lidar/layer.md
-          - "Rasterize": reference/lidar/rasterize.md
-      - Raster:
-          - "Compute Index": reference/raster/compute_index.md
-          - "Engine": reference/raster/engine.md
-          - "Geom": reference/raster/geom.md
-          - "Indices": reference/raster/indices.md
-          - "Io": reference/raster/io.md
-          - "Layer": reference/raster/layer.md
-          - "Partition": reference/raster/partition.md
-          - "Resources": reference/raster/resources.md
-          - "Utils": reference/raster/utils.md
-      - Vector:
-          - "Geom": reference/vector/geom.md
-          - "Io": reference/vector/io.md
-          - "Layer": reference/vector/layer.md
-          - "Spatial Operations": reference/vector/spatial_operations.md
-      - "Extract": reference/extract.md
+  - API Reference: reference/
   - Articles:
       - "Phytospatial Blog": articles/blog.md
   - About:
