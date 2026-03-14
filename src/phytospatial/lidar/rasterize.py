@@ -15,7 +15,7 @@ from numba import jit
 
 from phytospatial.raster.layer import Raster
 
-from .layer import PointCloud
+from phytospatial.lidar.layer import PointCloud
 
 log = logging.getLogger(__name__)
 

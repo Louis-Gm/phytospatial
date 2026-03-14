@@ -42,7 +42,6 @@ class DelineationParams:
         apex_inclusion: Minimum relative height of pixels to be included in the crown compared to the apex height.
         crown_threshold: Minimum relative height of pixels to be included in the crown compared to the 
                         current average height of the crown during region growing.
-
     """
     delineation_method: str = "watershed"
     pixel_size: float = 0.25
