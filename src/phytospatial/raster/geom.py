@@ -7,11 +7,11 @@ It uses other raster modules under the hood to balance performance
 and safety (memory-awareness).
 """
 
+import inspect
 import logging
 from pathlib import Path
 from typing import Union, List, Optional, Tuple, Callable, Any
 from functools import wraps
-import inspect
 
 import numpy as np
 from rasterio.warp import Resampling, calculate_default_transform, reproject as rio_reproject
@@ -19,9 +19,9 @@ from rasterio.crs import CRS
 from rasterio.windows import from_bounds, transform as window_transform
 from rasterio.transform import Affine
 
-from .layer import Raster
-from .io import load
-from .resources import determine_strategy, ProcessingMode
+from phytospatial.raster.layer import Raster
+from phytospatial.raster.io import load
+from phytospatial.raster.resources import determine_strategy, ProcessingMode
 
 log = logging.getLogger(__name__)
 
@@ -35,46 +35,65 @@ __all__ = [
     "align_rasters"
 ]
 
-def auto_load(safe: bool = True) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+def auto_load(
+        safe: bool = True
+        ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """
-    Decorator which automatically loads file path arguments into Raster objects.
+    A signature-aware polymorphic decorator that resolves raster filepaths into in-memory Raster objects.
     
+    It selectively intercepts arguments passed as strings or Paths only if the target parameter's 
+    signature explicitly expects a 'Raster'. 
+
     Args:
-        safe (bool): If True, checks memory availability before loading.
-                     Raises MemoryError if the file is too large.
-    
+        safe (bool): Instructs the decorator to perform a preemptive memory safety assessment using 
+            the resource subpackage before loading. If True, it prevents Out-Of-Memory (OOM) 
+            errors by raising an exception if the raster exceeds safe capacity. Defaults to True.
+
     Returns:
-        Callable[[Callable[..., Any]], Callable[..., Any]]: Decorated function with auto-loaded Raster arguments.
+        Callable[[Callable[..., Any]], Callable[..., Any]]: The wrapped function executed with fully 
+            resolved Raster dependencies.
+
+    Raises:
+        MemoryError: If 'safe' is True and the target raster is evaluated as too large to safely 
+            fit within the available system RAM for an in-memory operation.
     """
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        sig = inspect.signature(func)
+        
         @wraps(func)
-        def wrapper(*args: Any, **kwargs: Any) -> Any:
-            sig = inspect.signature(func)
-            bound = sig.bind(*args, **kwargs)
-            bound.apply_defaults()
+        def wrapper(
+            *args: Any, 
+            **kwargs: Any
+            ) -> Any:
+            bound_args = sig.bind(*args, **kwargs)
+            bound_args.apply_defaults()
             
-            new_args = bound.arguments.copy()
-            
-            for name, value in new_args.items():
-                if isinstance(value, (str, Path)):
-                    try:
-                        if not Path(value).exists():
-                            continue
-                    except OSError:
-                        continue                    
+            for name, param in sig.parameters.items():
+                val = bound_args.arguments[name]
+                
+                if val is None:
+                    continue
+                    
+                annot_str = str(param.annotation)
+                expects_raster = "Raster" in annot_str or "raster" in name.lower()
+                
+                if expects_raster and isinstance(val, (str, Path)):
+                    val_path = Path(val)
+                    if not val_path.exists():
+                        continue
+                        
                     if safe:
-                        report = determine_strategy(value, user_mode="auto")
+                        report = determine_strategy(val_path, user_mode="auto")
                         if report.mode == ProcessingMode.IN_MEMORY:
                             raise MemoryError(
-                                f"Unsafe to auto-load '{name}' ({value}).\n"
+                                f"Unsafe to auto-load '{name}' ({val_path}).\n"
                                 f"Reason: {report.reason}\n"
                                 f"This function requires full in-memory loading. Use a streaming alternative."
                             )
+                            
+                    bound_args.arguments[name] = load(val_path)
                     
-                    log.debug(f"Auto-loading argument '{name}' from {value}")
-                    new_args[name] = load(value)
-            
-            return func(**new_args)
+            return func(*bound_args.args, **bound_args.kwargs)
         return wrapper
     return decorator
 
@@ -84,7 +103,7 @@ def reproject(
     target_crs: Union[str, CRS], 
     res: Optional[float] = None, 
     resampling: Resampling = Resampling.bilinear
-) -> Raster:
+    ) -> Raster:
     """
     Reproject a Raster to a new Coordinate Reference System (CRS).
 
@@ -143,7 +162,7 @@ def resample(
     raster: Raster, 
     scale_factor: float, 
     resampling: Resampling = Resampling.bilinear
-) -> Raster:
+    ) -> Raster:
     """
     Resample a raster by a scaling factor (Up/Down sampling).
     
@@ -187,7 +206,10 @@ def resample(
     )
 
 @auto_load(safe=True)
-def crop(raster: Raster, bounds: Tuple[float, float, float, float]) -> Raster:
+def crop(
+    raster: Raster, 
+    bounds: Tuple[float, float, float, float]
+    ) -> Raster:
     """
     Crop raster to specified geographic bounds.
     
@@ -227,7 +249,9 @@ def crop(raster: Raster, bounds: Tuple[float, float, float, float]) -> Raster:
     )
 
 @auto_load(safe=True)
-def split_bands(raster: Raster) -> List[Raster]:
+def split_bands(
+    raster: Raster
+    ) -> List[Raster]:
     """
     Splits a multi-band Raster into a list of single-band Rasters.
     
@@ -262,7 +286,9 @@ def split_bands(raster: Raster) -> List[Raster]:
     log.info(f"Split raster into {len(outputs)} single-band objects.")
     return outputs
 
-def stack_bands(rasters: List[Union[str, Path, Raster]]) -> Raster:
+def stack_bands(
+        rasters: List[Union[str, Path, Raster]]
+        ) -> Raster:
     """
     Combines a list of Rasters into a single multi-band Raster.
 
@@ -318,7 +344,7 @@ def align_rasters(
     rasters: List[Union[str, Path, Raster]], 
     method: str = 'first',
     resampling: Resampling = Resampling.nearest
-) -> List[Raster]:
+    ) -> List[Raster]:
     """
     Align multiple rasters to a common grid.
 
