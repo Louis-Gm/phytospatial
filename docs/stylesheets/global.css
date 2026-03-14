@@ -336,16 +336,3 @@
   width: 20px !important;
   height: 20px !important;
 }
-
-.tx-credit-mkdocs {
-  color: #858383 !important;
-}
-
-.tx-credit-mkdocs a {
-  color: #b3b3b3 !important;
-}
-
-.tx-credit-mkdocs a:hover {
-  color: #b3b3b3 !important;
-  font-weight: bold;
-}
