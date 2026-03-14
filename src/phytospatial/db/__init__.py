@@ -5,7 +5,7 @@
 # See the NOTICE file for more information
 
 """
-Initializes the database sub-package and validates the presence of optional ORM dependencies.
+The db sub-package initializes the database functionality and validates the presence of optional ORM dependencies.
 """
 
 from typing import Tuple
