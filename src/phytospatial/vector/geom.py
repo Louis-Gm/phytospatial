@@ -18,12 +18,13 @@ __all__ = [
     "to_crs",
     "validate",
     "filter_vector",
-    "select_columns"
+    "select_columns",
+    "force_Z"
 ]
 
 def to_crs(
         vector: Vector, 
-        target_crs, 
+        target_crs: Union[str, int, dict],
         inplace: bool = False
         ) -> Vector:
     """
@@ -31,7 +32,7 @@ def to_crs(
     
     Args:
         vector (Vector): The input Vector object containing geometries to be reprojected.
-        target_crs: The target CRS to which the geometries will be reprojected.
+        target_crs (Union[str, int, dict]): The target CRS to which the geometries will be reprojected.
         inplace (bool): If True, modifies the input Vector in place. 
                         If False, returns a new Vector with reprojected geometries. Defaults to False.
     
@@ -138,3 +139,40 @@ def select_columns(
         vector.data = selected_gdf
         return vector
     return Vector(selected_gdf.copy())
+
+def force_Z(
+    vector: Vector,
+    dimensionality: int = 2,
+    inplace: bool = False
+    ) -> Vector:
+    """
+    Alters the geometric dimensionality of the spatial data by either stripping or appending a Z-axis.
+
+    Args:
+        vector (Vector): The input Vector object containing the geometries to transform.
+        dimensionality (int): The target number of spatial dimensions. Must be strictly 2 or 3. Defaults to 2.
+        inplace (bool): If True, applies the dimensionality transformation directly to the underlying 
+            GeoDataFrame of the input Vector. If False, generates and returns a new Vector instance. 
+            Defaults to False.
+
+    Returns:
+        Vector: A Vector object ensuring all geometries conform to the requested dimensionality.
+
+    Raises:
+        ValueError: If the provided dimensionality argument is not exactly 2 or 3.
+    """
+    if dimensionality not in (2, 3):
+        raise ValueError(f"Dimensionality must be strictly 2 or 3. Received: {dimensionality}")
+
+    gdf = vector.data if inplace else vector.data.copy()
+
+    if dimensionality == 2 and gdf.geometry.has_z.any():
+        gdf.geometry = gpd.GeoSeries.from_wkb(gdf.geometry.to_wkb(output_dimension=2))
+    elif dimensionality == 3 and not gdf.geometry.has_z.all():
+        gdf.geometry = gpd.GeoSeries.from_wkb(gdf.geometry.to_wkb(output_dimension=3))
+
+    if inplace:
+        vector.data = gdf
+        return vector
+
+    return Vector(gdf)

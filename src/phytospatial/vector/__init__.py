@@ -27,10 +27,12 @@ from .geom import (
     filter_vector,
     select_columns,
     validate,
+    force_Z
 )
 
 from .spatial_operations import (
     prepare_itcd_vectors,
+    prepare_treetop_vectors,
     label_tree_crowns
 )
 
@@ -47,6 +49,9 @@ __all__ = [
     "filter_vector",
     "select_columns",
     "validate",
+    "force_Z",
+    
     "prepare_itcd_vectors",
+    "prepare_treetop_vectors",
     "label_tree_crowns"
 ]
