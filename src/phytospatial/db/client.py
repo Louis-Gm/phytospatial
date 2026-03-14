@@ -1,5 +1,3 @@
-# src/phytospatial/db/client.py
-
 import logging
 import datetime
 import os
@@ -15,6 +13,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from geoalchemy2.shape import from_shape, to_shape
 
 from phytospatial.vector.layer import Vector
+from phytospatial.vector.io import resolve_vector
+from phytospatial.vector.geom import force_Z, to_crs
+from phytospatial.vector.spatial_operations import prepare_treetop_vectors
+
 from .models import (
     Base, Tree, Crown, LidarAcquisition,
     ImageAcquisition, ImageBand, SpectralAttribute
@@ -42,6 +44,7 @@ def _load_spatialite(
     except Exception as e:
         log.warning(f"Failed to load SpatiaLite extension. Spatial queries may fail. Error: {e}")
 
+
 class DB_Client:
     """
     A dialect-agnostic Data Access Layer bridging Phytospatial algorithms with persistent relational storage.
@@ -50,7 +53,7 @@ class DB_Client:
     def __init__(
             self, 
             connection_string: str = "sqlite:///phytospatial_local.gpkg"
-            ):
+            ) -> None:
         """
         Initializes the database client, deploying dialect-specific hooks when interacting with SQLite engines.
         
@@ -221,27 +224,58 @@ class DB_Client:
             session.commit()
             return acquisition.id
 
+    @resolve_vector
     def upload_trees(
-            self, 
-            trees_vector: Vector, 
-            srid: int = 32619, 
-            batch_size: int = 5000
-            ) -> int:
+        self,
+        trees_input: Union[str, Path, Vector],
+        column_mapping: Optional[Dict[str, str]] = None,
+        target_srid: int = 32619,
+        batch_size: int = 5000
+        ) -> int:
         """
-        Performs a memory-safe bulk insertion of point geometries representing tree anchor locations.
+        Ingests master tree anchor locations into the persistent relational storage layer.
         
+        This polymorphic method accepts either a filepath to a vector dataset or an in-memory Vector 
+        object. It standardizes the schema, enforces the 3D Z-dimension, aligns the coordinate 
+        reference system, and executes a memory-safe bulk insertion.
+
         Args:
-            trees_vector (Vector): Source Vector containing tree attributes and spatial data.
-            srid (int): The Spatial Reference System Identifier to assign to inserted geometries.
+            trees_input (Union[str, Path, Vector]): The spatial dataset of tree anchors.
+            column_mapping (Optional[Dict[str, str]]): A translation dictionary bridging native shapefile 
+                attributes to the required 'tree_id' and 'species' columns.
+            target_srid (int): The Spatial Reference System Identifier enforced on the destination schema. 
+                Defaults to 32619.
             batch_size (int): The maximum number of records to hold in memory before committing to the database.
-            
+
         Returns:
-            int: The total integer count of correctly uploaded tree records.
+            int: The aggregate total of successfully committed tree anchor records.
+
+        Raises:
+            KeyError: If the underlying dataset lacks required schema fields after mapping.
+            RuntimeError: If the database engine rejects the insertion transaction.
         """
-        if trees_vector.data.empty:
+        prepared_vector = prepare_treetop_vectors(
+            vector=trees_input, 
+            column_mapping=column_mapping
+        )
+        
+        if prepared_vector.crs and prepared_vector.crs.to_epsg() != target_srid:
+            prepared_vector = to_crs(
+                vector=prepared_vector, 
+                target_crs=f"EPSG:{target_srid}", 
+                inplace=True
+            )
+            
+        prepared_vector = force_Z(
+            vector=prepared_vector, 
+            dimensionality=3, 
+            inplace=True
+        )
+
+        if prepared_vector.data.empty:
             return 0
             
-        df = trees_vector.data
+        df = prepared_vector.data
         total_inserted = 0
         records = []
         
@@ -251,7 +285,7 @@ class DB_Client:
                     "tree_id": str(getattr(row, "tree_id")),
                     "species": getattr(row, "species", None),
                     "status": getattr(row, "status", 'Alive'),
-                    "geom": from_shape(geom, srid=srid)
+                    "geom": from_shape(geom, srid=target_srid)
                 })
                 
                 if len(records) >= batch_size:
@@ -267,41 +301,63 @@ class DB_Client:
                 
         return total_inserted
 
-    def upload_automated_crowns(
+    @resolve_vector
+    def upload_crowns(
         self,
-        crowns_vector: Vector,
-        generation_method: str,
+        crowns_input: Union[str, Path, Vector],
+        crown_category: str = "Automated",
+        generation_method: Optional[str] = None,
         lidar_id: Optional[int] = None,
         image_id: Optional[int] = None,
         srid: int = 32619,
         batch_size: int = 5000
         ) -> int:
         """
-        Uploads synthetically generated polygon arrays via memory-safe chunking linked to existing tree anchors.
+        Uploads delineated crown polygons to the database linked to existing tree anchors.
         
+        This polymorphic method accepts either a filepath to a vector dataset or an in-memory Vector 
+        object. It safely enforces two-dimensional geometries for insertion into PostGIS/SpatiaLite
+        to prevent dimensional mismatch errors and accommodates both manually digitized and 
+        algorithmically generated bounds.
+
         Args:
-            crowns_vector (Vector): Polygonal Vector object defining physical canopy delineations.
-            generation_method (str): String identifier for the algorithmic process used.
+            crowns_input (Union[str, Path, Vector]): Polygonal dataset defining physical canopy delineations.
+            crown_category (str): Categorical designation. Must be strictly 'Manual' or 'Automated'.
+            generation_method (Optional[str]): String identifier for the algorithmic process used. 
+                Required if crown_category is 'Automated'.
             lidar_id (Optional[int]): Linking reference back to the source point cloud acquisition.
             image_id (Optional[int]): Linking reference back to the source photogrammetric acquisition.
-            srid (int): The Spatial Reference System Identifier.
-            batch_size (int): The maximum number of records to hold in memory before committing to the database.
-            
+            srid (int): The Spatial Reference System Identifier to assign to inserted geometries.
+            batch_size (int): The maximum number of records to hold in memory before committing.
+
         Returns:
             int: The total integer count of effectively inserted crown bounds.
+
+        Raises:
+            ValueError: If constraints matching 'crown_category' and 'generation_method' are violated.
         """
-        if crowns_vector.data.empty:
+        if crowns_input.data.empty:
             return 0
-            
+
+        if crown_category not in ("Manual", "Automated"):
+            raise ValueError(f"Invalid crown_category: {crown_category}. Must be 'Manual' or 'Automated'.")
+
+        if crown_category == "Automated":
+            if not generation_method:
+                raise ValueError("generation_method must be provided when crown_category is 'Automated'.")
+        else:
+            if generation_method:
+                log.warning("generation_method is ignored when crown_category is 'Manual'.")
+                generation_method = None
+
+        flat_vector = force_Z(
+            vector=crowns_input, 
+            dimensionality=2, 
+            inplace=False
+        )
+        df = flat_vector.data
+
         date_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H%M")
-        
-        # A deep copy prevents geometric mutations from bleeding back into the active memory space of the calling script.
-        df = crowns_vector.data.copy()
-        
-        # Dimensionality must be forcefully flattened to prevent Z errors with PostGIS
-        if df.geometry.has_z.any():
-            df.geometry = gpd.GeoSeries.from_wkb(df.geometry.to_wkb(output_dimension=2))
-            
         total_inserted = 0
         records = []
         
@@ -312,7 +368,7 @@ class DB_Client:
                 records.append({
                     "crown_id": crown_id,
                     "tree_id": str(getattr(row, "tree_id")),
-                    "crown_category": "Automated",
+                    "crown_category": crown_category,
                     "generation_method": generation_method,
                     "source_lidar_id": lidar_id,
                     "source_image_id": image_id,
@@ -355,7 +411,7 @@ class DB_Client:
         image_id: int,
         batch_size: int = 5000,
         **kwargs: Any
-        ) -> int:
+     ) -> int:
         """
         Orchestrates an extraction pipeline, routing generated scalar JSON payloads directly into SQL storage.
         
@@ -370,16 +426,11 @@ class DB_Client:
             ValueError: If `return_raw` flags are enabled, blocking heavy data arrays from violating JSON bounds.
             
         Returns:
-            total_inserted (int): Comprehensive integer representing total rows effectively inserted into the relational schema.
+            int: Comprehensive integer representing total rows effectively inserted into the relational schema.
         """
         if kwargs.get("return_raw") is True:
             raise ValueError("Cannot extract raw pixel arrays directly to a relational database JSON payload. Use extract_to_dataframe for raw ML matrices.")
 
-        # The overall logic is that a generator function that yields parsed dictionaries one at a time to maintain a memory-safe footprint
-        # while the client batches these dictionaries into transactions of a specified size before committing to the database.
-        # This allows the streaming of large extraction results without overwhelming memory resources.
-        # 
-        # Each resulting record is linked back to the source image acquisition via the provided image_id foreign key reference.
         from phytospatial.extract import extract_features
         results_gen = extract_features(
             raster_input=raster_input,
