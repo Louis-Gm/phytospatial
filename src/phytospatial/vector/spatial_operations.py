@@ -4,7 +4,7 @@
 This module provides spatial operations for vector data, including attribute transfer, treetop labeling, and crown delineation.
 """
 
-from typing import Optional
+from typing import Dict, Optional
 import logging
 
 import geopandas as gpd
@@ -17,6 +17,7 @@ log = logging.getLogger(__name__)
 
 __all__ = [
     "prepare_itcd_vectors",
+    "prepare_treetop_vectors",
     "label_tree_crowns"
 ]
 
@@ -123,12 +124,53 @@ def prepare_itcd_vectors(
     return Vector(gdf)
 
 @resolve_vector
+def prepare_treetop_vectors(
+    vector: Vector,
+    column_mapping: Optional[Dict[str, str]] = None,
+    default_status: str = "Alive"
+    ) -> Vector:
+    """
+    Standardizes treetop anchor point data schemas prior to database ingestion.
+
+    Args:
+        vector (Vector): The input point Vector object.
+        column_mapping (Optional[Dict[str, str]]): A dictionary mapping native source 
+            attributes to the required 'tree_id' and 'species' schema columns.
+        default_status (str): The default string value to inject for the biological 
+            or management status of the tree. Defaults to "Alive".
+
+    Returns:
+        Vector: A sanitized Vector object containing the precise schema required 
+            by the persistent relational data layer.
+
+    Raises:
+        KeyError: If the resulting DataFrame lacks 'tree_id' or 'species' attributes.
+    """
+    gdf = vector.data.copy()
+
+    if column_mapping:
+        gdf = gdf.rename(columns=column_mapping)
+
+    required_columns = ["tree_id", "species"]
+    missing_cols = [col for col in required_columns if col not in gdf.columns]
+    
+    if missing_cols:
+        raise KeyError(f"Missing required columns after applying schema mapping: {missing_cols}")
+
+    gdf["tree_id"] = gdf["tree_id"].astype(str)
+    
+    if "status" not in gdf.columns:
+        gdf["status"] = default_status
+        
+    return Vector(gdf)
+
+@resolve_vector
 def label_tree_crowns(
     target_vector: Vector,
     source_points: Vector,
     label_col: str, 
     max_dist: float = 2.0
-) -> Vector:
+    ) -> Vector:
     """
     Labels tree crowns in the target vector by transferring species information from nearby source points.
     
