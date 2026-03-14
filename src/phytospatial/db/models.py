@@ -168,7 +168,7 @@ class ImageBand(Base):
         image_acquisition_id (int): Foreign key linking to the parent ImageAcquisition. Non-nullable, cascades on delete.
         band_index (int): The sequential index or channel number of the band within the raster dataset. Non-nullable.
         wavelength_nm (float): The central wavelength of the band measured in nanometers. Non-nullable.
-        band_name (str): The common name or designation of the band (e.g., 'Red', 'NIR').
+        band_name (str): The common name or designation of the band.
 
     Relationships:
         image_acquisition (ImageAcquisition): The parent multispectral or hyperspectral acquisition event.
@@ -251,7 +251,7 @@ class SpectralAttribute(Base):
         objectid (int): Primary key, auto-incrementing integer identifier.
         crown_id (str): Foreign key linking to the mapped Crown. Non-nullable, cascades on delete.
         source_image_id (int): Foreign key linking to the source ImageAcquisition. Sets to NULL on delete.
-        metrics (JSONVariant): Flexible JSON payload containing extracted index values (e.g., NDVI, EVI) and statistics. Non-nullable.
+        metrics (JSONVariant): Flexible JSON payload containing extracted index values and statistics. Non-nullable.
         extracted_at (datetime.datetime): Timestamp marking when the metrics were computed, defaults to current UTC time.
 
     Indexes:
@@ -284,7 +284,7 @@ class StructuralAttribute(Base):
         objectid (int): Primary key, auto-incrementing integer identifier.
         crown_id (str): Foreign key linking to the mapped Crown. Non-nullable, cascades on delete.
         source_lidar_id (int): Foreign key linking to the source LidarAcquisition. Sets to NULL on delete.
-        metrics (JSONVariant): Flexible JSON payload containing computed structural statistics (e.g., max height, variance, percentile distributions). Non-nullable.
+        metrics (JSONVariant): Flexible JSON payload containing computed structural statistics. Non-nullable.
         extracted_at (datetime.datetime): Timestamp marking when the metrics were computed, defaults to current UTC time.
 
     Indexes:
