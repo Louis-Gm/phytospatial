@@ -9,6 +9,8 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.types import TypeDecorator, VARCHAR
 from geoalchemy2 import Geometry
 
+# We need to first define the base declarative class and the JSONVariant type before we can define our models, 
+# since they are used as base classes and column types respectively in the subsequent model definitions.
 Base = declarative_base()
 
 class JSONVariant(TypeDecorator):
