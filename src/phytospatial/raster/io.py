@@ -10,9 +10,10 @@ from typing import Union, Optional, List, Dict, Any
 
 import rasterio
 from rasterio.windows import Window
-from .utils import resolve_envi_path, extract_band_indices, extract_band_names, extract_wavelength
-from .layer import Raster
-from .resources import determine_strategy
+
+from phytospatial.raster.utils import resolve_envi_path, extract_band_indices, extract_band_names, extract_wavelength
+from phytospatial.raster.layer import Raster
+from phytospatial.raster.resources import determine_strategy
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +30,7 @@ def load(
     bands: Optional[Union[int, List[int]]] = None,
     window: Optional[Window] = None,
     driver: Optional[str] = None
-) -> Raster:
+    ) -> Raster:
     """
     Load a raster from disk into memory.
     
@@ -80,7 +81,7 @@ def save(
     raster: Raster,
     path: Union[str, Path],
     **profile_kwargs: Any
-):
+    ) -> None:
     """
     Write a Raster object to disk.
     Creates a new geospatial raster file from the in-memory Raster object.
@@ -152,7 +153,9 @@ def write_window(
     except Exception as e:
         raise IOError(f"Failed to write window to {path}: {e}") from e
 
-def read_info(path: Union[str, Path]) -> Dict[str, Any]:
+def read_info(
+        path: Union[str, Path]
+        ) -> Dict[str, Any]:
     """
     Intelligently inspects a raster file, extracting spatial metadata, 
     band descriptions, and spectral wavelengths in a single pass.
@@ -203,7 +206,7 @@ def ensure_tiled_raster(
     path: Union[str, Path], 
     output_dir: Optional[Union[str, Path]] = None,
     block_size: int = 512
-) -> Path:
+    ) -> Path:
     """
     Analyzes raster structure and translates striped or untiled files 
     into optimized, tiled GeoTIFFs to prevent I/O thrashing.

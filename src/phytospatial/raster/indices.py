@@ -27,8 +27,14 @@ class IndexCatalog:
             "OTHER INDEX": SpectralIndex("OTHER INDEX", "SOME FORMULA", {"BANDNAME1": 700.0, "BANDNAME2": 500.0})
         }
     
-    def get(self, name: str) -> SpectralIndex:
+    def get(
+            self, 
+            name: str
+            ) -> SpectralIndex:
         return self._indices[name]
     
-    def register(self, index: SpectralIndex):
+    def register(
+            self, 
+            index: SpectralIndex
+            ) -> None:
         self._indices[index.name] = index

@@ -18,7 +18,7 @@ from dataclasses import dataclass
 import numpy as np
 import rasterio
 
-from .utils import resolve_envi_path
+from phytospatial.raster.utils import resolve_envi_path
 
 log = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ class ProcessingMode(Enum):
 
         BLOCKED: Use raster's internal blocks/tiles for optimized streaming. Best for tiled files.
 
-        TILED: Use standard windowed reading. Safe fallback for large or scanline
+        TILED: Use standard windowed reading. Safe fallback for large or scanline-based rasters.
     """
     IN_MEMORY = "in_memory"
     BLOCKED = "blocked"
@@ -77,7 +77,7 @@ class MemoryEstimate:
         total_required_bytes: Total bytes required to load raster (with overhead)
         available_system_bytes: Currently available system memory in bytes
         is_safe: Boolean indicating if loading is considered safe
-        reason: Explanation for the safety assessment (e.g. "Req: 10GB,
+        reason: Explanation for the safety assessment
     """
     total_required_bytes: int
     available_system_bytes: int
@@ -100,7 +100,9 @@ class StrategyReport:
     memory_stats: MemoryEstimate
     structure_stats: BlockStructure
 
-def _analyze_structure(src: rasterio.DatasetReader) -> BlockStructure:
+def _analyze_structure(
+        src: rasterio.DatasetReader
+        ) -> BlockStructure:
     """Helper that determines if the raster is physically tiled or striped.
     
     Args:
@@ -130,7 +132,7 @@ def _estimate_memory_safety(
     bands: Optional[int] = None,
     safety_factor: float = DEFAULT_SAFETY_FACTOR,
     min_free_gb: float = MIN_FREE_GB
-) -> MemoryEstimate:
+    ) -> MemoryEstimate:
     """
     Helper that checks if raster fits in RAM safely checking all band dtypes.
 
@@ -161,7 +163,7 @@ def _estimate_memory_safety(
 def determine_strategy(
     raster_input: Union[str, Path, rasterio.DatasetReader],
     user_mode: str = "auto"
-) -> StrategyReport:
+    ) -> StrategyReport:
     """
     Determines the optimal processing strategy for a raster based on memory and internal structure.
 

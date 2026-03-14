@@ -13,10 +13,10 @@ from enum import Enum
 
 from rasterio.windows import Window
 
-from .layer import Raster
-from .io import load
-from .resources import ProcessingMode, determine_strategy
-from .partition import iter_tiles, iter_blocks, iter_windows, TileStitcher
+from phytospatial.raster.layer import Raster
+from phytospatial.raster.io import load
+from phytospatial.raster.resources import ProcessingMode, determine_strategy
+from phytospatial.raster.partition import iter_tiles, iter_blocks, iter_windows, TileStitcher
 
 log = logging.getLogger(__name__)
 

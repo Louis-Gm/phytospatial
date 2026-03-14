@@ -18,10 +18,10 @@ from rasterio.windows import Window
 from rasterio.windows import transform as compute_window_transform
 from shapely.geometry import box
 
-from .layer import Raster
-from .io import load, ensure_tiled_raster
-from .utils import resolve_envi_path, extract_band_indices, extract_band_names
-from .resources import ProcessingMode, determine_strategy
+from phytospatial.raster.layer import Raster
+from phytospatial.raster.io import load, ensure_tiled_raster
+from phytospatial.raster.utils import resolve_envi_path, extract_band_indices, extract_band_names
+from phytospatial.raster.resources import ProcessingMode, determine_strategy
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ __all__ = [
 def iter_blocks(
     source: Union[str, Path, rasterio.DatasetReader],
     bands: Optional[Union[int, List[int]]] = None
-) -> Iterator[Tuple[Window, Raster]]:
+    ) -> Iterator[Tuple[Window, Raster]]:
     """
     Stream data using the file's native internal block structure.
 
@@ -82,7 +82,7 @@ def iter_tiles(
     tile_size: Union[int, Tuple[int, int]] = 512,
     overlap: int = 0,
     bands: Optional[Union[int, List[int]]] = None
-) -> Iterator[Tuple[Window, Raster]]:
+    ) -> Iterator[Tuple[Window, Raster]]:
     """
     Stream data using a virtual grid of fixed-size tiles.
 
@@ -147,7 +147,7 @@ def iter_windows(
     raster: Raster,
     tile_size: Union[int, Tuple[int, int]] = 512,
     overlap: int = 0
-) -> Iterator[Tuple[Window, Raster]]:
+    ) -> Iterator[Tuple[Window, Raster]]:
     """
     Partition an in-memory Raster object into smaller Raster tiles.
     
@@ -208,7 +208,7 @@ def iter_core_halo(
     tile_mode: str = "auto",
     tile_size: int = 1024,
     overlap: int = 64
-) -> Iterator[Tuple[np.ndarray, rasterio.Affine, Optional[box], Optional[box]]]:
+    ) -> Iterator[Tuple[np.ndarray, rasterio.Affine, Optional[box], Optional[box]]]:
     """
     Streams spatial data using a Core-Halo architecture.
     Provides overlapping read buffers to prevent boundary truncation, while supplying 
@@ -263,7 +263,7 @@ class TileStitcher:
         output_path: Union[str, Path],
         profile: Dict[str, Any],
         **profile_overrides: Any
-    ):
+        ):
         """
         Open a new raster file for writing.
         
@@ -294,7 +294,7 @@ class TileStitcher:
         window: Window,
         tile: Raster,
         indexes: Optional[List[int]] = None
-    ):
+        ):
         """
         Write a tile to the output file.
         

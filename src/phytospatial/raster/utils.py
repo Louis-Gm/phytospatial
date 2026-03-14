@@ -25,7 +25,9 @@ __all__ = [
     "extract_wavelength"
 ]
 
-def resolve_envi_path(path: Union[str, Path]) -> Path:
+def resolve_envi_path(
+        path: Union[str, Path]
+        ) -> Path:
     """
     Resolve ENVI header/binary file confusion.
     If 'image.hdr' is passed, redirects to 'image' (binary).
@@ -40,7 +42,7 @@ def resolve_envi_path(path: Union[str, Path]) -> Path:
 def extract_band_indices(
     src: rasterio.DatasetReader, 
     bands: Optional[Union[int, List[int]]]
-) -> List[int]:
+    ) -> List[int]:
     """
     Normalize band selection to a list of 1-based indices.
     """
@@ -53,7 +55,7 @@ def extract_band_indices(
 def extract_band_names(
     src: rasterio.DatasetReader, 
     indices: List[int]
-) -> Dict[str, int]:
+    ) -> Dict[str, int]:
     """
     Extract descriptions/names for specific bands.
     """
@@ -75,7 +77,7 @@ def map_wavelengths(
     parsed_wavelengths: Dict[float, int], 
     required_wavelengths: Dict[str, float],
     max_tolerance: float = 20.0
-) -> Dict[str, int]:
+    ) -> Dict[str, int]:
     """
     Matches required formula variables to actual 1-based band indices based on wavelength proximity.
     """

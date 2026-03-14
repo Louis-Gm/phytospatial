@@ -11,11 +11,11 @@ from pathlib import Path
 import numexpr as ne
 import numpy as np
 
-from .layer import Raster
-from .engine import dispatch, DispatchConfig, AggregationType
-from .io import read_info
-from .indices import IndexCatalog
-from .utils import map_wavelengths
+from phytospatial.raster.layer import Raster
+from phytospatial.raster.engine import dispatch, DispatchConfig, AggregationType
+from phytospatial.raster.io import read_info
+from phytospatial.raster.indices import IndexCatalog
+from phytospatial.raster.utils import map_wavelengths
 
 log = logging.getLogger(__name__)
 

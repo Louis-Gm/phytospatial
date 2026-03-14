@@ -75,7 +75,12 @@ class Raster:
         self.nodata = nodata
         self.band_names = band_names or {}
 
-    def _validate_inputs(self, data: np.ndarray, transform: Affine, crs: Union[str, CRS]):
+    def _validate_inputs(
+            self, 
+            data: np.ndarray, 
+            transform: Affine, 
+            crs: Union[str, CRS]
+            ) -> None:
         """
         Helper to validate constructor inputs.
         
@@ -205,7 +210,10 @@ class Raster:
         """
         return self._data.nbytes * 3  # Rough estimate including overhead
     
-    def get_band(self, identifier: Union[int, str]) -> np.ndarray:
+    def get_band(
+            self, 
+            identifier: Union[int, str]
+            ) -> np.ndarray:
         """
         Retrieve a specific band by index or name.
         
