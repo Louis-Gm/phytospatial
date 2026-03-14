@@ -70,6 +70,8 @@ nav:
       - "Pipeline Introduction": examples/extraction_pipeline.ipynb
   # REF_START    
   - API Reference:
+  # REF_END
+
       - Db:
           - "Client": reference/db/client.md
           - "Import Treetops": reference/db/import_treetops.md
@@ -97,7 +99,6 @@ nav:
           - "Layer": reference/vector/layer.md
           - "Spatial Operations": reference/vector/spatial_operations.md
       - "Extract": reference/extract.md
-  # REF_END
   - Articles:
       - "Phytospatial Blog": articles/blog.md
   - About:
