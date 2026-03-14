@@ -5,7 +5,9 @@ This module provides functions for reading and writing vector data (points, line
 """
 
 from pathlib import Path
-from typing import Union, Callable
+from typing import Union, Callable, Any
+import inspect
+import logging
 from functools import wraps
 import logging
 
@@ -24,13 +26,13 @@ __all__ = [
 def load_vector(
         path: Union[str, Path], 
         engine: str = "pyogrio", 
-        **kwargs
+        **kwargs: Any
         ) -> Vector:
     """Loads a vector dataset from the specified file path into a Vector object.
     Args:
         path (Union[str, Path]): The absolute or relative system path resolving to the vector file.
         engine (str): The GeoPandas engine to use for reading the file. Defaults to "pyogrio".
-        **kwargs: Additional keyword arguments to pass to the GeoPandas read_file function.
+        **kwargs (Any): Additional keyword arguments to pass to the GeoPandas read_file function.
         
     Returns:
         Vector: A Vector object encapsulating the loaded GeoDataFrame. 
@@ -48,7 +50,7 @@ def save_vector(
         path: Union[str, Path], 
         driver: str = None, 
         engine: str = "pyogrio", 
-        **kwargs
+        **kwargs: Any
         ):
     """
     Saves a Vector object to the specified file path in a geospatial format.
@@ -58,38 +60,56 @@ def save_vector(
         path (Union[str, Path]): The absolute or relative system path where the vector file will be saved.
         driver (str, optional): The OGR driver to use for writing the file. Defaults to None.
         engine (str): The GeoPandas engine to use for writing the file. Defaults to "pyogrio".
-        **kwargs: Additional keyword arguments to pass to the GeoPandas to_file function.
+        **kwargs (Any): Additional keyword arguments to pass to the GeoPandas to_file function.
     """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     vector.data.to_file(path, driver=driver, engine=engine, **kwargs)
 
-def resolve_vector(func: Callable):
-    @wraps(func)
-    def wrapper(
-        input_obj: Union[str, Path, Vector], 
-        *args, 
-        **kwargs
-        ):
-        """Decorator to resolve a vector input that can be either a file path or a Vector object.
+def resolve_vector(
+        func: Callable[..., Any]
+        ) -> Callable[..., Any]:
+    """
+    A polymorphic decorator that intelligently resolves vector inputs into instantiated Vector objects.
+    
+    This function analyzes the target method's signature, evaluating type annotations and parameter 
+    nomenclature. If a parameter expects a Vector but receives a string or Path, it intercepts the 
+    execution to perform disk I/O, seamlessly injecting the loaded Vector object before runtime.
+    
+    Args:
+        func (Callable[..., Any]): The target function or class method expecting a Vector input.
         
-        Args:
-            input_obj (Union[str, Path, Vector]): The input vector, which can be a file path or a Vector object.
-            *args: Additional positional arguments to pass to the decorated function.
-            **kwargs: Additional keyword arguments to pass to the decorated function.
+    Returns:
+        Callable[..., Any]: The wrapped function executing with fully resolved Vector dependencies.
+        
+    Raises:
+        TypeError: If a resolved target parameter receives an argument that is neither a valid 
+            system path nor an instantiated Vector object.
+    """
+    sig = inspect.signature(func)
+    
+    @wraps(func)
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
+        bound_args = sig.bind(*args, **kwargs)
+        bound_args.apply_defaults()
+        
+        for name, param in sig.parameters.items():
+            val = bound_args.arguments[name]
+            
+            if val is None:
+                continue
 
-        Returns:
-            The result of the decorated function, with the input vector resolved to a Vector object.        
-        """
-        if input_obj is None:
-            return func(None, *args, **kwargs)
+            annot_str = str(param.annotation)
+            expects_vector = "Vector" in annot_str or "vector" in name.lower()
+            
+            if expects_vector:
+                if isinstance(val, (str, Path)):
+                    bound_args.arguments[name] = load_vector(val)
+                elif not isinstance(val, Vector):
+                    raise TypeError(
+                        f"Expected file path or Vector object for parameter '{name}', got {type(val)}"
+                    )
 
-        if isinstance(input_obj, (str, Path)):
-            vector_obj = load_vector(input_obj)
-        elif isinstance(input_obj, Vector):
-            vector_obj = input_obj
-        else:
-            raise TypeError(f"Expected file path or Vector object, got {type(input_obj)}")
+        return func(*bound_args.args, **bound_args.kwargs)
 
-        return func(vector_obj, *args, **kwargs)
     return wrapper
