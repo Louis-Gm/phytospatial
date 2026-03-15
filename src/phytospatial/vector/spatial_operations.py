@@ -7,7 +7,9 @@ This module provides spatial operations for vector data, including attribute tra
 from typing import Dict, Optional
 import logging
 
+import numpy as np
 import geopandas as gpd
+from scipy.spatial import cKDTree
 
 from phytospatial.vector.layer import Vector
 from phytospatial.vector.io import resolve_vector
@@ -18,7 +20,8 @@ log = logging.getLogger(__name__)
 __all__ = [
     "prepare_itcd_vectors",
     "prepare_treetop_vectors",
-    "label_tree_crowns"
+    "label_tree_crowns",
+    "assign_tree_ids_to_crowns"
 ]
 
 def _transfer_attributes(
@@ -47,24 +50,30 @@ def _transfer_attributes(
     if target_gdf.crs != source_gdf.crs:
         source_gdf = source_gdf.to_crs(target_gdf.crs)
 
-    temp_col = "transfer_temp_col"
-    source_subset = source_gdf[[transfer_col, 'geometry']].rename(columns={transfer_col: temp_col})
+    target_centroids = target_gdf.geometry.centroid
+    target_coords = np.column_stack((target_centroids.x, target_centroids.y))
+    
+    source_coords = np.column_stack((source_gdf.geometry.x, source_gdf.geometry.y))
 
-    joined = gpd.sjoin_nearest(
-        target_gdf,
-        source_subset,
-        how='left',
-        max_distance=max_dist,
-        distance_col="dist"
+    tree = cKDTree(source_coords)
+
+    distances, indices = tree.query(
+        target_coords, 
+        k=1, 
+        distance_upper_bound=max_dist,
+        workers=-1
     )
 
-    joined = joined[~joined.index.duplicated(keep='first')]
+    valid_mask = distances <= max_dist
+    valid_indices = indices[valid_mask]
+
+    source_values = source_gdf[transfer_col].iloc[valid_indices].values
 
     if target_col_name not in target_gdf.columns:
         target_gdf[target_col_name] = None
-    
-    target_gdf[target_col_name] = target_gdf[target_col_name].combine_first(joined[temp_col])
-    
+
+    target_gdf.loc[valid_mask, target_col_name] = source_values
+
     return target_gdf
 
 @resolve_vector
@@ -195,3 +204,34 @@ def label_tree_crowns(
     )
     
     return Vector(updated_gdf)
+
+@resolve_vector
+def assign_tree_ids_to_crowns(
+    crowns: Vector, 
+    trees: Vector
+    ) -> Vector:
+    """
+    Executes a spatial intersection to map master tree anchor IDs to corresponding crown polygons.
+    Enforces a strict one-to-one relationship by retaining only the first intersecting anchor.
+
+    Args:
+        crowns (Vector): The vector layer containing the unmapped crown polygons.
+        trees (Vector): The master tree points containing the recognized database identities.
+
+    Returns:
+        Vector: A filtered vector containing polygons paired with their unique tree IDs.
+    """
+    if crowns.crs != trees.crs:
+        trees = trees.to_crs(crowns.crs)
+
+    anchors_gdf = trees.data[["tree_id", "geometry"]].copy()
+    joined_gdf = gpd.sjoin(crowns.data, anchors_gdf, how="inner", predicate="intersects")
+    
+    joined_gdf = joined_gdf[~joined_gdf.index.duplicated(keep="first")]
+    
+    if "tree_id" in joined_gdf.columns:
+        joined_gdf = joined_gdf.drop_duplicates(subset=["tree_id"], keep="first")
+        
+    joined_gdf = joined_gdf.drop(columns=["index_right"])
+    
+    return Vector(joined_gdf)

@@ -33,7 +33,8 @@ from .geom import (
 from .spatial_operations import (
     prepare_itcd_vectors,
     prepare_treetop_vectors,
-    label_tree_crowns
+    label_tree_crowns,
+    assign_tree_ids_to_crowns
 )
 
 # 
@@ -53,5 +54,6 @@ __all__ = [
     
     "prepare_itcd_vectors",
     "prepare_treetop_vectors",
-    "label_tree_crowns"
+    "label_tree_crowns",
+    "assign_tree_ids_to_crowns"
 ]
