@@ -1,12 +1,12 @@
 # src/phytospatial/db/client.py
 
 import datetime
+import logging
 import os
 from typing import Optional, List, Dict, Any, Union
 from pathlib import Path
 
 import geopandas as gpd
-import shapely.wkb
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, insert, select
 from sqlalchemy.orm import sessionmaker
