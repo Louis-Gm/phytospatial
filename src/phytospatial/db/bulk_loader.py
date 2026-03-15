@@ -1,6 +1,6 @@
 # src/phytospatial/db/bulk_loader.py
 
-import datetime
+import logging
 from typing import Dict, Union
 
 import polars as pl
@@ -13,6 +13,8 @@ from phytospatial.vector.geom import to_crs, force_Z
 from phytospatial.vector.spatial_operations import prepare_treetop_vectors
 
 from phytospatial.db.models import Tree, Crown
+
+log = logging.getLogger(__name__)
 
 class PolarsLoader:
     """
@@ -133,6 +135,26 @@ class PolarsLoader:
         if crown_category == "Automated" and not generation_method:
             raise ValueError("generation_method must be provided when crown_category is 'Automated'.")
 
+        if "tree_id" not in vector.data.columns:
+            raise KeyError("Vector payload must contain a 'tree_id' mapping prior to reaching the bulk loader.")
+
+        vector.data["tree_id"] = vector.data["tree_id"].astype(str)
+        prefix = crown_category[:3].upper()
+        vector.data["crown_id"] = vector.data["tree_id"] + f"_{prefix}"
+        
+        is_polygon = vector.data.geometry.geom_type == 'Polygon'
+        if not is_polygon.all():
+            dropped_gdf = vector.data[~is_polygon]
+            for _, row in dropped_gdf.iterrows():
+                log.warning(
+                    f"Dropping crown_id '{row['crown_id']}' (tree_id: '{row['tree_id']}'). "
+                    f"Expected 'Polygon', found '{row.geometry.geom_type}'."
+                )
+            vector.data = vector.data[is_polygon].copy()
+
+        if vector.data.empty:
+            return 0
+
         flat_vector = force_Z(
             vector=vector,
             dimensionality=2,
@@ -140,13 +162,13 @@ class PolarsLoader:
         )
         
         gdf = flat_vector.data
-        date_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H%M")
         
         geoms_with_srid = shapely.set_srid(gdf.geometry.values, target_srid)
         ewkb_hex = shapely.to_wkb(geoms_with_srid, hex=True, include_srid=True)
         
         df = pl.DataFrame({
-            "tree_id": gdf["tree_id"].astype(str).values,
+            "crown_id": gdf["crown_id"].values,
+            "tree_id": gdf["tree_id"].values,
             "geom": ewkb_hex
         })
         
@@ -154,8 +176,7 @@ class PolarsLoader:
             pl.lit(crown_category).alias("crown_category"),
             pl.lit(generation_method).alias("generation_method"),
             pl.lit(lidar_id).alias("source_lidar_id"),
-            pl.lit(image_id).alias("source_image_id"),
-            (pl.col("tree_id") + f"_{date_str}").alias("crown_id")
+            pl.lit(image_id).alias("source_image_id")
         ])
 
         records = df.to_dicts()
