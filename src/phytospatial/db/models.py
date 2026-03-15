@@ -1,18 +1,102 @@
 # src/phytospatial/db/models.py
 
 import datetime
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, CheckConstraint, Index
+from sqlalchemy import (
+    Column, 
+    Integer, 
+    String, 
+    Float, 
+    DateTime, 
+    ForeignKey, 
+    CheckConstraint, 
+    Index
+)
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.types import TypeDecorator, VARCHAR
-from geoalchemy2 import Geometry
+from sqlalchemy.types import TypeDecorator, VARCHAR, UserDefinedType
 
 # We need to first define the base declarative class and the JSONVariant type before we can define our models, 
 # since they are used as base classes and column types respectively in the subsequent model definitions.
 Base = declarative_base()
 
+class NativeGeometry(UserDefinedType):
+    """
+    A custom SQLAlchemy type for defining spatial columns without external dependencies.
+    
+    This class bypasses ORM-level geometry serialization, falling back to standard 
+    geometry declarations for databases like PostGIS and SpatiaLite. It relies on 
+    the database engine to natively parse Extended Well-Known Binary (EWKB) hex strings.
+    """
+
+    def __init__(
+            self, 
+            geometry_type: str = 'GEOMETRY', 
+            srid: int = 32619
+            ) -> None:
+        """
+        Initializes the NativeGeometry type.
+
+        Args:
+            geometry_type (str): The specific geometry type ('POINT', 'POLYGON', etc.).
+            srid (int): The spatial reference identifier.
+        """
+        self.geometry_type = geometry_type.upper()
+        self.srid = srid
+
+    def get_col_spec(
+            self, 
+            **kw: Any
+            ) -> str:
+        """
+        Generates the column specification for DDL compilation.
+
+        Args:
+            **kw (Any): Additional keyword arguments passed by the SQLAlchemy compiler.
+
+        Returns:
+            str: The SQL column type definition.
+        """
+        return f"geometry({self.geometry_type}, {self.srid})"
+
+    def bind_processor(
+            self, 
+            dialect: Any
+            ) -> Any:
+        """
+        Processes the bound parameter before execution.
+
+        Args:
+            dialect (Any): The active database dialect.
+
+        Returns:
+            Any: A processor function that returns the value unmodified, relying on 
+            native database EWKB hex casting.
+        """
+        def process(value: Optional[str]) -> Optional[str]:
+            return value
+        return process
+
+    def result_processor(
+            self, 
+            dialect: Any, 
+            coltype: Any
+            ) -> Any:
+        """
+        Processes the result value retrieved from the database.
+
+        Args:
+            dialect (Any): The active database dialect.
+            coltype (Any): The column type.
+
+        Returns:
+            Any: A processor function that returns the raw WKB/EWKB hex string.
+        """
+        def process(value: Optional[Any]) -> Optional[Any]:
+            return value
+        return process
+    
 class JSONVariant(TypeDecorator):
     """
     Dynamically abstracts JSON column typing to support both PostgreSQL JSONB and SQLite VARCHAR serialization.
@@ -90,21 +174,21 @@ class Tree(Base):
         tree_id (str): Unique, non-nullable string identifier for the tree.
         species (str): Botanical species classification of the tree.
         status (str): Current physiological or management status of the tree.
-        geom (geoalchemy2.types.Geometry): PostGIS POINT geometry representing the tree's spatial location, spatially indexed.
+        geom (NativeGeometry): Custom spatial type for the tree's geometry, spatially indexed.
         created_at (datetime.datetime): Timestamp of record creation, defaults to current UTC time.
 
     Relationships:
         crowns (list[Crown]): Collection of delineated crown polygons associated with this tree. Cascade deletes orphans.
     """
     __tablename__ = 'trees'
-
+    
     objectid = Column(Integer, primary_key=True, autoincrement=True)
     tree_id = Column(String(255), unique=True, nullable=False)
     species = Column(String(255))
     status = Column(String(20))
-    geom = Column(Geometry('POINT', spatial_index=True))
+    geom = Column(NativeGeometry('POINT', 32619))
     created_at = Column(DateTime(timezone=True), default=datetime.datetime.utcnow)
-
+    
     crowns = relationship("Crown", back_populates="tree", cascade="all, delete-orphan")
 
 class LidarAcquisition(Base):
@@ -195,7 +279,7 @@ class Crown(Base):
         generation_method (str): Algorithm or methodology used for automated delineation (if applicable).
         source_lidar_id (int): Foreign key linking to the originating LidarAcquisition. Sets to NULL on delete.
         source_image_id (int): Foreign key linking to the originating ImageAcquisition. Sets to NULL on delete.
-        geom (geoalchemy2.types.Geometry): PostGIS POLYGON geometry representing the canopy spread, spatially indexed.
+        geom (NativeGeometry): Custom spatial type for the crown polygon geometry, spatially indexed.
         created_at (datetime.datetime): Timestamp of record creation, defaults to current UTC time.
 
     Constraints:
@@ -211,7 +295,7 @@ class Crown(Base):
         structural_attributes (list[StructuralAttribute]): Associated geometric metrics. Cascade deletes orphans.
     """
     __tablename__ = 'crowns'
-
+    
     objectid = Column(Integer, primary_key=True, autoincrement=True)
     crown_id = Column(String(255), unique=True, nullable=False)
     tree_id = Column(String(255), ForeignKey('trees.tree_id', ondelete='CASCADE'), nullable=False)
@@ -219,12 +303,12 @@ class Crown(Base):
     generation_method = Column(String(255))
     source_lidar_id = Column(Integer, ForeignKey('lidar_acquisitions.id', ondelete='SET NULL'))
     source_image_id = Column(Integer, ForeignKey('image_acquisitions.id', ondelete='SET NULL'))
-    geom = Column(Geometry('POLYGON', spatial_index=True))
+    geom = Column(NativeGeometry('POLYGON', 32619))
     created_at = Column(DateTime(timezone=True), default=datetime.datetime.utcnow)
-
+    
     __table_args__ = (
         CheckConstraint(
-            "crown_category IN ('Manual', 'Automated')", 
+            "crown_category IN ('Manual', 'Automated')",
             name='chk_crown_category'
         ),
         CheckConstraint(
@@ -236,7 +320,7 @@ class Crown(Base):
             name='chk_source_exists'
         ),
     )
-
+    
     tree = relationship("Tree", back_populates="crowns")
     lidar_acquisition = relationship("LidarAcquisition", back_populates="crowns")
     image_acquisition = relationship("ImageAcquisition", back_populates="crowns")

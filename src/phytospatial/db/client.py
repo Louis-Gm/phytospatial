@@ -1,26 +1,25 @@
-import logging
+# src/phytospatial/db/client.py
+
 import datetime
 import os
 from typing import Optional, List, Dict, Any, Union
 from pathlib import Path
 
 import geopandas as gpd
+import shapely.wkb
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, insert, select
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.event import listen
 from sqlalchemy.exc import SQLAlchemyError
-from geoalchemy2.shape import from_shape, to_shape
 
 from phytospatial.vector.layer import Vector
 from phytospatial.vector.io import resolve_vector
-from phytospatial.vector.geom import force_Z, to_crs
-from phytospatial.vector.spatial_operations import prepare_treetop_vectors
 
-from .models import (
-    Base, Tree, Crown, LidarAcquisition,
-    ImageAcquisition, ImageBand, SpectralAttribute
+from phytospatial.db.models import (
+    Base, Tree, LidarAcquisition, ImageAcquisition, ImageBand, SpectralAttribute
 )
+from phytospatial.db.bulk_loader import PolarsLoader
 
 log = logging.getLogger(__name__)
 
@@ -44,10 +43,14 @@ def _load_spatialite(
     except Exception as e:
         log.warning(f"Failed to load SpatiaLite extension. Spatial queries may fail. Error: {e}")
 
-
 class DB_Client:
     """
-    A dialect-agnostic Data Access Layer bridging Phytospatial algorithms with persistent relational storage.
+    A dialect-agnostic Data Access Layer managing connections, schema deployments, 
+    and routing data to high-performance bulk loaders without external ORM spatial dependencies.
+
+    Attributes:
+        engine (sqlalchemy.engine.Engine): The active database engine.
+        SessionLocal (sqlalchemy.orm.sessionmaker): The session factory for transactions.
     """
 
     def __init__(
@@ -55,10 +58,10 @@ class DB_Client:
             connection_string: str = "sqlite:///phytospatial_local.gpkg"
             ) -> None:
         """
-        Initializes the database client, deploying dialect-specific hooks when interacting with SQLite engines.
-        
+        Initializes the database client and configures spatial extensions if necessary.
+
         Args:
-            connection_string (str): The SQLAlchemy-formatted connection URI. Defaults to a local GeoPackage.
+            connection_string (str): The database connection URI.
         """
         self.engine = create_engine(connection_string, echo=False)
         if connection_string.startswith("sqlite"):
@@ -67,24 +70,24 @@ class DB_Client:
 
     @classmethod
     def from_env(
-        cls, 
-        db_type: str = "postgres", 
-        env_path: Optional[Union[str, Path]] = None, 
+        cls,
+        db_type: str = "postgres",
+        env_path: Optional[Union[str, Path]] = None,
         sqlite_path: str = "phytospatial_local.gpkg"
         ) -> "DB_Client":
         """
-        Instantiates a DB_Client by dynamically resolving connection credentials from the system environment.
+        Constructs a DB_Client instance using environment variables.
 
         Args:
-            db_type (str): The requested database dialect ('sqlite' or 'postgres'). Defaults to 'postgres'.
-            env_path (Optional[Union[str, Path]]): Filepath to a .env configuration file.
-            sqlite_path (str): Fallback filepath for local SQLite deployments. Defaults to 'phytospatial_local.gpkg'.
+            db_type (str): The target database dialect ('postgres' or 'sqlite').
+            env_path (Optional[Union[str, Path]]): Filepath to a specific .env file.
+            sqlite_path (str): Filepath for local SQLite/GeoPackage databases.
 
         Returns:
-            DB_Client: A fully configured and instantiated database client.
+            DB_Client: A fully configured database client instance.
 
         Raises:
-            ValueError: If the required PostgreSQL credentials are missing from the environment.
+            ValueError: If PostgreSQL credentials are required but missing from the environment.
         """
         if env_path:
             load_dotenv(env_path)
@@ -230,76 +233,29 @@ class DB_Client:
         trees_input: Union[str, Path, Vector],
         column_mapping: Optional[Dict[str, str]] = None,
         target_srid: int = 32619,
-        batch_size: int = 5000
+        batch_size: int = 15000
         ) -> int:
         """
-        Ingests master tree anchor locations into the persistent relational storage layer.
-        
-        This polymorphic method accepts either a filepath to a vector dataset or an in-memory Vector 
-        object. It standardizes the schema, enforces the 3D Z-dimension, aligns the coordinate 
-        reference system, and executes a memory-safe bulk insertion.
+        Routes the vector input to the PolarsLoader for high-performance insertion 
+        of tree geometries.
 
         Args:
-            trees_input (Union[str, Path, Vector]): The spatial dataset of tree anchors.
-            column_mapping (Optional[Dict[str, str]]): A translation dictionary bridging native shapefile 
-                attributes to the required 'tree_id' and 'species' columns.
-            target_srid (int): The Spatial Reference System Identifier enforced on the destination schema. 
-                Defaults to 32619.
-            batch_size (int): The maximum number of records to hold in memory before committing to the database.
+            trees_input (Union[str, Path, Vector]): The input vector data or filepath.
+            column_mapping (Optional[Dict[str, str]]): Schema alignment dictionary.
+            target_srid (int): The target spatial reference identifier.
+            batch_size (int): Transaction block size for bulk insertions.
 
         Returns:
-            int: The aggregate total of successfully committed tree anchor records.
-
-        Raises:
-            KeyError: If the underlying dataset lacks required schema fields after mapping.
-            RuntimeError: If the database engine rejects the insertion transaction.
+            int: The total number of trees successfully inserted.
         """
-        prepared_vector = prepare_treetop_vectors(
-            vector=trees_input, 
-            column_mapping=column_mapping
-        )
-        
-        if prepared_vector.crs and prepared_vector.crs.to_epsg() != target_srid:
-            prepared_vector = to_crs(
-                vector=prepared_vector, 
-                target_crs=f"EPSG:{target_srid}", 
-                inplace=True
-            )
-            
-        prepared_vector = force_Z(
-            vector=prepared_vector, 
-            dimensionality=3, 
-            inplace=True
-        )
-
-        if prepared_vector.data.empty:
-            return 0
-            
-        df = prepared_vector.data
-        total_inserted = 0
-        records = []
-        
         with self.SessionLocal() as session:
-            for row, geom in zip(df.itertuples(index=False), df.geometry):
-                records.append({
-                    "tree_id": str(getattr(row, "tree_id")),
-                    "species": getattr(row, "species", None),
-                    "status": getattr(row, "status", 'Alive'),
-                    "geom": from_shape(geom, srid=target_srid)
-                })
-                
-                if len(records) >= batch_size:
-                    session.execute(insert(Tree), records)
-                    session.commit()
-                    total_inserted += len(records)
-                    records.clear()
-                    
-            if records:
-                session.execute(insert(Tree), records)
-                session.commit()
-                total_inserted += len(records)
-                
-        return total_inserted
+            loader = PolarsLoader(session)
+            return loader.load_trees(
+                vector=trees_input,
+                column_mapping=column_mapping,
+                target_srid=target_srid,
+                batch_size=batch_size
+            )
 
     @resolve_vector
     def upload_crowns(
@@ -313,80 +269,32 @@ class DB_Client:
         batch_size: int = 5000
         ) -> int:
         """
-        Uploads delineated crown polygons to the database linked to existing tree anchors.
-        
-        This polymorphic method accepts either a filepath to a vector dataset or an in-memory Vector 
-        object. It safely enforces two-dimensional geometries for insertion into PostGIS/SpatiaLite
-        to prevent dimensional mismatch errors and accommodates both manually digitized and 
-        algorithmically generated bounds.
+        Routes the vector input to the PolarsLoader for high-performance insertion 
+        of delineated crown polygons.
 
         Args:
-            crowns_input (Union[str, Path, Vector]): Polygonal dataset defining physical canopy delineations.
-            crown_category (str): Categorical designation. Must be strictly 'Manual' or 'Automated'.
-            generation_method (Optional[str]): String identifier for the algorithmic process used. 
-                Required if crown_category is 'Automated'.
-            lidar_id (Optional[int]): Linking reference back to the source point cloud acquisition.
-            image_id (Optional[int]): Linking reference back to the source photogrammetric acquisition.
-            srid (int): The Spatial Reference System Identifier to assign to inserted geometries.
-            batch_size (int): The maximum number of records to hold in memory before committing.
+            crowns_input (Union[str, Path, Vector]): The input vector data or filepath.
+            crown_category (str): Defines the delineation source.
+            generation_method (Optional[str]): Defines the algorithmic generation method.
+            lidar_id (Optional[int]): Source LiDAR record ID.
+            image_id (Optional[int]): Source Image record ID.
+            srid (int): The target spatial reference identifier.
+            batch_size (int): Transaction block size for bulk insertions.
 
         Returns:
-            int: The total integer count of effectively inserted crown bounds.
-
-        Raises:
-            ValueError: If constraints matching 'crown_category' and 'generation_method' are violated.
+            int: The total number of crowns successfully inserted.
         """
-        if crowns_input.data.empty:
-            return 0
-
-        if crown_category not in ("Manual", "Automated"):
-            raise ValueError(f"Invalid crown_category: {crown_category}. Must be 'Manual' or 'Automated'.")
-
-        if crown_category == "Automated":
-            if not generation_method:
-                raise ValueError("generation_method must be provided when crown_category is 'Automated'.")
-        else:
-            if generation_method:
-                log.warning("generation_method is ignored when crown_category is 'Manual'.")
-                generation_method = None
-
-        flat_vector = force_Z(
-            vector=crowns_input, 
-            dimensionality=2, 
-            inplace=False
-        )
-        df = flat_vector.data
-
-        date_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H%M")
-        total_inserted = 0
-        records = []
-        
         with self.SessionLocal() as session:
-            for row, geom in zip(df.itertuples(index=False), df.geometry):
-                crown_id = f"{getattr(row, 'tree_id')}_{date_str}"
-                
-                records.append({
-                    "crown_id": crown_id,
-                    "tree_id": str(getattr(row, "tree_id")),
-                    "crown_category": crown_category,
-                    "generation_method": generation_method,
-                    "source_lidar_id": lidar_id,
-                    "source_image_id": image_id,
-                    "geom": from_shape(geom, srid=srid)
-                })
-                
-                if len(records) >= batch_size:
-                    session.execute(insert(Crown), records)
-                    session.commit()
-                    total_inserted += len(records)
-                    records.clear()
-                    
-            if records:
-                session.execute(insert(Crown), records)
-                session.commit()
-                total_inserted += len(records)
-                
-        return total_inserted
+            loader = PolarsLoader(session)
+            return loader.load_crowns(
+                vector=crowns_input,
+                crown_category=crown_category,
+                generation_method=generation_method,
+                lidar_id=lidar_id,
+                image_id=image_id,
+                target_srid=srid,
+                batch_size=batch_size
+            )
 
     def _batch_insert_spectral(
             self, 
@@ -411,7 +319,7 @@ class DB_Client:
         image_id: int,
         batch_size: int = 5000,
         **kwargs: Any
-     ) -> int:
+        ) -> int:
         """
         Orchestrates an extraction pipeline, routing generated scalar JSON payloads directly into SQL storage.
         
