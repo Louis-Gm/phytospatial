@@ -25,7 +25,7 @@
   <div align="center">
     <img src="https://img.shields.io/badge/python-3.10+-orange.svg" alt="Python versions">
     <img src="https://img.shields.io/badge/Apache%202.0-blue.svg" alt="License">
-    <img src="https://img.shields.io/pypi/dm/phytospatial-red" alt="Downloads">
+    <img src="https://img.shields.io/pypi/dm/phytospatial" alt="Downloads">
     <img src="https://github.com/Louis-Gm/phytospatial/actions/workflows/test_suite.yml/badge.svg" alt="Build Status">
     <img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.18112045-purple" alt="DOI">
     <br />
