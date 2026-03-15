@@ -116,7 +116,7 @@ This software is developed by Louis-Vincent Grand'Maison as part of a PhD projec
 
 `Phytospatial` is distributed under the Apache License, Version 2.0.
 <br />
-See the LICENSE file for the full text. This license includes a world-wide, no-charge, royalty-free, irrevocable patent license for all users.
+This license includes a world-wide, no-charge, royalty-free, irrevocable patent license for all users.
 
 See [LICENSE](https://phytospatial.readthedocs.io/en/latest/license/) for more information on licensing and copyright.
 

@@ -33,4 +33,4 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
-          python scripts/test_release.py "${{ inputs.test_version }}"
+          python scripts/auto/test_release.py "${{ inputs.test_version }}"

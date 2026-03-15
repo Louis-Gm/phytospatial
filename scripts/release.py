@@ -104,7 +104,7 @@ def main():
         error_exit("Version required.")
 
     # capture the version change
-    update_script = script_path.parent / "update_docs.py"
+    update_script = script_path.parent / "auto/update_docs.py"
     if not update_script.exists():
         error_exit(f"Could not find update_docs.py at {update_script}")
 
