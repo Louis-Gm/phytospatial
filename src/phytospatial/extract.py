@@ -57,7 +57,6 @@ def _process_geometry_in_memory(
     Returns:
         Dict[str, Any]: A dictionary containing either raw pixel values or computed statistics for the geometry.
     """
-    
     try:
         raster_window = Window(0, 0, raster.width, raster.height)
         geom_window = from_bounds(
@@ -156,9 +155,9 @@ def extract_features(
     return_raw: bool = False,
     tile_mode: Literal["auto", "tiled", "blocked", "in_memory"] = "auto",
     tile_size: int = 512
-) -> Generator[Dict[str, Any], None, None]:
+    ) -> Generator[Dict[str, Any], None, None]:
     """
-    Generates spectral features for vector polygons using a single-pass processing architecture.
+    Generates Raster-derived features for all Vector objects within the raster extent using a single-pass processing architecture.
 
     Args:
         raster_input (Union[str, Path, Raster]): The source raster data, provided as an in-memory Raster object or a filepath.
@@ -185,40 +184,74 @@ def extract_features(
     crown_metadata = {} 
     fully_processed_ids = set()
 
-    def _execute_intersection(raster_iterator, source_name, vector_data):
+    def _execute_intersection(
+            raster_iterator, 
+            source_name, 
+            vector_data
+            ) -> Generator[Dict[str, Any], None, None]:
         """
-        Internal generator to intersect vector geometries against an active stream of raster windows.
+        Coordinates the continuous intersection of vector geometries against streamed raster tiles utilizing 
+        optimized native Polars Rust expressions and vectorized Shapely C-arrays for primary spatial filtering.
+
+        Parameters
+        ----------
+        raster_iterator : Iterator[Tuple[Window, Raster]]
+            An active generator yielding spatial partition windows and their corresponding loaded Raster matrices.
+        source_name : str
+            The nomenclature identifier of the active raster source file.
+        vector_data : gpd.GeoDataFrame
+            The contiguous spatial boundaries to be evaluated against the raster matrix.
+
+        Yields
+        ------
+        Dict[str, Any]
+            A comprehensive mapping containing spatial relational identifiers and aggregated spectral metrics 
+            for verified topologies.
         """
-        sindex = vector_data.sindex if hasattr(vector_data, 'sindex') else None
-        
+        bounds_df = pl.from_pandas(vector_data.bounds)
+
         for window, tile_raster in raster_iterator:
-            tile_box = box(*tile_raster.bounds)
+            t_minx, t_miny, t_maxx, t_maxy = tile_raster.bounds
             
-            if sindex is not None:
-                possible_matches_index = list(sindex.intersection(tile_box.bounds))
-                local_trees = vector_data.iloc[possible_matches_index]
-            else:
-                local_trees = vector_data
+            mask_expr = (
+                (pl.col("maxx") >= t_minx) & 
+                (pl.col("minx") <= t_maxx) & 
+                (pl.col("maxy") >= t_miny) & 
+                (pl.col("miny") <= t_maxy)
+            )
+            intersect_mask = bounds_df.select(mask_expr).to_series().to_numpy()
             
-            local_trees = local_trees[local_trees.intersects(tile_box)]
+            local_trees = vector_data.iloc[intersect_mask].copy()
 
             if local_trees.empty:
                 continue
-                
+
+            tile_box = box(t_minx, t_miny, t_maxx, t_maxy)
+            
+            intersects_mask = local_trees.geometry.intersects(tile_box)
+            local_trees = local_trees[intersects_mask]
+
+            if local_trees.empty:
+                continue
+
+            if window is not None:
+                local_trees['is_fully_within'] = local_trees.geometry.within(tile_box)
+            else:
+                local_trees['is_fully_within'] = True
+
             idx_to_name = {v: k for k, v in tile_raster.band_names.items()}
             for idx, row in local_trees.iterrows():
                 crown_id = row.get('crown_id', idx)
                 if crown_id in fully_processed_ids:
                     continue
 
-                geom = row.geometry
-                is_fully_within = True if window is None else geom.within(tile_box)
+                is_fully_within = row['is_fully_within']
                 force_raw = not is_fully_within
                 species = row.get('species', None)
 
                 feats = _process_geometry_in_memory(
                     raster=tile_raster,
-                    geometry=geom,
+                    geometry=row.geometry,
                     threshold=threshold,
                     return_raw=(return_raw or force_raw),
                     idx_to_name=idx_to_name
@@ -245,6 +278,7 @@ def extract_features(
                     result = {'crown_id': crown_id, 'species': species, 'raster_source': source_name}
                     result.update(feats)
                     yield result
+
                 else:
                     if crown_id not in crown_metadata:
                         crown_metadata[crown_id] = {'species': species, 'raster_source': source_name}
@@ -281,6 +315,7 @@ def extract_features(
     for crown_id, band_data in boundary_buffer.items():
         if crown_id in fully_processed_ids:
             continue
+
         result = {'crown_id': crown_id}
         result.update(crown_metadata.get(crown_id, {}))
         
