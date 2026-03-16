@@ -37,7 +37,15 @@ from .spatial_operations import (
     assign_tree_ids_to_crowns
 )
 
-# 
+from .spatial_metrics import (
+    compute_iou,
+    compute_giou,
+    compute_diou,
+    compute_ciou,
+    compute_dice,
+    analyze_geometric_similarity
+)
+ 
 __all__ = [
     # I/O and data structure
     "Vector",
@@ -56,5 +64,13 @@ __all__ = [
     "prepare_treetop_vectors",
     "label_tree_crowns",
     "calculate_centroid",
-    "assign_tree_ids_to_crowns"
+    "assign_tree_ids_to_crowns",
+
+    # Geometric similarity metrics
+    "compute_iou",
+    "compute_giou",
+    "compute_diou",
+    "compute_ciou",
+    "compute_dice",
+    "analyze_geometric_similarity"
 ]
