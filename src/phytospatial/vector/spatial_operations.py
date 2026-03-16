@@ -21,6 +21,7 @@ __all__ = [
     "prepare_itcd_vectors",
     "prepare_treetop_vectors",
     "label_tree_crowns",
+    "calculate_centroid",
     "assign_tree_ids_to_crowns"
 ]
 
@@ -204,6 +205,21 @@ def label_tree_crowns(
     )
     
     return Vector(updated_gdf)
+
+@resolve_vector
+def calculate_centroid(vector: Vector) -> Vector:
+    """
+    Computes the geometric center of each geometry in the provided vector layer.
+
+    Args:
+        vector (Vector): The input vector layer containing polygonal geometries.
+
+    Returns:
+        Vector: A new vector object containing Point geometries at the centroids.
+    """
+    gdf = vector.data.copy()
+    gdf.geometry = gdf.geometry.centroid
+    return Vector(gdf)
 
 @resolve_vector
 def assign_tree_ids_to_crowns(

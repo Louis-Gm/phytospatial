@@ -55,5 +55,6 @@ __all__ = [
     "prepare_itcd_vectors",
     "prepare_treetop_vectors",
     "label_tree_crowns",
+    "calculate_centroid",
     "assign_tree_ids_to_crowns"
 ]
