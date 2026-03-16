@@ -263,6 +263,7 @@ class DB_Client:
         crowns_input: Union[str, Path, Vector],
         crown_category: str = "Automated",
         generation_method: Optional[str] = None,
+        trees_reference: Optional[Vector] = None,
         lidar_id: Optional[int] = None,
         image_id: Optional[int] = None,
         srid: int = 32619,
@@ -276,6 +277,7 @@ class DB_Client:
             crowns_input (Union[str, Path, Vector]): The input vector data or filepath.
             crown_category (str): Defines the delineation source.
             generation_method (Optional[str]): Defines the algorithmic generation method.
+            trees_reference (Optional[Vector]): A reference Vector of tree points for spatial reconciliation.
             lidar_id (Optional[int]): Source LiDAR record ID.
             image_id (Optional[int]): Source Image record ID.
             srid (int): The target spatial reference identifier.
@@ -290,6 +292,7 @@ class DB_Client:
                 vector=crowns_input,
                 crown_category=crown_category,
                 generation_method=generation_method,
+                trees_reference=trees_reference,
                 lidar_id=lidar_id,
                 image_id=image_id,
                 target_srid=srid,
