@@ -10,9 +10,10 @@ band extraction, and other common tasks.
 import logging
 import re
 from pathlib import Path
-from typing import Union, List, Optional, Dict
+from typing import Tuple, Union, List, Optional, Dict
 
 import numpy as np
+from numba import njit
 import rasterio
 
 log = logging.getLogger(__name__)
@@ -22,7 +23,8 @@ __all__ = [
     "extract_band_indices",
     "extract_band_names",
     "map_wavelengths",
-    "extract_wavelength"
+    "extract_wavelength",
+    "compute_statistics"
 ]
 
 def resolve_envi_path(
@@ -97,3 +99,24 @@ def map_wavelengths(
         mapping[var_name] = parsed_wavelengths[matched_wvl]
         
     return mapping
+
+@njit(cache=True, fastmath=True)
+def compute_statistics(
+    pixel_array: np.ndarray
+    ) -> Tuple[float, float, float, float, float]:
+    """
+    Computes core summary statistics for a 1-dimensional numeric array utilizing a JIT-compiled pipeline.
+
+    Args:
+        pixel_array (np.ndarray): A flat, contiguous array of isolated pixel intensity values cast to float64.
+
+    Returns:
+        Tuple[float, float, float, float, float]: A structured sequence containing the median, mean, 
+                                                  standard deviation, minimum, and maximum values respectively.
+    """
+    med = np.median(pixel_array)
+    mean = np.mean(pixel_array)
+    sd = np.std(pixel_array)
+    min_v = np.min(pixel_array)
+    max_v = np.max(pixel_array)
+    return med, mean, sd, min_v, max_v

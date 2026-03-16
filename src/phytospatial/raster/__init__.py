@@ -64,7 +64,8 @@ from .utils import (
     extract_band_names,
     extract_band_indices,
     extract_wavelength,
-    map_wavelengths
+    map_wavelengths,
+    compute_statistics
 )
 
 # Spectral index registry
@@ -94,7 +95,8 @@ __all__ = [
     "extract_band_indices",
     "extract_wavelength",
     "map_wavelengths",
-
+    "compute_statistics",
+    
     # Layer
     "Raster",
 
