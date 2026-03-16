@@ -22,7 +22,7 @@ from rasterio.errors import WindowError
 from shapely.geometry import box
 
 from phytospatial.raster.layer import Raster
-from phytospatial.raster.utils import resolve_envi_path, extract_band_indices, extract_band_names
+from phytospatial.raster.utils import resolve_envi_path, extract_band_indices, extract_band_names, compute_statistics
 from phytospatial.raster.resources import ProcessingMode, determine_strategy
 from phytospatial.raster.partition import iter_tiles, iter_blocks
 
@@ -129,21 +129,18 @@ def _process_geometry_in_memory(
             for b_idx in range(raster.count)
         }
     else:
-        med = np.median(masked_pixels, axis=1)
-        mean = np.mean(masked_pixels, axis=1)
-        std = np.std(masked_pixels, axis=1)
-        min_val = np.min(masked_pixels, axis=1)
-        max_val = np.max(masked_pixels, axis=1)
-        
         for b_idx in range(raster.count):
             name = idx_to_name.get(b_idx + 1, f"b{b_idx + 1}")
-            stats_out.update({
-                f"{name}_med": float(med[b_idx]),
-                f"{name}_mean": float(mean[b_idx]),
-                f"{name}_sd": float(std[b_idx]),
-                f"{name}_min": float(min_val[b_idx]),
-                f"{name}_max": float(max_val[b_idx])
-            })
+            p_arr = np.array(masked_pixels[b_idx], dtype=np.float64)
+            if p_arr.size > 0:
+                med, mean, sd, min_v, max_v = compute_statistics(p_arr)
+                stats_out.update({
+                    f"{name}_med": float(med),
+                    f"{name}_mean": float(mean),
+                    f"{name}_sd": float(sd),
+                    f"{name}_min": float(min_v),
+                    f"{name}_max": float(max_v)
+                })
 
     return stats_out
 
@@ -178,7 +175,7 @@ def extract_features(
     elif isinstance(vector_input, Vector):
         vector_obj = validate(vector_input, fix_invalid=True, drop_invalid=False)
     else:
-        raise TypeError(f"vector_input must be a path or Vector object")
+        raise TypeError("vector_input must be a path or Vector object")
     
     boundary_buffer = defaultdict(lambda: defaultdict(list))
     crown_metadata = {} 
@@ -187,45 +184,33 @@ def extract_features(
     def _execute_intersection(
             raster_iterator, 
             source_name, 
-            vector_data
+            vector_layer: Vector
             ) -> Generator[Dict[str, Any], None, None]:
         """
         Coordinates the continuous intersection of vector geometries against streamed raster tiles utilizing 
-        optimized native Polars Rust expressions and vectorized Shapely C-arrays for primary spatial filtering.
+        optimized native Rust RTree indexing and vectorized Shapely C-arrays for primary spatial filtering.
 
-        Parameters
-        ----------
-        raster_iterator : Iterator[Tuple[Window, Raster]]
-            An active generator yielding spatial partition windows and their corresponding loaded Raster matrices.
-        source_name : str
-            The nomenclature identifier of the active raster source file.
-        vector_data : gpd.GeoDataFrame
-            The contiguous spatial boundaries to be evaluated against the raster matrix.
+        Args:
+            raster_iterator (Iterator[Tuple[Window, Raster]]): An active generator yielding spatial partition windows 
+            and their corresponding loaded Raster matrices.
+            source_name (str): The nomenclature identifier of the active raster source file.
+            vector_layer (Vector): The fully projected vector dataset manager holding the geometries and spatial cache.
 
-        Yields
-        ------
-        Dict[str, Any]
-            A comprehensive mapping containing spatial relational identifiers and aggregated spectral metrics 
-            for verified topologies.
+        Yields:
+        Generator[Dict[str, Any], None, None]: A comprehensive mapping containing spatial relational identifiers and aggregated 
+            spectral metrics for verified topologies.
         """
-        bounds_df = pl.from_pandas(vector_data.bounds)
+        _ = vector_layer.spatial_index
 
         for window, tile_raster in raster_iterator:
             t_minx, t_miny, t_maxx, t_maxy = tile_raster.bounds
             
-            mask_expr = (
-                (pl.col("maxx") >= t_minx) & 
-                (pl.col("minx") <= t_maxx) & 
-                (pl.col("maxy") >= t_miny) & 
-                (pl.col("miny") <= t_maxy)
-            )
-            intersect_mask = bounds_df.select(mask_expr).to_series().to_numpy()
+            candidate_indices = vector_layer.query_bounds(t_minx, t_miny, t_maxx, t_maxy)
             
-            local_trees = vector_data.iloc[intersect_mask].copy()
-
-            if local_trees.empty:
+            if len(candidate_indices) == 0:
                 continue
-
+                
+            local_trees = vector_layer.data.iloc[candidate_indices].copy()
             tile_box = box(t_minx, t_miny, t_maxx, t_maxy)
             
             intersects_mask = local_trees.geometry.intersects(tile_box)
@@ -267,12 +252,14 @@ def extract_features(
                         for key, pixels in feats.items():
                             if key.endswith("_values"):
                                 band_name = key.replace("_values", "")
-                                p_arr = np.array(pixels)
-                                final_stats[f"{band_name}_med"] = float(np.median(p_arr))
-                                final_stats[f"{band_name}_mean"] = float(np.mean(p_arr))
-                                final_stats[f"{band_name}_sd"] = float(np.std(p_arr))
-                                final_stats[f"{band_name}_min"] = float(np.min(p_arr))
-                                final_stats[f"{band_name}_max"] = float(np.max(p_arr))
+                                p_arr = np.array(pixels, dtype=np.float64)
+                                if p_arr.size > 0:
+                                    med, mean, sd, min_v, max_v = compute_statistics(p_arr)
+                                    final_stats[f"{band_name}_med"] = float(med)
+                                    final_stats[f"{band_name}_mean"] = float(mean)
+                                    final_stats[f"{band_name}_sd"] = float(sd)
+                                    final_stats[f"{band_name}_min"] = float(min_v)
+                                    final_stats[f"{band_name}_max"] = float(max_v)
                         feats = final_stats
 
                     result = {'crown_id': crown_id, 'species': species, 'raster_source': source_name}
@@ -288,7 +275,7 @@ def extract_features(
     if isinstance(raster_input, Raster):
         if vector_obj.crs != raster_input.crs:
             vector_obj = to_crs(vector_obj, raster_input.crs, inplace=False)
-        yield from _execute_intersection([(None, raster_input)], "memory_raster", vector_obj.data)
+        yield from _execute_intersection([(None, raster_input)], "memory_raster", vector_obj)
 
     else:
         path = resolve_envi_path(Path(raster_input))
@@ -310,7 +297,7 @@ def extract_features(
             else: 
                 raster_iterator = iter_tiles(src, tile_size=tile_size, bands=bands)
 
-            yield from _execute_intersection(raster_iterator, source_name, vector_obj.data)
+            yield from _execute_intersection(raster_iterator, source_name, vector_obj)
 
     for crown_id, band_data in boundary_buffer.items():
         if crown_id in fully_processed_ids:
@@ -321,16 +308,19 @@ def extract_features(
         
         extracted_data = {}
         for key, all_pixels in band_data.items():
-            pixel_array = np.array(all_pixels)
+            pixel_array = np.array(all_pixels, dtype=np.float64)
+            if pixel_array.size == 0:
+                continue
             if return_raw:
                 extracted_data[key] = pixel_array.tolist()
             else:
                 prefix = key.replace("_values", "")
-                extracted_data[f"{prefix}_med"] = float(np.median(pixel_array))
-                extracted_data[f"{prefix}_mean"] = float(np.mean(pixel_array))
-                extracted_data[f"{prefix}_sd"] = float(np.std(pixel_array))
-                extracted_data[f"{prefix}_min"] = float(np.min(pixel_array))
-                extracted_data[f"{prefix}_max"] = float(np.max(pixel_array))
+                med, mean, sd, min_v, max_v = compute_statistics(pixel_array)
+                extracted_data[f"{prefix}_med"] = float(med)
+                extracted_data[f"{prefix}_mean"] = float(mean)
+                extracted_data[f"{prefix}_sd"] = float(sd)
+                extracted_data[f"{prefix}_min"] = float(min_v)
+                extracted_data[f"{prefix}_max"] = float(max_v)
         
         if extracted_data:
             result.update(extracted_data)
@@ -342,7 +332,7 @@ def extract_to_dataframe(
     tile_mode: Literal["auto", "tiled", "blocked", "in_memory"] = "auto",
     tile_size: int = 512,
     **kwargs: Any
-) -> pl.DataFrame:
+    ) -> pl.DataFrame:
     """
     Consumes the feature generator to immediately build an optimized Polars DataFrame.
 
