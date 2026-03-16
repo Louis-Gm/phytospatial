@@ -1,7 +1,8 @@
 # src/phytospatial/db/bulk_loader.py
 
+import datetime
 import logging
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 import polars as pl
 import shapely
@@ -10,7 +11,7 @@ from sqlalchemy import insert
 
 from phytospatial.vector.layer import Vector
 from phytospatial.vector.geom import to_crs, force_Z
-from phytospatial.vector.spatial_operations import prepare_treetop_vectors
+from phytospatial.vector.spatial_operations import prepare_treetop_vectors, calculate_centroid, assign_tree_ids_to_crowns
 
 from phytospatial.db.models import Tree, Crown
 
@@ -98,11 +99,57 @@ class PolarsLoader:
 
         return total_inserted
 
+    def _reconcile_manual_ancestry(
+            self, vector: Vector, 
+            trees_ref: Optional[Vector], 
+            srid: int
+            ) -> None:
+        """
+        Ensures manual crowns are linked to trees. Intersects with reference if available, 
+        else creates synthetic trees at centroids.
+
+        Args:
+            vector (Vector): The input crown Vector to reconcile.
+            trees_ref (Optional[Vector]): A reference Vector of tree points for spatial reconciliation.
+            srid (int): The spatial reference system identifier for reprojection and consistency.
+
+        Returns:
+            None: The function modifies the input Vector in place, adding 'tree_id' links as needed.    
+        """
+        gdf = vector.data
+        if "tree_id" not in gdf.columns:
+            gdf["tree_id"] = None
+
+        missing_mask = gdf["tree_id"].isna() | (gdf["tree_id"] == "")
+        
+        if missing_mask.any() and trees_ref is not None:
+            missing_subset = Vector(gdf[missing_mask].copy())
+            linked = assign_tree_ids_to_crowns(missing_subset, trees_ref)
+            gdf.loc[linked.data.index, "tree_id"] = linked.data["tree_id"]
+            missing_mask = gdf["tree_id"].isna() | (gdf["tree_id"] == "")
+
+        if missing_mask.any():
+            missing_gdf = gdf[missing_mask].copy()
+            centroids_vector = calculate_centroid(Vector(missing_gdf))
+            
+            timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            synthetic_ids = [f"SYN_{timestamp}_{i}" for i in range(len(centroids_vector))]
+            
+            centroids_vector.data["tree_id"] = synthetic_ids
+            centroids_vector.data["species"] = "Manual_Digitization"
+            centroids_vector.data["status"] = "Synthetic"
+            
+            self.load_trees(centroids_vector, target_srid=srid)
+            gdf.loc[missing_mask, "tree_id"] = synthetic_ids
+
+        vector.data = gdf
+
     def load_crowns(
         self,
         vector: Vector,
         crown_category: str = "Automated",
         generation_method: Union[str, None] = None,
+        trees_reference: Optional[Vector] = None,
         lidar_id: Union[int, None] = None,
         image_id: Union[int, None] = None,
         target_srid: int = 32619,
@@ -113,8 +160,9 @@ class PolarsLoader:
 
         Args:
             vector (Vector): The input Vector object containing crown polygon features.
-            crown_category (str): Classification of the crown generation.
+            crown_category (str): Classification of the crown generation. Can either be 'Manual' or 'Automated'. Defaults to 'Automated'.
             generation_method (Union[str, None]): The algorithm used if category is 'Automated'.
+            trees_reference (Optional[Vector]): A reference vector containing tree locations for manual crown reconciliation.
             lidar_id (Union[int, None]): Foreign key referencing the source LiDAR acquisition.
             image_id (Union[int, None]): Foreign key referencing the source Image acquisition.
             target_srid (int): The target spatial reference system identifier.
@@ -129,38 +177,26 @@ class PolarsLoader:
         if vector.data.empty:
             return 0
 
-        if crown_category not in ("Manual", "Automated"):
-            raise ValueError(f"Invalid crown_category: {crown_category}. Must be 'Manual' or 'Automated'.")
-
-        if crown_category == "Automated" and not generation_method:
-            raise ValueError("generation_method must be provided when crown_category is 'Automated'.")
-
+        if crown_category == "Manual":
+            self._reconcile_manual_ancestry(vector, trees_reference, target_srid)
+        
         if "tree_id" not in vector.data.columns:
-            raise KeyError("Vector payload must contain a 'tree_id' mapping prior to reaching the bulk loader.")
+            raise KeyError("Vector payload lacks 'tree_id' even after reconciliation.")
 
         vector.data["tree_id"] = vector.data["tree_id"].astype(str)
         prefix = crown_category[:3].upper()
         vector.data["crown_id"] = vector.data["tree_id"] + f"_{prefix}"
-        
+
         is_polygon = vector.data.geometry.geom_type == 'Polygon'
         if not is_polygon.all():
-            dropped_gdf = vector.data[~is_polygon]
-            for _, row in dropped_gdf.iterrows():
-                log.warning(
-                    f"Dropping crown_id '{row['crown_id']}' (tree_id: '{row['tree_id']}'). "
-                    f"Expected 'Polygon', found '{row.geometry.geom_type}'."
-                )
+            for _, row in vector.data[~is_polygon].iterrows():
+                log.warning(f"Dropping MultiPolygon crown '{row['crown_id']}' for tree '{row['tree_id']}'.")
             vector.data = vector.data[is_polygon].copy()
 
         if vector.data.empty:
             return 0
 
-        flat_vector = force_Z(
-            vector=vector,
-            dimensionality=2,
-            inplace=False
-        )
-        
+        flat_vector = force_Z(vector, dimensionality=2, inplace=False)
         gdf = flat_vector.data
         
         geoms_with_srid = shapely.set_srid(gdf.geometry.values, target_srid)
