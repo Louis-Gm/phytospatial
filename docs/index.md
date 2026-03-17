@@ -78,6 +78,12 @@ hide:
         <p class="tx-profile__title">Code reviewer</p>
         <p class="tx-profile__bio">Professor in geomatics at Université Laval</p>
       </div>
+      <div class="tx-profile">
+        <img src="assets/images/team/banakinao.jpg" alt="Kibalou Betchaleel Banakinao">
+        <h3>Kibalou Betchaleel Banakinao</h3>
+        <p class="tx-profile__title">Frontend developer</p>
+        <p class="tx-profile__bio">PhD candidate at Université Laval</p>
+      </div>
     </div>
     <div class="tx-collaborators__action">
       <p>Join the fun! Whether you are a student or an expert, we welcome your contributions.</p>
