@@ -5,7 +5,7 @@ This module provides functions for reading and writing vector data (points, line
 """
 
 from pathlib import Path
-from typing import Union, Callable, Any
+from typing import Union, Callable, Any, get_type_hints, get_origin, get_args
 import inspect
 import logging
 from functools import wraps
@@ -93,15 +93,32 @@ def resolve_vector(
         bound_args = sig.bind(*args, **kwargs)
         bound_args.apply_defaults()
         
+        try:
+            hints = get_type_hints(func)
+        except Exception:
+            hints = {}
+        
         for name, param in sig.parameters.items():
             val = bound_args.arguments[name]
             
             if val is None:
                 continue
 
-            annot_str = str(param.annotation)
-            expects_vector = "Vector" in annot_str or "vector" in name.lower()
+            param_type = hints.get(name, Any)
+            expects_vector = False
             
+            if param_type is Vector:
+                expects_vector = True
+            else:
+                origin = get_origin(param_type)
+                if origin is not None:
+                    args_types = get_args(param_type)
+                    if Vector in args_types:
+                        expects_vector = True
+            
+            if not expects_vector and "vector" in name.lower():
+                expects_vector = True
+
             if expects_vector:
                 if isinstance(val, (str, Path)):
                     bound_args.arguments[name] = load_vector(val)
