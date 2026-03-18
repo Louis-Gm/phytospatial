@@ -4,18 +4,20 @@
 This module implements functions to rasterize lidar point clouds.
 """
 
-from typing import Union
+import itertools
+from typing import Union, Iterator, Generator
 from pathlib import Path
 import logging
 
 import numpy as np
 from rasterio.transform import Affine
 from rasterio.crs import CRS
-from numba import jit
+from numba import njit
 
 from phytospatial.raster.layer import Raster
 
 from phytospatial.lidar.layer import PointCloud
+from phytospatial.lidar.io import resolve_pc
 
 log = logging.getLogger(__name__)
 
@@ -26,120 +28,150 @@ __all__ = [
 
 NODATA_VAL = -9999.0
 
-def _create_affine_transform(min_x: float, max_y: float, resolution: float) -> Affine:
+def _create_affine_transform(
+        min_x: float, 
+        max_y: float, 
+        resolution: float
+        ) -> Affine:
     """
     Generates affine coordinate reference transforms for empty grids.
 
     Args:
-        min_x (float): Minimum X coordinate of the grid.
-        max_y (float): Maximum Y coordinate of the grid.
-        resolution (float): Geographic units per pixel.
+        min_x (float): Minimum absolute X coordinate of the target grid footprint.
+        max_y (float): Maximum absolute Y coordinate of the target grid footprint.
+        resolution (float): Spatial resolution defining geographic units per pixel.
 
     Returns:
-        Affine: Affine transformation object for georeferencing the raster grid.
+        Affine: Instantiated affine transformation matrix for strict georeferencing.
     """
-    # Translate spatial coordinates into discrete pixel space through a combination of scaling and translation
     return Affine.translation(min_x, max_y) * Affine.scale(resolution, -resolution)
 
-@jit(nopython=True, cache=True)
-def _rasterize_chunk(
-    grid: np.ndarray,
-    rows: np.ndarray,
-    cols: np.ndarray,
+@njit(cache=True, fastmath=True)
+def _process_chunk_fused(
+    x: np.ndarray,
+    y: np.ndarray,
     z: np.ndarray,
+    grid: np.ndarray,
+    min_x: float,
+    max_y: float,
+    resolution: float,
+    height: int,
+    width: int,
     method_flag: int
-    ):
+    ) -> None:
     """
-    Helper function to rasterize a chunk of points into the grid using explicit loops for numba optimization.
-    
+    Fuses spatial coordinate transformation, boundary validation, and statistical 
+    aggregation into a single pre-compiled kernel to bypass intermediate array allocation.
+
     Args:
-        grid: 2D array representing the raster grid to update.
-        rows: Row indices for each point.
-        cols: Column indices for each point.
-        z: Z values for each point.
-        method_flag: Integer flag indicating the aggregation method (0=count, 1=max, 2=min).
+        x (np.ndarray): 1D array of horizontal x-coordinates for the current chunk.
+        y (np.ndarray): 1D array of vertical y-coordinates for the current chunk.
+        z (np.ndarray): 1D array of elevation z-coordinates for the current chunk.
+        grid (np.ndarray): 2D target matrix acting as the raster output accumulator.
+        min_x (float): Origin X coordinate representing the left-most bound of the grid.
+        max_y (float): Origin Y coordinate representing the top-most bound of the grid.
+        resolution (float): Spatial resolution utilized as the discrete binning divisor.
+        height (int): Maximum allowable row index, derived from the grid shape.
+        width (int): Maximum allowable column index, derived from the grid shape.
+        method_flag (int): Directive flag mapping to the aggregation algorithm 
+            (0 = Count, 1 = Maximum, 2 = Minimum).
 
     Returns:
-        None (the grid is modified in place).
+        None
     """
-    for i in range(len(rows)):
-        r = rows[i]
-        c = cols[i]
-        # For each point, update the corresponding grid cell based on the specified method:
-        # Count simply increments the cell value;
-        # Max updates if the point's Z is greater;
-        # Min updates if the point's Z is smaller.
-        if method_flag == 0:  # count
-            grid[r, c] += 1
-        elif method_flag == 1:  # max
-            if z[i] > grid[r, c]:
-                grid[r, c] = z[i]
-        elif method_flag == 2:  # min
-            if z[i] < grid[r, c]:
-                grid[r, c] = z[i]
+    for i in range(x.shape[0]):
+        c = int((x[i] - min_x) / resolution)
+        r = int((max_y - y[i]) / resolution)
 
+        if 0 <= r < height and 0 <= c < width:
+            if method_flag == 1:
+                if z[i] > grid[r, c]:
+                    grid[r, c] = z[i]
+            elif method_flag == 2:
+                if z[i] < grid[r, c]:
+                    grid[r, c] = z[i]
+            elif method_flag == 0:
+                grid[r, c] += 1
+
+@resolve_pc
 def points_to_grid(
-    source: Union[str, Path, PointCloud], 
+    source: Union[str, Path, PointCloud, Iterator[PointCloud], Generator[PointCloud, None, None]], 
     resolution: float,
     crs: Union[str, CRS],
     method: str = 'max',
     nodata: float = NODATA_VAL,
     chunk_size: int = 2_000_000
-) -> Raster:
+    ) -> Raster:
     """
-    Rasterizes point cloud distributions sequentially into dense grids using NumPy vectorization.
+    Ingests and transforms unstructured 3D point cloud distributions into strict, 
+    geo-aligned 2D raster grids via heavily optimized spatial hashing.
 
-    This function can be used to create DSMs, DTMs, or point density maps by specifying the appropriate method.
-    It handles large datasets by processing points in manageable chunks.
-    
+    This function relies on the `@resolve_pc` decorator to dynamically supply either a 
+    fully instantiated PointCloud object or a memory-safe stream generator based on 
+    the presence of a chunk_size parameter during invocation.
+
     Args:
-        source (Union[str, Path, PointCloud]): Filepath to stream from or existing PointCloud object.
-        resolution (float): Geographic units per pixel.
-        crs (Union[str, CRS]): Coordinate reference system of the points.
-        method (str): Statistical aggregator ('max', 'min', 'count').
-        nodata (float): Filler value.
-        chunk_size (int): Points processed simultaneously.
-        
+        source (Union[str, Path, PointCloud, Iterator[PointCloud], Generator[PointCloud, None, None]]): 
+            The target data input. Filepaths are resolved into object streams prior to execution.
+        resolution (float): Granularity of the output grid defining the geographic 
+            distance each pixel represents.
+        crs (Union[str, CRS]): Target Coordinate Reference System for spatial alignment.
+        method (str, optional): Statistical aggregator to apply when multiple points fall 
+            within identical pixel bounds. Valid arguments are 'max' (highest elevation), 
+            'min' (lowest elevation), or 'count' (point density). Defaults to 'max'.
+        nodata (float, optional): Filler scalar designated for pixels containing zero 
+            point intersections. Defaults to the module-level NODATA_VAL.
+        chunk_size (int, optional): Buffer limit representing the maximum number of points 
+            processed per iterative cycle. Defaults to 2,000,000.
+
+    Raises:
+        ValueError: If the `method` parameter provided does not resolve to an implemented 
+            aggregation kernel, or if the resolved data stream is entirely empty.
+        TypeError: If the resolved source fails to inherit from the expected PointCloud 
+            or Iterator signatures.
+
     Returns:
-        Raster: Compiled and geo-aligned pixel array.
+        Raster: A fully populated raster object containing the processed 2D array matrix, 
+            affine transformation parameters, the designated CRS, and metadata properties.
     """
-    if isinstance(source, (str, Path)):
-        import laspy
-        # If path is provided, we need to read the header first to get bounds for grid sizing, then stream in chunks
-        with laspy.open(source) as fh:
-            # Extract global bounds from the LAS header for accurate grid sizing
-            min_x = fh.header.x_min
-            max_x = fh.header.x_max
-            min_y = fh.header.y_min
-            max_y = fh.header.y_max
-        iterator = PointCloud.iter_chunks(source, chunk_size=chunk_size)
-    else:
-        # If a PointCloud object is provided directly, we can use its bounding attributes to define the grid
+    if isinstance(source, (Iterator, Generator)):
+        try:
+            first_chunk = next(source)
+        except StopIteration:
+            raise ValueError("The resolved LiDAR stream is empty.")
+            
+        min_x = first_chunk.min_x
+        max_x = first_chunk.max_x
+        min_y = first_chunk.min_y
+        max_y = first_chunk.max_y
+        
+        iterator = itertools.chain([first_chunk], source)
+        
+    elif isinstance(source, PointCloud):
         min_x = source.min_x
         max_x = source.max_x
         min_y = source.min_y
         max_y = source.max_y
-        iterator = [source]
+        
+        iterator = iter([source])
+        
+    else:
+        raise TypeError(f"Execution expected a PointCloud or Iterator, received {type(source)}")
     
-    # Calculate grid dimensions and prepare the affine transform based on the bounds and resolution provided
     width = int((max_x - min_x) / resolution)
     height = int((max_y - min_y) / resolution)
     shape = (height, width)
     transform = _create_affine_transform(min_x, max_y, resolution)
     
     if method == 'count':
-        # For counting, we can use a simple integer grid initialized to zero
-        # and nodata is not applicable since zero counts are valid
         grid = np.zeros(shape, dtype=np.uint32)
         actual_nodata = None
         method_flag = 0
     elif method == 'max':
-        # For max, we initialize with -inf so any real point will be greater, and we set nodata after processing
         grid = np.full(shape, -np.inf, dtype=np.float32)
         actual_nodata = nodata
         method_flag = 1
     elif method == 'min':
-        # For min, we initialize with inf so any real point will be smaller, and we set nodata after processing
         grid = np.full(shape, np.inf, dtype=np.float32)
         actual_nodata = nodata
         method_flag = 2
@@ -147,31 +179,25 @@ def points_to_grid(
         raise ValueError(f"Unknown rasterization method: {method}")
         
     for pc in iterator:
-        # Convert point coordinates to grid indices.
-        # We only process points that fall within the defined grid bounds
-        cols = np.floor((pc.x - min_x) / resolution).astype(np.int32)
-        rows = np.floor((max_y - pc.y) / resolution).astype(np.int32)
-        valid_mask = (rows >= 0) & (rows < shape[0]) & (cols >= 0) & (cols < shape[1])
+        _process_chunk_fused(
+            x=pc.x,
+            y=pc.y,
+            z=pc.z,
+            grid=grid,
+            min_x=min_x,
+            max_y=max_y,
+            resolution=resolution,
+            height=height,
+            width=width,
+            method_flag=method_flag
+        )
         
-        if not np.any(valid_mask):
-            continue
-
-        # Filter points to those that are valid and within the grid bounds, then rasterize this chunk into the grid    
-        r_valid = rows[valid_mask]
-        c_valid = cols[valid_mask]
-        z_valid = pc.z[valid_mask]
-        
-        _rasterize_chunk(grid, r_valid, c_valid, z_valid, method_flag)
-        
-    # After processing all chunks, we need to replace the initial extreme values 
-    # with the nodata value for max and min methods
     if method == 'max':
         grid[grid == -np.inf] = nodata
     elif method == 'min':
         grid[grid == np.inf] = nodata
         
     return Raster(
-        # we initialize a Raster object with the final grid, affine transform, CRS, and nodata value
         data=grid,
         transform=transform,
         crs=crs,
