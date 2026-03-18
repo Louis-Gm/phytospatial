@@ -18,6 +18,7 @@ from shapely.geometry import shape
 
 from phytospatial.raster.layer import Raster
 from phytospatial.raster.partition import iter_core_halo
+
 from phytospatial.vector.layer import Vector
 from phytospatial.vector.geom import to_crs
 
