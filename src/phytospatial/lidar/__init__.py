@@ -15,6 +15,13 @@ from .layer import (
     PointCloud
 )
 
+# I/O
+from .io import (
+    load_pc,
+    iter_pc,
+    resolve_pc
+)
+
 # Rasterization and DTM generation
 from .rasterize import (
     points_to_grid,
@@ -42,6 +49,11 @@ from .delineate_crown import (
 __all__ = [
     # Data structure
     "PointCloud",
+
+    # I/O
+    "load_pc",
+    "iter_pc",
+    "resolve_pc",
 
     # Rasterization and DTM generation
     "points_to_grid",
