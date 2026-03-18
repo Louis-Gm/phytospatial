@@ -1,26 +1,20 @@
-# src/phytospatial/lidar/generate_model.py
-
-"""
-This module implements functions to generate various raster products from lidar point clouds.
-"""
-
 from enum import Enum
-from typing import Union, Optional
+from typing import Union, Tuple
 from pathlib import Path
 import logging
+import concurrent.futures
 
 import numpy as np
-import CSF
 import scipy.ndimage as ndimage
 from rasterio.crs import CRS
 from rasterio.fill import fillnodata
-from numba import jit
+from rasterio.transform import Affine
+from numba import njit
 
 from phytospatial.raster.layer import Raster
-from phytospatial.raster.engine import dispatch, DispatchConfig, AggregationType
-
-from .layer import PointCloud
-from .rasterize import points_to_grid, NODATA_VAL
+from phytospatial.lidar.layer import PointCloud
+from phytospatial.lidar.io import iter_pc
+from phytospatial.lidar.csf import simulate_cloth, simulate_cloth_chunked
 
 log = logging.getLogger(__name__)
 
@@ -28,336 +22,369 @@ __all__ = [
     "TerrainType",
     "generate_dtm",
     "generate_dsm",
-    "calculate_chm"
+    "generate_chm"
 ]
+
+NODATA_VAL = -9999.0
 
 class TerrainType(Enum):
     """
-    Defines terrain types used in topographical filtering parameterization.
-
-    Options:
-    FLAT: Represents areas with minimal elevation variation, such as plains or agricultural fields.
-    RELIEF: Represents areas with moderate elevation variation, such as rolling hills or mixed terrain.
-    HIGH_RELIEF: Represents areas with significant elevation variation, such as mountainous regions or deep valleys
+    Categorical enumeration defining landscape complexities for ground filtering tolerances.
     """
     FLAT = 1
     RELIEF = 2
     HIGH_RELIEF = 3
 
-def _get_csf_params(
+def _get_filter_params(
     terrain: TerrainType
-    ) -> dict:
+) -> dict:
     """
-    Extracts configuration parameters for the Cloth Simulation Filter framework.
+    Maps terrain complexity to optimal parameters for the physics-based cloth simulation.
 
     Args:
-        terrain (TerrainType): Macro level topographical structure. See TerrainType enum for options.
+        terrain (TerrainType): The complexity of the landscape.
 
     Returns:
-        dict: Dictionary of parameters to configure the CSF algorithm based on terrain type.
+        dict: A mapping containing configurations for the cloth simulation filter.
     """
     if terrain == TerrainType.FLAT:
-        return {"rigidness": 3, "slope_smoothing": False}
+        return {"cell_size": 1.5, "iterations": 50, "time_step": 0.5, "rigidness": 0.1, "height_threshold": 0.3}
     elif terrain == TerrainType.RELIEF:
-        return {"rigidness": 2, "slope_smoothing": True}
+        return {"cell_size": 1.0, "iterations": 100, "time_step": 0.4, "rigidness": 0.5, "height_threshold": 0.5}
     elif terrain == TerrainType.HIGH_RELIEF:
-        return {"rigidness": 1, "slope_smoothing": True}
-    return {"rigidness": 2, "slope_smoothing": True}
+        return {"cell_size": 1.0, "iterations": 150, "time_step": 0.3, "rigidness": 1.0, "height_threshold": 1.0}
+    return {"cell_size": 1.0, "iterations": 100, "time_step": 0.4, "rigidness": 0.5, "height_threshold": 0.5}
+
+def _create_affine_transform(min_x: float, max_y: float, resolution: float) -> Affine:
+    """
+    Generates affine coordinate reference transforms for empty grids.
+
+    Args:
+        min_x (float): Minimum absolute X coordinate of the target grid footprint.
+        max_y (float): Maximum absolute Y coordinate of the target grid footprint.
+        resolution (float): Spatial resolution defining geographic units per pixel.
+
+    Returns:
+        Affine: Instantiated affine transformation matrix for strict georeferencing.
+    """
+    return Affine.translation(min_x, max_y) * Affine.scale(resolution, -resolution)
+
+@njit(cache=True, fastmath=True, nogil=True)
+def _process_dual_chunk_fused(
+    x: np.ndarray,
+    y: np.ndarray,
+    z: np.ndarray,
+    ground_mask: np.ndarray,
+    min_x: float,
+    max_y: float,
+    resolution: float,
+    height: int,
+    width: int,
+    compute_dtm: bool
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Simultaneously populates discrete, thread-local digital surface and terrain matrices 
+    within a GIL-released compiled iteration block to enable lock-free parallelization.
+
+    Args:
+        x (np.ndarray): Horizontal point coordinates.
+        y (np.ndarray): Vertical point coordinates.
+        z (np.ndarray): Elevation point coordinates.
+        ground_mask (np.ndarray): Boolean array isolating bare earth classifications.
+        min_x (float): Absolute minimum X coordinate of the spatial envelope.
+        max_y (float): Absolute maximum Y coordinate of the spatial envelope.
+        resolution (float): Coordinate span per discrete grid cell.
+        height (int): Row boundary dimension of the matrices.
+        width (int): Column boundary dimension of the matrices.
+        compute_dtm (bool): Flag to dynamically toggle ground evaluation logic.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: The localized maximum vegetation and minimum terrain matrices.
+    """
+    dsm_grid = np.full((height, width), -np.inf, dtype=np.float32)
+    dtm_grid = np.full((height, width), np.inf, dtype=np.float32)
+
+    for i in range(x.shape[0]):
+        c = int((x[i] - min_x) / resolution)
+        r = int((max_y - y[i]) / resolution)
+
+        if 0 <= r < height and 0 <= c < width:
+            if z[i] > dsm_grid[r, c]:
+                dsm_grid[r, c] = z[i]
+                
+            if compute_dtm and ground_mask[i]:
+                if z[i] < dtm_grid[r, c]:
+                    dtm_grid[r, c] = z[i]
+                    
+    return dsm_grid, dtm_grid
+
+def _generate_base_surfaces(
+    source: Union[str, Path, PointCloud],
+    resolution: float,
+    terrain: TerrainType,
+    chunk_size: int,
+    force_csf: bool,
+    compute_dtm: bool = True
+) -> Tuple[np.ndarray, np.ndarray, Affine, float, float]:
+    """
+    Core execution engine orchestrating a thread-pool Map-Reduce paradigm to map point geometries 
+    into a unified multi-band tensor representing the extreme bounds of the surface profile.
+
+    Args:
+        source (Union[str, Path, PointCloud]): Target spatial object or active byte stream.
+        resolution (float): Continuous surface resolution in discrete meter steps.
+        terrain (TerrainType): Complexity definition mapped to physics simulations.
+        chunk_size (int): Buffer limit strictly governing RAM allocation profiles.
+        force_csf (bool): Command to override existing classifications with cloth simulation.
+        compute_dtm (bool): Toggle to bypass physics computations for surface-only calls.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray, Affine, float, float]: The populated DSM matrix, DTM matrix, 
+            affine orientation, and the search radii requirements for spatial gap filling.
+    """
+    is_classified = False
+    
+    if isinstance(source, PointCloud):
+        min_x, max_x = source.min_x, source.max_x
+        min_y, max_y = source.min_y, source.max_y
+        if np.any(source.classification == 2):
+            is_classified = True
+    else:
+        source_path = Path(source)
+        first_chunk = next(iter_pc(source_path, chunk_size=chunk_size))
+        min_x, max_x = first_chunk.min_x, first_chunk.max_x
+        min_y, max_y = first_chunk.min_y, first_chunk.max_y
+        
+        for pc in iter_pc(source_path, chunk_size=chunk_size):
+            if np.any(pc.classification == 2):
+                is_classified = True
+                break
+
+    width = int((max_x - min_x) / resolution)
+    height = int((max_y - min_y) / resolution)
+    transform = _create_affine_transform(min_x, max_y, resolution)
+    
+    global_dsm = np.full((height, width), -np.inf, dtype=np.float32)
+    global_dtm = np.full((height, width), np.inf, dtype=np.float32)
+
+    executor = concurrent.futures.ThreadPoolExecutor()
+    futures = []
+
+    if isinstance(source, PointCloud):
+        if compute_dtm:
+            if is_classified and not force_csf:
+                ground_mask = source.classification == 2
+            else:
+                params = _get_filter_params(terrain)
+                ground_mask = simulate_cloth(
+                    pc=source,
+                    cell_size=params["cell_size"],
+                    iterations=params["iterations"],
+                    time_step=params["time_step"],
+                    rigidness=params["rigidness"],
+                    height_threshold=params["height_threshold"]
+                )
+        else:
+            ground_mask = np.zeros(source.x.shape[0], dtype=np.bool_)
+            
+        futures.append(executor.submit(
+            _process_dual_chunk_fused,
+            source.x, source.y, source.z, ground_mask,
+            min_x, max_y, resolution, height, width, compute_dtm
+        ))
+    else:
+        if compute_dtm:
+            if is_classified and not force_csf:
+                for pc in iter_pc(source_path, chunk_size=chunk_size):
+                    ground_mask = pc.classification == 2
+                    futures.append(executor.submit(
+                        _process_dual_chunk_fused,
+                        pc.x, pc.y, pc.z, ground_mask,
+                        min_x, max_y, resolution, height, width, compute_dtm
+                    ))
+            else:
+                params = _get_filter_params(terrain)
+                mask_generator = simulate_cloth_chunked(
+                    source=source_path,
+                    cell_size=params["cell_size"],
+                    iterations=params["iterations"],
+                    time_step=params["time_step"],
+                    rigidness=params["rigidness"],
+                    height_threshold=params["height_threshold"],
+                    chunk_size=chunk_size
+                )
+                for pc, mask in zip(iter_pc(source_path, chunk_size=chunk_size), mask_generator):
+                    futures.append(executor.submit(
+                        _process_dual_chunk_fused,
+                        pc.x, pc.y, pc.z, mask,
+                        min_x, max_y, resolution, height, width, compute_dtm
+                    ))
+        else:
+            for pc in iter_pc(source_path, chunk_size=chunk_size):
+                dummy_mask = np.zeros(pc.x.shape[0], dtype=np.bool_)
+                futures.append(executor.submit(
+                    _process_dual_chunk_fused,
+                    pc.x, pc.y, pc.z, dummy_mask,
+                    min_x, max_y, resolution, height, width, compute_dtm
+                ))
+
+    for future in concurrent.futures.as_completed(futures):
+        local_dsm, local_dtm = future.result()
+        np.maximum(global_dsm, local_dsm, out=global_dsm)
+        np.minimum(global_dtm, local_dtm, out=global_dtm)
+        
+    executor.shutdown()
+
+    d_search = max(10, int(20.0 / resolution))
+    t_search = max(15, int(35.0 / resolution))
+    
+    return global_dsm, global_dtm, transform, d_search, t_search
 
 def generate_dtm(
-    pc: PointCloud,
+    source: Union[str, Path, PointCloud],
     resolution: float,
     crs: Union[str, CRS],
-    terrain: TerrainType = TerrainType.RELIEF
-    ) -> Raster:
+    terrain: TerrainType = TerrainType.RELIEF,
+    chunk_size: int = 2_000_000,
+    force_csf: bool = False
+) -> Raster:
     """
-    Classifies points and extracts the terrain plane using Cloth Simulation Filters and optimized GDAL filling.
-    
+    Extracts and interpolates the minimum bare earth elevation footprint from the unified spatial pipeline.
+
     Args:
-        pc (PointCloud): Fully loaded point cloud dependency.
-        resolution (float): Output pixel dimension sizing.
-        crs (Union[str, CRS]): Affine coordinate projection mapping.
-        terrain (TerrainType): Macro level topographical structure.
-        
+        source (Union[str, Path, PointCloud]): Target geometric entity or byte file.
+        resolution (float): Square dimension of discrete matrix cells in coordinate metrics.
+        crs (Union[str, CRS]): Projection and datum specifications.
+        terrain (TerrainType): Modifies internal simulation tension limits for complex landscapes.
+        chunk_size (int): Execution point limit strictly scaling active RAM utilization.
+        force_csf (bool): Circumvents explicit classifications to re-simulate ground masks.
+
     Returns:
-        Raster: Filtered representation of the ground topography securely clipped to the original flight path.
+        Raster: Interpolated and sealed continuous surface.
     """
-    # Initializes terrain parameters for the CSF algorithm based on the specified terrain type
-    params = _get_csf_params(terrain)
-
-    # Set up the CSF filter with the configured parameters and prepare the point cloud for processing
-    csf = CSF.CSF()
-    
-    # Set a cloth resolution that is at least as large as the output raster resolution to balance detail and performance
-    cloth_res = max(1.0, resolution)
-
-    # Configure CSF parameters based on terrain type, 
-    # which influences how the algorithm simulates the cloth draping over the point cloud to identify ground points
-    csf.params.cloth_resolution = cloth_res
-    csf.params.bSloopSmooth = params["slope_smoothing"]
-    csf.params.time_step = 0.65
-    csf.params.rigidness = params["rigidness"]
-    
-    # To optimize the CSF processing, we shift the point cloud to a local coordinate system starting at (0,0)
-    # This avoids issues with large coordinate values
-    shift_x = np.min(pc.x)
-    shift_y = np.min(pc.y)    
-    x_local = pc.x - shift_x
-    y_local = pc.y - shift_y
-    
-    # We convert the local point coordinates into a format suitable for the CSF algorithm (2D array of points with X, Y, and Z values)
-    # We then set this point cloud into the CSF filter for processing
-    points = np.vstack((x_local, y_local, pc.z)).transpose()
-    csf.setPointCloud(points)
-    
-    # We classify points using the CSF algorithm
-    ground_idx = CSF.VecInt()
-    off_ground_idx = CSF.VecInt()
-    csf.do_filtering(ground_idx, off_ground_idx, False)
-    
-    g_idx = np.array(ground_idx)
-    gx, gy, gz = pc.x[g_idx], pc.y[g_idx], pc.z[g_idx]
-    
-    # We assign the classified ground points to a new PointCloud object, which will be used to generate the DTM raster
-    ground_pc = PointCloud(
-        x=gx, y=gy, z=gz,
-        classification=np.zeros_like(gx), return_number=np.zeros_like(gx),
-        min_x=pc.min_x, max_x=pc.max_x, min_y=pc.min_y, max_y=pc.max_y, max_z=np.max(gz) if len(gz) > 0 else 0.0
+    _, dtm_grid, transform, _, t_search = _generate_base_surfaces(
+        source, resolution, terrain, chunk_size, force_csf, compute_dtm=True
     )
-
-    # points_to_grid is used to rasterize the ground points into a DTM raster using the 'min' method
-    dtm_raster = points_to_grid(ground_pc, resolution, crs, method='min', nodata=np.nan)
-    dtm_grid = dtm_raster.data[0]
     
-    # We create a mask of valid pixels in the DTM grid to identify areas that need filling
+    dtm_grid[dtm_grid == np.inf] = np.nan
     valid_mask = ~np.isnan(dtm_grid)
 
-    # We create a footprint of where we have data with the 'count' method.
-    # This prevents the fillnodata function from extrapolating values far beyond the original point cloud coverage
-    footprint_raster = points_to_grid(pc, resolution, crs, method='count')
-    data_footprint = footprint_raster.data[0] > 0
-    data_footprint = ndimage.binary_closing(data_footprint, structure=np.ones((5,5)))
-    data_footprint = ndimage.binary_fill_holes(data_footprint)
-    
-    # Define a max search distance to prevent excessive searching in areas with sparse data
-    max_search_px = max(15, int(35.0 / resolution))
-    
     if np.any(valid_mask) and not np.all(valid_mask):
-        dtm_grid = fillnodata(dtm_grid, mask=valid_mask.astype(np.uint8), max_search_distance=max_search_px)
+        dtm_grid = fillnodata(dtm_grid, mask=valid_mask.astype(np.uint8), max_search_distance=t_search)
     elif not np.any(valid_mask):
         dtm_grid[:] = NODATA_VAL
 
-    # To smooth the DTM and reduce artifacts from the rasterization and filling process, we apply a Gaussian filter.
-    blur_sigma = (cloth_res / resolution) * 0.5
-    dtm_grid = ndimage.gaussian_filter(dtm_grid, sigma=blur_sigma)
-    dtm_grid[~data_footprint] = NODATA_VAL
     dtm_grid[np.isnan(dtm_grid)] = NODATA_VAL
 
     return Raster(
-            data=dtm_grid.astype(np.float32),
-            transform=dtm_raster.transform,
-            crs=crs,
-            nodata=NODATA_VAL
-            )
+        data=dtm_grid.astype(np.float32),
+        transform=transform,
+        crs=crs,
+        nodata=NODATA_VAL
+    )
 
 def generate_dsm(
     source: Union[str, Path, PointCloud],
     resolution: float,
-    crs: Union[str, CRS]
+    crs: Union[str, CRS],
+    chunk_size: int = 2_000_000
 ) -> Raster:
     """
-    Interpolates uppermost LiDAR returns into a continuous canopy surface mapping.
-    
+    Extracts and filters the maximum vegetation footprint from the unified spatial pipeline.
+
     Args:
-        source (Union[str, Path, PointCloud]): Data object or streaming path reference.
-        resolution (float): Output pixel dimension sizing.
-        crs (Union[str, CRS]): Affine coordinate projection mapping.
-        
+        source (Union[str, Path, PointCloud]): Target geometric entity or byte file.
+        resolution (float): Square dimension of discrete matrix cells in coordinate metrics.
+        crs (Union[str, CRS]): Projection and datum specifications.
+        chunk_size (int): Execution point limit strictly scaling active RAM utilization.
+
     Returns:
-        Raster: Array of interpolated point maxima securely clipped to the valid spatial bounds.
+        Raster: Sealed and hole-filled contiguous surface footprint.
     """
-    # The DSM is simpler to generate than the DTM, as we can directly rasterize the highest points using the 'max' method in points_to_grid.
-    dsm_raster = points_to_grid(source, resolution, crs, method='max', nodata=np.nan)
-    dsm_grid = dsm_raster.data[0]
-
-    valid_mask = ~np.isnan(dsm_grid)
-
-    # Note that the search distance for filling DSM gaps may need to be larger than for the DTM, 
-    # especially in areas with sparse canopy coverage, to ensure we can fill in missing values without leaving large holes. 
-    # However, we still want to limit this to prevent unrealistic interpolation across large gaps.
-    max_search_px = max(10, int(20.0 / resolution))
+    dsm_grid, _, transform, d_search, _ = _generate_base_surfaces(
+        source, resolution, TerrainType.FLAT, chunk_size, force_csf=False, compute_dtm=False
+    )
     
-    # We define a data footprint based on where we have valid DSM values, and we expand this footprint slightly to allow for filling small gaps
-    # while preventing excessive extrapolation in areas with no data.
+    dsm_grid[dsm_grid == -np.inf] = np.nan
+    valid_mask = ~np.isnan(dsm_grid)
+    
     data_footprint = valid_mask.copy()
-    data_footprint = ndimage.binary_closing(data_footprint, structure=np.ones((5,5)))
+    data_footprint = ndimage.binary_closing(data_footprint, structure=np.ones((5, 5)))
     data_footprint = ndimage.binary_fill_holes(data_footprint)
-
+    
     if np.any(valid_mask) and not np.all(valid_mask):
-        dsm_grid = fillnodata(dsm_grid, mask=valid_mask.astype(np.uint8), max_search_distance=max_search_px)
+        dsm_grid = fillnodata(dsm_grid, mask=valid_mask.astype(np.uint8), max_search_distance=d_search)
     elif not np.any(valid_mask):
         dsm_grid[:] = NODATA_VAL
-
+        
     dsm_grid[~data_footprint] = NODATA_VAL
     dsm_grid[np.isnan(dsm_grid)] = NODATA_VAL
-
+    
     return Raster(
-            data=dsm_grid.astype(np.float32),
-            transform=dsm_raster.transform,
-            crs=crs,
-            nodata=NODATA_VAL
-            )
+        data=dsm_grid.astype(np.float32),
+        transform=transform,
+        crs=crs,
+        nodata=NODATA_VAL
+    )
 
-@jit(nopython=True, cache=True)
-def _compute_raw_chm(
-    dsm_arr: np.ndarray, 
-    dtm_arr: np.ndarray, 
-    has_d_nodata: bool, 
-    d_nodata: float, 
-    has_t_nodata: bool, 
-    t_nodata: float, 
-    out_nodata: float
-    ):
+def generate_chm(
+    source: Union[str, Path, PointCloud],
+    resolution: float,
+    crs: Union[str, CRS],
+    terrain: TerrainType = TerrainType.RELIEF,
+    chunk_size: int = 2_000_000,
+    force_csf: bool = False,
+    filter_size: int = 3
+) -> Raster:
     """
-    Naive CHM computation with explicit loops for numba optimization.
+    Constructs a finalized Canopy Height Model entirely in-memory using a fused single-pass map execution, 
+    eliminating redundant disk streaming and intermediate layer serializations.
 
     Args:
-        dsm_arr: 2D array of DSM values.
-        dtm_arr: 2D array of DTM values.
-        has_d_nodata: Whether DSM has a nodata value.
-        d_nodata: The nodata value for DSM.
-        has_t_nodata: Whether DTM has a nodata value.
-        t_nodata: The nodata value for DTM.
-        out_nodata: The nodata value to use for the output CHM.
+        source (Union[str, Path, PointCloud]): Source coordinate spatial tensor.
+        resolution (float): Matrix subdivision granularity.
+        crs (Union[str, CRS]): Defined projection system.
+        terrain (TerrainType): Modifies physics bounds for cloth drop.
+        chunk_size (int): Stream slicing bounds for RAM safety limits.
+        force_csf (bool): Bypass existing structural classification checks.
+        filter_size (int): Matrix kernel mapping for salt-and-pepper noise dampening.
 
     Returns:
-        Tuple of (chm_arr, valid_mask) where chm_arr is the computed CHM and valid_mask indicates valid pixels.
+        Raster: Cleaned, height-normalized canopy architecture model.
     """
-    rows, cols = dsm_arr.shape
-    chm_arr = np.empty((rows, cols), dtype=np.float32)
-    valid_mask = np.empty((rows, cols), dtype=np.bool_)
-    
-    # We iterate through each pixel in the DSM and DTM arrays to compute the CHM value as the difference between DSM and DTM.
-    # We also check for nodata values in both DSM and DTM to ensure we only compute valid CHM values where we have valid input data.
-    for i in range(rows):
-        for j in range(cols):
-            d_val = dsm_arr[i, j]
-            t_val = dtm_arr[i, j]
-            
-            is_valid = True
-            if has_d_nodata and d_val == d_nodata:
-                is_valid = False
-            if has_t_nodata and t_val == t_nodata:
-                is_valid = False
-                
-            if not is_valid:
-                chm_arr[i, j] = out_nodata
-                valid_mask[i, j] = False
-            else:
-                diff = d_val - t_val
-                if diff < 0.0:
-                    diff = 0.0
-                chm_arr[i, j] = diff
-                valid_mask[i, j] = True
-                
-    return chm_arr, valid_mask
-
-def _chm_block(
-    dsm: Raster, 
-    dtm: Raster, 
-    filter_size: int
-    ) -> Raster:
-    """
-    Helper function to compute CHM for a block of DSM and DTM rasters. Designed for use with the dispatch framework.
-
-    Args:
-        dsm: Raster object representing the Digital Surface Model for the block.
-        dtm: Raster object representing the Digital Terrain Model for the block.
-        filter_size: Size of the median filter to apply to the CHM.
-
-    Returns:
-        Raster: The computed CHM raster for the block.
-    """
-    d_nodata = dsm.nodata
-    t_nodata = dtm.nodata
-    
-    dsm_arr = dsm.get_band(1)
-    dtm_arr = dtm.get_band(1)
-    
-    has_d_nodata = d_nodata is not None
-    d_nodata_val = float(d_nodata) if has_d_nodata else 0.0
-    has_t_nodata = t_nodata is not None
-    t_nodata_val = float(t_nodata) if has_t_nodata else 0.0
-    
-    out_nodata_val = float(d_nodata) if has_d_nodata else float(NODATA_VAL)
-    
-    # We compute the raw CHM values using the helper function, which handles nodata values and computes the difference between DSM and DTM.
-    chm_arr, valid_mask = _compute_raw_chm(
-        dsm_arr, 
-        dtm_arr, 
-        has_d_nodata, 
-        d_nodata_val, 
-        has_t_nodata, 
-        t_nodata_val, 
-        out_nodata_val
+    dsm_grid, dtm_grid, transform, d_search, t_search = _generate_base_surfaces(
+        source, resolution, terrain, chunk_size, force_csf, compute_dtm=True
     )
     
-    # To reduce noise and create a smoother canopy surface, we apply a median filter to the CHM values.
-    if filter_size > 0:
-        temp_chm = np.copy(chm_arr)
-        temp_chm[~valid_mask] = 0.0
-        smoothed_chm = ndimage.median_filter(temp_chm, size=filter_size)
-        chm_arr = np.where(valid_mask, smoothed_chm, out_nodata_val)
+    dsm_grid[dsm_grid == -np.inf] = np.nan
+    dtm_grid[dtm_grid == np.inf] = np.nan
+    
+    dsm_valid = ~np.isnan(dsm_grid)
+    dtm_valid = ~np.isnan(dtm_grid)
+    
+    data_footprint = dsm_valid.copy()
+    data_footprint = ndimage.binary_closing(data_footprint, structure=np.ones((5, 5)))
+    data_footprint = ndimage.binary_fill_holes(data_footprint)
+    
+    if np.any(dtm_valid) and not np.all(dtm_valid):
+        dtm_grid = fillnodata(dtm_grid, mask=dtm_valid.astype(np.uint8), max_search_distance=t_search)
         
-    return Raster(
-        data=chm_arr,
-        transform=dsm.transform,
-        crs=dsm.crs,
-        nodata=out_nodata_val,
-        band_names={"CHM": 1} # we set a band name for clarity if the output is stacked in the future
-    )
-
-def calculate_chm(
-    dsm: Union[str, Path, Raster],
-    dtm: Union[str, Path, Raster],
-    output_path: Optional[Union[str, Path]] = None,
-    filter_size: int = 3,
-    tile_mode: str = "auto"
-    ) -> Union[Raster, Path]:
-    """
-    Calculates the Canopy Height Model (CHM) from DSM and DTM rasters.
-
-    Args:
-        dsm: Digital Surface Model raster or path.
-        dtm: Digital Terrain Model raster or path.
-        output_path: Optional output path for the CHM.
-        filter_size: Size of the median filter to apply to the CHM.
-        tile_mode: Mode for tiling operations (e.g., "auto").
-
-    Returns:
-        The computed CHM raster or the path to the output file if `output_path` is provided.
-    """
-
-    # We set up a dispatch configuration to compute the CHM in blocks, 
-    # which allows us to handle larger rasters that may not fit into memory all at once.
-    # See the dispatch framework for more details on how this works, but essentially it will call the _chm_block function
-    # on manageable chunks of the input rasters and then aggregate the results.
-    config = DispatchConfig(
-        mode=tile_mode,
-        output_path=output_path,
-        aggregation=AggregationType.STITCH if output_path else AggregationType.COLLECT
-    )
-
-    result = dispatch(
-        func=_chm_block,
-        input_map={'dsm': dsm, 'dtm': dtm},
-        static_kwargs={'filter_size': filter_size},
-        config=config
-    )
+    if np.any(dsm_valid) and not np.all(dsm_valid):
+        dsm_grid = fillnodata(dsm_grid, mask=dsm_valid.astype(np.uint8), max_search_distance=d_search)
+        
+    chm_arr = dsm_grid - dtm_grid
+    chm_arr[chm_arr < 0.0] = 0.0
     
-    if output_path:
-        # We allow polymorphic return types here:
-        # if an output path is provided, we return the path to the saved CHM raster.
-        # Otherwise, we return the Raster object directly.
-        return Path(output_path)
-    return result[0] if isinstance(result, list) else result
+    if filter_size > 0:
+        chm_arr = np.where(data_footprint, ndimage.median_filter(chm_arr, size=filter_size), np.nan)
+        
+    chm_arr[~data_footprint] = NODATA_VAL
+    chm_arr[np.isnan(chm_arr)] = NODATA_VAL
+    
+    return Raster(
+        data=chm_arr.astype(np.float32),
+        transform=transform,
+        crs=crs,
+        nodata=NODATA_VAL,
+        band_names={"CHM": 1}
+    )

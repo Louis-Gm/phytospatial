@@ -24,8 +24,8 @@ from .generate_model import (
     TerrainType,
     generate_dtm,
     generate_dsm,
-    calculate_chm
-)
+    generate_chm
+    )
 
 # Treetop detection
 from .detect_treetop import (
@@ -50,7 +50,7 @@ __all__ = [
     "TerrainType",
     "generate_dtm",
     "generate_dsm",
-    "calculate_chm",
+    "generate_chm",
 
     # Treetop detection
     "DetectionParams",
