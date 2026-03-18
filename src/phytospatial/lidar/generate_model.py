@@ -2,7 +2,6 @@ from enum import Enum
 from typing import Union, Tuple
 from pathlib import Path
 import logging
-import concurrent.futures
 
 import numpy as np
 import scipy.ndimage as ndimage
@@ -12,6 +11,7 @@ from rasterio.transform import Affine
 from numba import njit
 
 from phytospatial.raster.layer import Raster
+
 from phytospatial.lidar.layer import PointCloud
 from phytospatial.lidar.io import iter_pc
 from phytospatial.lidar.csf import simulate_cloth, simulate_cloth_chunked
@@ -37,7 +37,7 @@ class TerrainType(Enum):
 
 def _get_filter_params(
     terrain: TerrainType
-) -> dict:
+    ) -> dict:
     """
     Maps terrain complexity to optimal parameters for the physics-based cloth simulation.
 
@@ -69,41 +69,39 @@ def _create_affine_transform(min_x: float, max_y: float, resolution: float) -> A
     """
     return Affine.translation(min_x, max_y) * Affine.scale(resolution, -resolution)
 
-@njit(cache=True, fastmath=True, nogil=True)
+@njit(cache=True, fastmath=True)
 def _process_dual_chunk_fused(
     x: np.ndarray,
     y: np.ndarray,
     z: np.ndarray,
     ground_mask: np.ndarray,
+    dsm_grid: np.ndarray,
+    dtm_grid: np.ndarray,
     min_x: float,
     max_y: float,
     resolution: float,
     height: int,
     width: int,
     compute_dtm: bool
-) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> None:
     """
-    Simultaneously populates discrete, thread-local digital surface and terrain matrices 
-    within a GIL-released compiled iteration block to enable lock-free parallelization.
+    Simultaneously populates the digital surface and terrain matrices within a single 
+    compiled iteration block to eliminate redundant point evaluations.
 
     Args:
         x (np.ndarray): Horizontal point coordinates.
         y (np.ndarray): Vertical point coordinates.
         z (np.ndarray): Elevation point coordinates.
         ground_mask (np.ndarray): Boolean array isolating bare earth classifications.
+        dsm_grid (np.ndarray): Target matrix for maximum elevations.
+        dtm_grid (np.ndarray): Target matrix for minimum ground elevations.
         min_x (float): Absolute minimum X coordinate of the spatial envelope.
         max_y (float): Absolute maximum Y coordinate of the spatial envelope.
         resolution (float): Coordinate span per discrete grid cell.
         height (int): Row boundary dimension of the matrices.
         width (int): Column boundary dimension of the matrices.
         compute_dtm (bool): Flag to dynamically toggle ground evaluation logic.
-
-    Returns:
-        Tuple[np.ndarray, np.ndarray]: The localized maximum vegetation and minimum terrain matrices.
     """
-    dsm_grid = np.full((height, width), -np.inf, dtype=np.float32)
-    dtm_grid = np.full((height, width), np.inf, dtype=np.float32)
-
     for i in range(x.shape[0]):
         c = int((x[i] - min_x) / resolution)
         r = int((max_y - y[i]) / resolution)
@@ -115,8 +113,6 @@ def _process_dual_chunk_fused(
             if compute_dtm and ground_mask[i]:
                 if z[i] < dtm_grid[r, c]:
                     dtm_grid[r, c] = z[i]
-                    
-    return dsm_grid, dtm_grid
 
 def _generate_base_surfaces(
     source: Union[str, Path, PointCloud],
@@ -125,9 +121,9 @@ def _generate_base_surfaces(
     chunk_size: int,
     force_csf: bool,
     compute_dtm: bool = True
-) -> Tuple[np.ndarray, np.ndarray, Affine, float, float]:
+    ) -> Tuple[np.ndarray, np.ndarray, Affine, float, float]:
     """
-    Core execution engine orchestrating a thread-pool Map-Reduce paradigm to map point geometries 
+    Core execution engine responsible for loading, classifying, and mapping point geometries 
     into a unified multi-band tensor representing the extreme bounds of the surface profile.
 
     Args:
@@ -162,13 +158,9 @@ def _generate_base_surfaces(
 
     width = int((max_x - min_x) / resolution)
     height = int((max_y - min_y) / resolution)
+    dsm_grid = np.full((height, width), -np.inf, dtype=np.float32)
+    dtm_grid = np.full((height, width), np.inf, dtype=np.float32)
     transform = _create_affine_transform(min_x, max_y, resolution)
-    
-    global_dsm = np.full((height, width), -np.inf, dtype=np.float32)
-    global_dtm = np.full((height, width), np.inf, dtype=np.float32)
-
-    executor = concurrent.futures.ThreadPoolExecutor()
-    futures = []
 
     if isinstance(source, PointCloud):
         if compute_dtm:
@@ -187,21 +179,21 @@ def _generate_base_surfaces(
         else:
             ground_mask = np.zeros(source.x.shape[0], dtype=np.bool_)
             
-        futures.append(executor.submit(
-            _process_dual_chunk_fused,
-            source.x, source.y, source.z, ground_mask,
-            min_x, max_y, resolution, height, width, compute_dtm
-        ))
+        _process_dual_chunk_fused(
+            x=source.x, y=source.y, z=source.z, ground_mask=ground_mask,
+            dsm_grid=dsm_grid, dtm_grid=dtm_grid, min_x=min_x, max_y=max_y, 
+            resolution=resolution, height=height, width=width, compute_dtm=compute_dtm
+        )
     else:
         if compute_dtm:
             if is_classified and not force_csf:
                 for pc in iter_pc(source_path, chunk_size=chunk_size):
                     ground_mask = pc.classification == 2
-                    futures.append(executor.submit(
-                        _process_dual_chunk_fused,
-                        pc.x, pc.y, pc.z, ground_mask,
-                        min_x, max_y, resolution, height, width, compute_dtm
-                    ))
+                    _process_dual_chunk_fused(
+                        x=pc.x, y=pc.y, z=pc.z, ground_mask=ground_mask,
+                        dsm_grid=dsm_grid, dtm_grid=dtm_grid, min_x=min_x, max_y=max_y, 
+                        resolution=resolution, height=height, width=width, compute_dtm=True
+                    )
             else:
                 params = _get_filter_params(terrain)
                 mask_generator = simulate_cloth_chunked(
@@ -214,31 +206,24 @@ def _generate_base_surfaces(
                     chunk_size=chunk_size
                 )
                 for pc, mask in zip(iter_pc(source_path, chunk_size=chunk_size), mask_generator):
-                    futures.append(executor.submit(
-                        _process_dual_chunk_fused,
-                        pc.x, pc.y, pc.z, mask,
-                        min_x, max_y, resolution, height, width, compute_dtm
-                    ))
+                    _process_dual_chunk_fused(
+                        x=pc.x, y=pc.y, z=pc.z, ground_mask=mask,
+                        dsm_grid=dsm_grid, dtm_grid=dtm_grid, min_x=min_x, max_y=max_y, 
+                        resolution=resolution, height=height, width=width, compute_dtm=True
+                    )
         else:
             for pc in iter_pc(source_path, chunk_size=chunk_size):
                 dummy_mask = np.zeros(pc.x.shape[0], dtype=np.bool_)
-                futures.append(executor.submit(
-                    _process_dual_chunk_fused,
-                    pc.x, pc.y, pc.z, dummy_mask,
-                    min_x, max_y, resolution, height, width, compute_dtm
-                ))
-
-    for future in concurrent.futures.as_completed(futures):
-        local_dsm, local_dtm = future.result()
-        np.maximum(global_dsm, local_dsm, out=global_dsm)
-        np.minimum(global_dtm, local_dtm, out=global_dtm)
-        
-    executor.shutdown()
+                _process_dual_chunk_fused(
+                    x=pc.x, y=pc.y, z=pc.z, ground_mask=dummy_mask,
+                    dsm_grid=dsm_grid, dtm_grid=dtm_grid, min_x=min_x, max_y=max_y, 
+                    resolution=resolution, height=height, width=width, compute_dtm=False
+                )
 
     d_search = max(10, int(20.0 / resolution))
     t_search = max(15, int(35.0 / resolution))
     
-    return global_dsm, global_dtm, transform, d_search, t_search
+    return dsm_grid, dtm_grid, transform, d_search, t_search
 
 def generate_dtm(
     source: Union[str, Path, PointCloud],
@@ -247,7 +232,7 @@ def generate_dtm(
     terrain: TerrainType = TerrainType.RELIEF,
     chunk_size: int = 2_000_000,
     force_csf: bool = False
-) -> Raster:
+    ) -> Raster:
     """
     Extracts and interpolates the minimum bare earth elevation footprint from the unified spatial pipeline.
 
@@ -288,7 +273,7 @@ def generate_dsm(
     resolution: float,
     crs: Union[str, CRS],
     chunk_size: int = 2_000_000
-) -> Raster:
+    ) -> Raster:
     """
     Extracts and filters the maximum vegetation footprint from the unified spatial pipeline.
 
@@ -335,7 +320,7 @@ def generate_chm(
     chunk_size: int = 2_000_000,
     force_csf: bool = False,
     filter_size: int = 3
-) -> Raster:
+    ) -> Raster:
     """
     Constructs a finalized Canopy Height Model entirely in-memory using a fused single-pass map execution, 
     eliminating redundant disk streaming and intermediate layer serializations.
