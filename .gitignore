@@ -1,7 +1,8 @@
 # .gitignore
 dev/
 old/
-src/unfinished
+*/unfinished
+*/target
 .VSCodeCounter
 __pycache__/
 data/
@@ -17,3 +18,5 @@ site/
 *pipeline.py
 .env
 *docx
+cargo*
+*rust*
