@@ -20,7 +20,8 @@ from .io import (
     save,
     write_window,
     read_info,
-    ensure_tiled_raster
+    ensure_tiled_raster,
+    resolve_raster
 )
 
 # Resource management
@@ -49,7 +50,6 @@ from .engine import (
 
 # Geometry utilities
 from .geom import (
-    auto_load,
     reproject, 
     resample, 
     stack_bands, 
@@ -106,6 +106,7 @@ __all__ = [
     "write_window",
     "read_info",
     "ensure_tiled_raster",
+    "resolve_raster",
 
     # Partition
     "iter_blocks",
@@ -126,7 +127,6 @@ __all__ = [
     "dispatch",
 
     # Geom utilities
-    "auto_load",
     "reproject", 
     "resample", 
     "stack_bands", 

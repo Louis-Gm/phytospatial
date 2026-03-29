@@ -4,16 +4,18 @@
 This module handles all disk-based operations for raster data.
 """
 
+from functools import wraps
+import inspect
 import logging
 from pathlib import Path
-from typing import Union, Optional, List, Dict, Any
+from typing import Callable, Union, Optional, List, Dict, Any
 
 import rasterio
 from rasterio.windows import Window
 
 from phytospatial.raster.utils import resolve_envi_path, extract_band_indices, extract_band_names, extract_wavelength
 from phytospatial.raster.layer import Raster
-from phytospatial.raster.resources import determine_strategy
+from phytospatial.raster.resources import ProcessingMode, determine_strategy
 
 log = logging.getLogger(__name__)
 
@@ -22,7 +24,8 @@ __all__ = [
     "save",
     "write_window",
     "read_info",
-    "ensure_tiled_raster"
+    "ensure_tiled_raster",
+    "resolve_raster"
 ]
 
 def load(
@@ -252,3 +255,61 @@ def ensure_tiled_raster(
                 
     log.info(f"Successfully optimized raster into {out_path.name}")
     return out_path
+    
+def resolve_raster(
+        safe: bool = True
+        ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    """
+    A signature-aware polymorphic decorator that resolves raster filepaths into in-memory Raster objects.
+    
+    It selectively intercepts arguments passed as strings or Paths only if the target parameter's 
+    signature explicitly expects a 'Raster'. 
+
+    Args:
+        safe (bool): Instructs the decorator to perform a preemptive memory safety assessment using 
+            the resource subpackage before loading. If True, it prevents Out-Of-Memory (OOM) 
+            errors by raising an exception if the raster exceeds safe capacity. Defaults to True.
+
+    Returns:
+        Callable[[Callable[..., Any]], Callable[..., Any]]: The wrapped function executed with fully 
+            resolved Raster dependencies.
+
+    Raises:
+        MemoryError: If 'safe' is True and the target raster is evaluated as too large to safely 
+            fit within the available system RAM for an in-memory operation.
+    """
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        sig = inspect.signature(func)        
+        @wraps(func)
+        def wrapper(
+            *args: Any, 
+            **kwargs: Any
+            ) -> Any:
+            bound_args = sig.bind(*args, **kwargs)
+            bound_args.apply_defaults()
+
+            for name, param in sig.parameters.items():
+                val = bound_args.arguments[name]
+                if val is None:
+                    continue
+
+                annot_str = str(param.annotation)
+                expects_raster = "Raster" in annot_str or "raster" in name.lower()
+                if expects_raster and isinstance(val, (str, Path)):
+                    val_path = Path(val)
+                    if not val_path.exists():
+                        continue
+
+                    if safe:
+                        report = determine_strategy(val_path, user_mode="auto")
+                        if report.mode != ProcessingMode.IN_MEMORY: 
+                            raise MemoryError(
+                                f"Unsafe to auto-load '{name}' ({val_path}).\n"
+                                f"Reason: {report.reason}\n"
+                                f"This function requires full in-memory loading. Use a streaming alternative."
+                            )
+                        
+                    bound_args.arguments[name] = load(val_path)
+            return func(*bound_args.args, **bound_args.kwargs)
+        return wrapper
+    return decorator
