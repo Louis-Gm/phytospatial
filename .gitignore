@@ -2,7 +2,7 @@
 dev/
 old/
 */unfinished
-*/target
+/target
 .VSCodeCounter
 __pycache__/
 data/
@@ -18,5 +18,8 @@ site/
 *pipeline.py
 .env
 *docx
-cargo*
-*rust*
+*.pdb
+*.pyd
+*.so
+*.dylib
+*.dll
