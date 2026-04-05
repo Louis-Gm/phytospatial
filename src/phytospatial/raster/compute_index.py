@@ -28,7 +28,20 @@ def calculate_index_block(
     raster: Raster, 
     formula: str, 
     band_mapping: Dict[str, int]
-) -> Raster:
+    ) -> Raster:
+    """
+    Calculate a spectral index for a block of raster data using a provided formula and band mapping.
+
+    Args:
+        raster (Raster): Input Raster object containing the spectral bands.
+        formula (str): A string representing the mathematical formula for the index, 
+                       using variable names corresponding to the band_mapping keys.
+        band_mapping (Dict[str, int]): A dictionary mapping variable names in the formula 
+                                       to 1-based band indices in the raster.
+        
+    Returns:
+        Raster: A new Raster object containing the calculated index as a single band.
+    """
     local_dict = {}
     for var_name, band_idx in band_mapping.items():
         local_dict[var_name] = raster.get_band(band_idx) 
@@ -60,7 +73,19 @@ def generate_index(
     output_path: Union[str, Path], 
     index_name: str,
     max_tolerance: float = 20.0
-) -> Path:
+    ) -> Path:
+    """
+    Generates a specified vegetation index from an input orthomosaic raster and saves the result to disk.
+
+    Args:
+        input_path (Union[str, Path]): File path to the input orthomosaic raster containing the necessary spectral bands.
+        output_path (Union[str, Path]): File path where the output index raster will be saved.
+        index_name (str): The name of the vegetation index to compute.
+        max_tolerance (float): Maximum tolerance for wavelength matching. Defaults to 20.0 nm.
+
+    Returns:
+        Path: The file path to the generated index raster.
+    """
     input_path = Path(input_path)
     output_path = Path(output_path)
     
