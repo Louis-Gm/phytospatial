@@ -31,10 +31,28 @@ class IndexCatalog:
             self, 
             name: str
             ) -> SpectralIndex:
+        """
+            Retrieve a SpectralIndex by name from the catalog.
+
+            Args:
+                name (str): The name of the spectral index to retrieve.
+
+            Returns:
+                SpectralIndex: The corresponding SpectralIndex object.
+        """
         return self._indices[name]
     
     def register(
             self, 
             index: SpectralIndex
             ) -> None:
+        """
+            Register a new SpectralIndex in the catalog.
+            
+            Args:
+                index (SpectralIndex): The SpectralIndex object to register.
+
+            Returns:
+                None
+        """
         self._indices[index.name] = index
