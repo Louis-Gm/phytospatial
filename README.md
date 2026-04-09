@@ -76,7 +76,7 @@ df = extract.extract_to_dataframe(
 print(df.head())
 ```
 
-For a complete workflow, see the [Spectral Extraction Tutorial](https://phytospatial.readthedocs.io/en/latest/examples/extraction_pipeline/).
+For a complete workflow, see the full [Spectral extraction pipeline](https://phytospatial.readthedocs.io/en/latest/examples/extraction_pipeline/).
 
 ## **Contribute**
 
