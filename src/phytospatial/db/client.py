@@ -109,7 +109,7 @@ class DB_Client:
 
     def deploy_schema(self) -> bool:
         """
-        Deploys the complete Phytospatial relational schema to the connected database target.
+        Deploys the complete relational schema to the connected database target.
         
         Returns:
             bool: True if the schema deployment was successful, False otherwise.
@@ -119,7 +119,7 @@ class DB_Client:
                 with self.engine.connect() as conn:
                     conn.execute("SELECT InitSpatialMetaData(1);")
             Base.metadata.create_all(bind=self.engine)
-            log.info(f"Phytospatial schema successfully deployed to {self.engine.name}.")
+            log.info(f"Schema successfully deployed to {self.engine.name}.")
             return True
         except SQLAlchemyError as e:
             log.error(f"Failed to initialize database schema: {e}")
